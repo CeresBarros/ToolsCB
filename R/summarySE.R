@@ -30,7 +30,7 @@ summarySE <- function(data = NULL, measurevar, groupvars = NULL, na.rm = FALSE,
                      mean = mean(xx[[col]], na.rm = na.rm),
                      sd = sd(xx[[col]], na.rm = na.rm),
                      var = var(xx[[col]], na.rm = na.rm))
-                   },
+                 },
                  measurevar)
 
   ## Rename the "mean" column

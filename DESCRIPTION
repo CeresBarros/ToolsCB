@@ -11,12 +11,19 @@ Date: 2021-06-10
 Imports:
   ade4,
   data.table,
+  dplyr,
+  googledrive,
   grDevices,
   graphics,
   hypervolume,
   pdist,
   plyr,
+  raster,
+  reproducible,
+  sf,
+  sp,
   stats,
+  tools,
   utils
 Suggests:
   knitr,
