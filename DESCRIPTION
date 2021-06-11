@@ -1,0 +1,31 @@
+Package: ToolsCB
+Type: Package
+Title: Ceres's Useful R Functions
+Version: 0.0.1.9000
+Author: Ceres Barros
+Maintainer: The package maintainer <ceresvbarros@hotmail.com>
+Description: Package of useful R functions used for various ecological analyses, including hypervolumes for ecosystem stability assessments.
+Depends:
+  R (>= 3.6)
+Date: 2021-06-10
+Imports:
+  ade4,
+  data.table,
+  grDevices,
+  graphics,
+  hypervolume,
+  pdist,
+  plyr,
+  stats,
+  utils
+Suggests:
+  knitr,
+  rmarkdown,
+  rstudioapi
+BugReports: https://github.com/CeresBarros/ToolsCB/issues
+License: GPL-3
+Language: en-EN
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+VignetteBuilder: knitr, rmarkdown
