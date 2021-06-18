@@ -18,8 +18,9 @@
 #' @param bw determines the bandwidth value across all variables. Only works if \code{freeBW} is FALSE
 #' @param HVmethod determines the method used to calculate hypervolumes - passed to \code{hypervolume::hypervolume} method argument
 #' @param no.runs determines how many times the HV calculations and comparisons are repeated
-#' @param plot activates/desactivates plotting
-#' @param savePCA activates/desactivates saving PCA outputs
+#' @param plotOrdi activates/desactivates plotting for ordinations - plots are saved to PDFs not plotted interactively
+#' @param plotHV activates/desactivates plotting for hypervolumes - plots are saved to PDFs not plotted interactively
+#' @param saveOrdi activates/desactivates saving ordinations outputs
 #' @param outputs.dir is the directory to store results
 #' @param file.suffix is a character string used as a suffix in file names
 #' @param verbose is passed to \code{hypervolume::*} functions to control printing of diagnostic outputs
@@ -29,7 +30,6 @@
 #'
 #' @export
 #'
-#' @importFrom hypervolume hypervolume hypervolume_distance get_volume estimate_bandwidth hypervolume_set
 #' @import data.table
 #' @import pdist
 #' @importFrom grDevices cairo_pdf graphics.off
@@ -38,33 +38,45 @@
 hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.vars = NULL,
                          noAxes = NULL, do.scale = NULL, HVmethod = "box",
                          freeBW = FALSE, bw = NULL,
-                         no.runs = 1, plot = TRUE, savePCA = TRUE, outputs.dir,
-                         file.suffix, verbose = TRUE, ...) {
+                         no.runs = 1, plotOrdi = TRUE, plotHV = TRUE, saveOrdi = TRUE,
+                         outputs.dir, file.suffix, verbose = TRUE, ...) {
   ## do some checks:
-  if (class(HVdata1) != class(HVdata2)) stop("HVdata1 and HVdata2 are not two dataframes")
-  if (class(HVdata1) != "data.frame" & class(HVdata2) != "data.frame") stop("HVdata1 and HVdata2 are not two dataframes")
-  if (ncol(HVdata1) != ncol(HVdata2)) stop("HVdata1 and HVdata2 must have the same no. of columns")
-  if (!all(names(HVdata1) == names(HVdata2))) stop("HVdata1 and HVdata2 columns do not match")
-  if (any(is.na(HVdata1)) | any(is.na(HVdata2)))  stop("NAs must be removed prior to computations")
-  if (!ordination %in% c("none", "PCA", "HillSmith", "dudi.mix")) stop("Argument ordination must be one of the following: 'none', 'PCA', 'HillSmith' or 'dudi.mix'")
+  if (!all(is(HVdata1, "data.frame"), is(HVdata2, "data.frame")))
+    stop("HVdata1 and HVdata2 are not two dataframes")
+  if (length(setdiff(names(HVdata1), names(HVdata2))) |
+      length(setdiff(names(HVdata2), names(HVdata1))))
+    stop("HVdata1 and HVdata2 columns do not match")
+  if (any(is.na(HVdata1)) | any(is.na(HVdata2)))
+    stop("NAs must be removed prior to computations")
+  if (!ordination %in% c("none", "PCA", "HillSmith", "dudi.mix"))
+    stop("Argument ordination must be one of the following: 'none', 'PCA', 'HillSmith' or 'dudi.mix'")
   if (!is.null(noAxes) & ordination == "none")
-    message(paste("You chose to use", noAxes, "ordination axes, but no ordination technique.\n
-                                                     Ordination will be skipped"))
+    message(paste("You chose to use", noAxes, "ordination axes, but no ordination technique.\n",
+                  "Ordination will be skipped"))
   if (!is.null(bw) & freeBW)
-    message(paste("You chose a fixed bandwith value of", bw, "for all variables, but freeBW is TRUE.\n
-                                    Bandwidths will be estimated per dimension using the default estimator. See ?estimate_bandwidth"))
+    message(paste("You chose a fixed bandwith value of", bw, "for all variables, but freeBW is TRUE.\n",
+                  "Bandwidths will be estimated per dimension using the default estimator. See ?estimate_bandwidth"))
 
   if (is.null(init.vars)) {
     init.vars = c(1:ncol(HVdata1))
   } else{
-    if (class(init.vars) != "numeric" & class(init.vars) != "integer") stop("init.vars must be a numeric/integer vector of columns indices")
+    if (!all(is(init.vars, "numeric"), is(init.vars, "integer")))
+      stop("init.vars must be a numeric/integer vector of columns indices")
   }
 
-  if (!exists("HVidvar")) stop("Provide column number that contains HV IDs")
-  if (class(HVidvar) == "integer" | class(HVidvar) == "numeric") {
+  if (!exists("HVidvar"))
+    stop("Provide column number that contains HV IDs")
+
+  if (!dir.exists(outputs.dir)) {
+    dir.create(outputs.dir)
+  }
+
+  if (any(is(HVidvar, "integer"), is(HVidvar, "numeric"))) {
     HVnames <- unique(c(as.character(HVdata1[, HVidvar]), as.character(HVdata2[, HVidvar])))
-    if (length(HVnames) > 2) stop("Only 2 hypervolumes can be used and HVidvar contains >2 IDs")
-  } else stop("HVidvar should be the column number")
+    if (length(HVnames) > 2)
+      stop("Only 2 hypervolumes can be used and HVidvar contains >2 IDs")
+  } else
+    stop("HVidvar should be the column number")
 
   if (length(HVidvar) > 1) stop("Provide one single column for HV IDs")
 
@@ -76,22 +88,20 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
 
   init.vars2 <- sort(c(init.vars, which(names(HVdata1) == "Type")))
 
-  ## Joining tables
+  ## Joining tables and redo init.vars
   big.table <- rbind(HVdata1[, init.vars2], HVdata2[, init.vars2])
+  init.vars <- grep("Type", names(big.table), invert = TRUE)
 
   ## In case PFG relative abundances are to be used, there's no need to rescale.
   ## To avoid wrapping the whole function in the "if" the dataframe used in the PCAs is replaced
   if (do.scale) {
     ## Attributing a very small value (1e-6) to variables that have only 0s enables scaling of all variables w/o producing NaNs
-
-    bigtable[, which(colSums(big.table) == 0)] <- 1e-6
+    big.table[, which(colSums(big.table[, init.vars]) == 0)] <- 1e-6
 
     ## Scaling using root mean squares (by having center=FALSE, scale=TRUE) to avoid producing NaNs in constant variables
     ## Scaling needs to be done with both datasets together, otherwise intersections are forced
-    big.table.sc <- bigtable
-    big.table.sc[, init.vars] <- as.data.frame(scale(big.table.sc[, init.vars], center=FALSE, scale=TRUE))
-
-    big.table <- cbind(big.table.sc, big.table[, "Type"])
+    big.table[, init.vars] <- as.data.frame(scale(big.table[, init.vars],
+                                                  center = FALSE, scale = TRUE))
   }
 
   ## ----------------------------------------------------------------------------
@@ -109,7 +119,7 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
   } else {
     ordi.list <- HVordination(datatable = big.table, init.vars = init.vars, ordination = ordination,
                               HVidvar = which(names(big.table) == "Type"),
-                              noAxes = noAxes, plot = plot, savePCA = savePCA,
+                              noAxes = noAxes, plot = plotOrdi, saveOrdi = saveOrdi,
                               outputs.dir = outputs.dir, file.suffix = paste(HVnames[1], HVnames[2], sep = "_"))
 
     HVpoints <- ordi.list[[1]]
@@ -127,104 +137,29 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
   ## ----------------------------------------------------------------------------
   ## HYPERVOLUMES
   ## Do not parellelise - generates random NA's in the data for some reason
+  for (i in 1:no.runs) {
+    out <- .HVcalc(big.table, HVpoints, noAxes, HVmethod, ordination, HVnames, bw, verbose, ...)
+    HV1.disjfact <- out$HV1.disjfact
+    HV2.disjfact <- out$HV2.disjfact
 
-  for(i in 1:no.runs) {
     if (freeBW == TRUE & HVmethod %in% c("box", "gaussian")) {
-      ## Disjunct factor is no longer an output (hypervolume v 2.0.8) -
-      ## now calculated "manually" when using the box method (not relevant in gaussian/svm)
-      ## Increasing bandwidth to reduce disjunct factor if BW is not fixed and using box method
-
-      while(HV1.disjfact >= 0.9 | HV2.disjfact >= 0.9) {
+      while (HV1.disjfact >= 0.9 | HV2.disjfact >= 0.9) {
         bw <- bw + 0.05
-
-        if (ordination != "none") {
-          HV1name <- paste(HVnames[1], "- Ordination factor scores - fixed bandwidth to", bw)
-          HV2name <- paste(HVnames[2], "- Ordination factor scores - fixed bandwidth to", bw)
-        } else {
-          HV1name <- paste(HVnames[1], "- fixed bandwidth to", bw)
-          HV2name <- paste(HVnames[2], "- fixed bandwidth to", bw)
-        }
-
-        HV1 <- hypervolume(data = HVpoints[which(big.table$Type == HVnames[1]), 1:noAxes],
-                           method = HVmethod, kde.bandwidth = bw,
-                           name = HV1name,
-                           verbose = verbose, ...)
-
-        HV2 <- hypervolume(data = HVpoints[which(big.table$Type == HVnames[2]), 1:noAxes],
-                           method = HVmethod, kde.bandwidth = bw,
-                           name = HV2name,
-                           verbose = verbose, ...)
-      }
-    } else {
-      if (HVmethod %in% c("box", "gaussian")) {
-        if (ordination != "none") {
-          HV1name <- paste(HVnames[1], "- Ordination factor scores - fixed bandwidth to", bw)
-          HV2name <- paste(HVnames[2], "- Ordination factor scores - fixed bandwidth to", bw)
-        } else {
-          HV1name <- paste(HVnames[1], "- fixed bandwidth to", bw)
-          HV2name <- paste(HVnames[2], "- fixed bandwidth to", bw)
-        }
-        HV1 <- hypervolume(data = HVpoints[which(big.table$Type == HVnames[1]), 1:noAxes],
-                           method = HVmethod, kde.bandwidth = bw,
-                           name = HV1name,
-                           verbose = verbose, ...)
-
-        HV2 <- hypervolume(data = HVpoints[which(big.table$Type == HVnames[2]), 1:noAxes],
-                           method = HVmethod, kde.bandwidth = bw,
-                           name = HV2name,
-                           verbose = verbose, ...)
-      } else {
-        if (ordination != "none") {
-        HV1name <- paste(HVnames[1], "- Ordination factor scores")
-        HV2name <- paste(HVnames[2], "- Ordination factor scores")
-        } else {
-          HV1name <- HVnames[1]
-          HV2name <- HVnames[2]
-        }
-        HV1 <- hypervolume(data = HVpoints[which(big.table$Type == HVnames[1]), 1:noAxes],
-                           method = HVmethod, name = HV1name,
-                           verbose = verbose, ...)
-
-        HV2 <- hypervolume(data = HVpoints[which(big.table$Type == HVnames[2]), 1:noAxes],
-                           method = HVmethod, name = HV2name,
-                           verbose = verbose, ...)
+        out <- .HVcalc(big.table, HVpoints, noAxes, HVmethod, ordination, HVnames, bw, verbose, ...)
+        HV1.disjfact <- out$HV1.disjfact
+        HV2.disjfact <- out$HV2.disjfact
       }
     }
 
-    volume.set <- hypervolume_set(HV1, HV2, check.memory = FALSE, verbose = verbose)
-
-    hv.centroid.dist <- hypervolume_distance(HV1, HV2, type = "centroid")
-    hv.min.dist <- hypervolume_distance(HV1, HV2, type = "minimum", check.memory=FALSE)
-
-    if (HVmethod == "box") {
-      Bandwidth <- c(HV1@Parameters$kde.bandwidth[1], HV2@Parameters$kde.bandwidth[1])
-      HV1.disjfact <- HV1@Volume / (nrow(HVpoints[which(big.table$Type == HVnames[1]), 1:noAxes]) * prod(2 * HV1@Parameters$kde.bandwidth))
-      HV2.disjfact <- HV2@Volume / (nrow(HVpoints[which(big.table$Type == HVnames[2]), 1:noAxes]) * prod(2 * HV2@Parameters$kde.bandwidth))
-      SVM_nu <- NA
-      SVM_gamma <- NA
-    } else if(HVmethod == "gaussian") {
-      Bandwidth <- c(HV1@Parameters$kde.bandwidth[1], HV2@Parameters$kde.bandwidth[1])
-      HV1.disjfact <- NA
-      HV2.disjfact <- NA
-      SVM_nu <- NA
-      SVM_gamma <- NA
-    } else {
-      Bandwidth <- NA
-      HV1.disjfact <- NA
-      HV2.disjfact <- NA
-      SVM_nu <- HV1@Parameters$svm.nu
-      SVM_gamma <- HV1@Parameters$svm.gamma
-    }
-
-    volumes <- data.frame(Dimensionality = c(HV1@Dimensionality, HV2@Dimensionality),
-                          Volume = c(HV1@Volume, HV2@Volume),
-                          Bandwidth = Bandwidth,
-                          DisjunctFactor = c(HV1.disjfact, HV2.disjfact),
-                          SVM_nu = SVM_nu,
-                          SVM_gamma = SVM_gamma,
+    volumes <- data.frame("Dimensionality" = c(out$HV1@Dimensionality, out$HV2@Dimensionality),
+                          "Volume" = c(out$HV1@Volume, out$HV2@Volume),
+                          "Bandwidth" = out$Bandwidth,
+                          "DisjunctFactor" = c(out$HV1.disjfact, out$HV2.disjfact),
+                          "SVM_nu" = out$SVM_nu,
+                          "SVM_gamma" = out$SVM_gamma,
                           row.names = c(HVnames[1], HVnames[2]))
 
-    vol_comparison <- get_volume(volume.set)
+    vol_comparison <- get_volume(out$volume.set)
     names(vol_comparison) = c(paste0("Volume_HV1_", HVnames[1]),
                               paste0("Volume_HV2_", HVnames[2]),
                               "Intersection",
@@ -232,21 +167,23 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
                               paste0("Unique_vol_HV1_", HVnames[1]),
                               paste0("Unique_vol_HV2_", HVnames[2]))
 
-    vol_comparison <- data.frame(t(as.matrix(vol_comparison)), MinDist = hv.min.dist, CentroidDist = hv.centroid.dist)
+    vol_comparison <- data.frame(t(as.matrix(vol_comparison)),
+                                 "MinDist" = out$hv.min.dist,
+                                 "CentroidDist" = out$hv.centroid.dist)
 
-    write.table(volumes, file = file.path(outputs.dir, paste(file.suffix, "HVdetails", i,".txt", sep="_")))
-    write.table(vol_comparison, file = file.path(outputs.dir, paste(file.suffix, "Intersection_results", i,".txt", sep="_")))
+    saveRDS(volumes, file = file.path(outputs.dir, paste0(file.suffix, "_HVdetails_", i,".rds")))
+    saveRDS(vol_comparison, file = file.path(outputs.dir, paste0(file.suffix, "_Intersection_results_", i,".rds")))
 
-    if (plot == TRUE) {
-      cairo_pdf(filename = file.path(outputs.dir, paste(file.suffix, "Hypervolumes", i,".pdf", sep="_")), onefile = TRUE,
+    if (isTRUE(plotHV)) {
+      cairo_pdf(filename = file.path(outputs.dir, paste0(file.suffix, "_Hypervolumes_", i,".pdf")),
+                onefile = TRUE,
                 width = 5, height = 5)
-      plot(HV1)
-      plot(HV2)
-      plot(volume.set)
+      plot(out$HV1)
+      plot(out$HV2)
+      plot(out$volume.set)
       graphics.off()
     }
   }
-
   paste("***done***")
 
 }
@@ -263,21 +200,19 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
 #' @export
 #'
 #' @import data.table
-#' @importFrom ade4 dudi.hillsmith dudi.mix scatter
-#' @importFrom stats biplot prcomp predict
-#' @importFrom graphics barplot layout par points
-#' @importFrom grDevices cairo_pdf graphics.off
+#' @importFrom ade4 dudi.hillsmith dudi.mix
+#' @importFrom stats prcomp predict
 #'
 #' @return a \code{list} of points used to build hypervolumes and final number of axes.
 
 HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA",
-                         noAxes = NULL, plot = TRUE, outputs.dir = NULL, file.suffix = NULL, savePCA = TRUE) {
+                         noAxes = NULL, plotOrdi = TRUE, outputs.dir = NULL, file.suffix = NULL, saveOrdi = TRUE) {
 
   if (!ordination %in% c("PCA", "HillSmith", "dudi.mix")) stop("Argument ordination must be one of the following: 'none', 'PCA', 'HillSmith' or 'dudi.mix'")
   if (!is.null(noAxes) & ordination == "none")
     message(paste("You chose to use", noAxes, "ordination axes, but no ordination technique.\n
                   Ordination will be skipped"))
-  if (savePCA) {
+  if (saveOrdi) {
     if (is.null(outputs.dir) | is.null(file.suffix)) stop("Provide an output directory and/or file name")
   }
 
@@ -313,58 +248,6 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
 
     ## Extracting eigenvalues
     eigenv <- ordi$sdev^2
-
-    ## In case the no of PCs is not determined: calculating no of PCs needed to have >=90% of the variance explained.
-    if (is.null(noAxes)) {
-      variance <- 0
-      noAxes <- NA
-      for (i in 1:length(PEV)) {
-        variance <- variance + PEV[i]
-        if (variance >= 0.9) {
-          noAxes <- i
-          break
-        }
-      }
-
-      if (noAxes == 1) {
-        warning("The first principal component explains >= 90% of the total variance.\n
-                  The two first principal components will be used as the dimensions for a 2D hypervolume nevertheless")
-        noAxes = 2
-      }
-
-      if (noAxes > 8) {
-        warning("A minimum total explained variance of 90% is explained by >8 PCs.\n
-                  Constraining no. of PCs to 8 anyway.")
-        noAxes <- 8
-      }
-    }
-
-    ## PCA-related plots
-    if (plot == TRUE) {
-      cairo_pdf(filename = file.path(outputs.dir, paste(file.suffix, "Ordination.pdf", sep = "_")), width = 10, height = 10)
-      layout(matrix(c(1:4), nrow = 2, ncol = 2, byrow = TRUE))
-      sets <- options(warn = -1)  ## suppressing warnings about zero-length arrows
-      biplot(ordi, choices = c(1,2))
-      biplot(ordi, choices = c(2,3))
-      plot(fscores[which(datatable[, HVidvar] == HVnames[1]),1], fscores[which(datatable[, HVidvar] == HVnames[1]), 2],
-           cxlim = c(min(fscores[,1]), max(fscores[,1])), ylim = c(min(fscores[,2]), max(fscores[,2])),
-           col = "black", pch = 19, main = paste(HVnames[1], "(black) and", HVnames[2], "(red)"), xlab = "PC1", ylab = "PC2")
-      options(sets)
-      par(new = TRUE)
-      points(fscores[which(datatable[, HVidvar] == HVnames[2]),1], fscores[which(datatable[, HVidvar] == HVnames[2]), 2],
-             col = "red", pch = 19)
-      par(new = FALSE)
-      barplot(PEV,
-              main = paste(file.suffix, "OrdiScreeplot.pdf", sep = "_"),
-              ylab = "% explained variance", xlab = "Principal components")
-      graphics.off()
-    }
-
-    ## Saving PCA summary outputs
-    if (savePCA) {
-      summPCA <- rbind(summary(ordi)$importance, Eigenvalues = eigenv)
-      write.table(summPCA, file.path(outputs.dir, paste(file.suffix, "OrdinationSumm.txt", sep = "_")))
-    }
   }
 
   if (ordination == "HillSmith") {
@@ -376,61 +259,6 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
 
     ## Extracting eigenvalues
     eigenv <- ordi$eig
-
-    ## If the no of PCs is not determined, calculate how many are needed to have >=90% of the variance explained.
-    if (is.null(noAxes)) {
-      variance <- 0
-      noAxes <- NA
-      for (i in 1:length(PEV)) {
-        variance <- variance + PEV[i]
-        if (variance >= 0.9) {
-          noAxes <- i
-          break
-        }
-      }
-
-      if (noAxes == 1) {
-        warning("The first PC explains >= 90% of the total variance.\n
-                  The two first PCs will be used as the dimensions for a 2D hypervolume nevertheless")
-        noAxes = 2
-      }
-
-      if (noAxes > 8) {
-        warning("A minimum total explained variance of 90% is explained by >8 PCs.\n
-                  Constraining no. of PCs to 8.")
-        noAxes <- 8
-      }
-    }
-
-    ## PCA-related plots
-    if (plot == TRUE) {
-      cairo_pdf(filename = file.path(outputs.dir, paste(file.suffix, "Ordination.pdf", sep = "_")), width = 10, height = 10)
-      layout(matrix(c(1:4), nrow = 2, ncol = 2, byrow = TRUE))
-      sets <- options(warn = -1)  ## suppressing warnings about zero-length arrows
-      scatter(ordi, xax = 1, yax = 2)
-      scatter(ordi, xax = 1, yax = 3)
-      plot(fscores[which(datatable[, HVidvar] == HVnames[1]),1], fscores[which(datatable[, HVidvar] == HVnames[1]), 2],
-           cxlim = c(min(fscores[,1]), max(fscores[,1])), ylim = c(min(fscores[,2]), max(fscores[,2])),
-           col = "black", pch = 19, main = paste(HVnames[1], "(black) and", HVnames[2], "(red)"), xlab = "PC1", ylab = "PC2")
-      options(sets)
-      par(new = TRUE)
-      points(fscores[which(datatable[, HVidvar] == HVnames[2]),1], fscores[which(datatable[, HVidvar] == HVnames[2]), 2],
-             col = "red", pch = 19)
-      par(new = FALSE)
-      barplot(PEV,
-              main = paste(file.suffix, "OrdiScreeplot.pdf", sep = "_"),
-              ylab = "% explained variance", xlab = "Principal components")
-      graphics.off()
-    }
-
-    ## Saving PCA summary outputs
-    if (savePCA) {
-      summPCA <- rbind("Standard deviation" = sqrt(eigenv),
-                       "Proportion of Variance" = PEV,
-                       "Cumulative Proportion" = cumsum(PEV),
-                       Eigenvalues = eigenv)
-      write.table(summPCA, file.path(outputs.dir, paste(file.suffix, "OrdinationSumm.txt", sep = "_")))
-    }
   }
 
   if (ordination == "dudi.mix") {
@@ -442,65 +270,199 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
 
     ## Extracting eigenvalues
     eigenv <- ordi$eig
+  }
 
-    ## If the no of PCs is not determined, calculate how many are needed to have >=90% of the variance explained.
-    if (is.null(noAxes)) {
-      variance <- 0
-      noAxes <- NA
-      for (i in 1:length(PEV)) {
-        variance <- variance + PEV[i]
-        if (variance >= 0.9) {
-          noAxes <- i
-          break
-        }
+  ## If the no of PCs is not determined, calculate how many are needed to have >=90% of the variance explained.
+  if (is.null(noAxes)) {
+    variance <- 0
+    noAxes <- NA
+    for (i in 1:length(PEV)) {
+      variance <- variance + PEV[i]
+      if (variance >= 0.9) {
+        noAxes <- i
+        break
       }
+    }
 
-      if (noAxes == 1) {
-        warning("The first PC explains >= 90% of the total variance.\n
+    if (noAxes == 1) {
+      warning("The first PC explains >= 90% of the total variance.\n
                   The two first PCs will be used as the dimensions for a 2D hypervolume nevertheless")
-        noAxes = 2
-      }
+      noAxes = 2
+    }
 
-      if (noAxes > 8) {
-        warning("A minimum total explained variance of 90% is explained by >8 PCs.\n
+    if (noAxes > 8) {
+      warning("A minimum total explained variance of 90% is explained by >8 PCs.\n
                   Constraining no. of PCs to 8.")
-        noAxes <- 8
-      }
+      noAxes <- 8
     }
+  }
 
-    ## PCA-related plots
-    if (plot == TRUE) {
-      cairo_pdf(filename = file.path(outputs.dir, paste(file.suffix, "Ordination.pdf", sep = "_")), width = 10, height = 10)
-      layout(matrix(c(1:4), nrow = 2, ncol = 2, byrow = TRUE))
-      sets <- options(warn = -1)  ## suppressing warnings about zero-length arrows
-      scatter(ordi, xax = 1, yax = 2)
-      scatter(ordi, xax = 1, yax = 3)
-      plot(fscores[which(datatable[, HVidvar] == HVnames[1]),1], fscores[which(datatable[, HVidvar] == HVnames[1]), 2],
-           cxlim = c(min(fscores[,1]), max(fscores[,1])), ylim = c(min(fscores[,2]), max(fscores[,2])),
-           col = "black", pch = 19, main = paste(HVnames[1], "(black) and", HVnames[2], "(red)"), xlab = "PC1", ylab = "PC2")
-      options(sets)
-      par(new = TRUE)
-      points(fscores[which(datatable[, HVidvar] == HVnames[2]),1], fscores[which(datatable[, HVidvar] == HVnames[2]), 2],
-             col = "red", pch = 19)
-      par(new = FALSE)
-      barplot(PEV,
-              main = paste(file.suffix, "OrdiScreeplot.pdf", sep = "_"),
-              ylab = "% explained variance", xlab = "Principal components")
-      graphics.off()
-    }
+  ## PCA-related plots
+  if (isTRUE(plotOrdi)) {
+    .ordinationPlots(ordi, fscores, PEV, datatable, HVidvar, HVnames,
+                     ordination, outputs.dir, file.suffix)
+  }
 
-    ## Saving PCA summary outputs
-    if (savePCA) {
+  ## Saving PCA summary outputs
+  if (saveOrdi) {
+    if (ordination %in% c("HillSmith", "dudi.mix")) {
+
       summPCA <- rbind("Standard deviation" = sqrt(eigenv),
                        "Proportion of Variance" = PEV,
                        "Cumulative Proportion" = cumsum(PEV),
-                       Eigenvalues = eigenv)
-      write.table(summPCA, file.path(outputs.dir, paste(file.suffix, "OrdinationSumm.txt", sep = "_")))
+                       "Eigenvalues" = eigenv)
+      saveRDS(summPCA, file.path(outputs.dir, paste(file.suffix, "OrdinationSumm.rds", sep = "_")))
+    } else {
+      summPCA <- rbind(summary(ordi)$importance, Eigenvalues = eigenv)
+      saveRDS(summPCA, file.path(outputs.dir, paste(file.suffix, "OrdinationSumm.rds", sep = "_")))
     }
   }
 
   HVpoints <- fscores
-  return(list(HVpoints = HVpoints, noAxes = noAxes))
+  return(list("HVpoints" = HVpoints, "noAxes" = noAxes))
 }
 
+#' ORDINATION PLOT SAVEING FUNCTION
+#'
+#' Calculates an ordination across two datasets prior to calculating two hypervolumes (one from each dataset)
+#'
+#' @param datatable is a \code{data.table} contained the raw data for the two hypervolumes
+#' @param ordi the ordination object
+#' @param fscores factor scores
+#' @param PEV percent explained variance per PC
+#' @param HVnames character vector of hypervolume names
+#'
+#' @inheritParams hypervolumes
+#'
+#' @import data.table
+#' @importFrom ade4 scatter
+#' @importFrom stats biplot
+#' @importFrom graphics barplot layout par points
+#' @importFrom grDevices cairo_pdf graphics.off
+#'
+#' @return NULL, just saves plots to a PDF
+
+.ordinationPlots <- function(ordi, fscores, PEV, datatable, HVidvar, HVnames,
+                             ordination, outputs.dir, file.suffix) {
+  plotFUN <- if (ordination %in% c("PCA", "HillSmith")) {
+    biplot
+  } else {
+    scatter
+  }
+  cairo_pdf(filename = file.path(outputs.dir, paste(file.suffix, "Ordination.pdf", sep = "_")), width = 10, height = 10)
+  layout(matrix(c(1:4), nrow = 2, ncol = 2, byrow = TRUE))
+  sets <- options(warn = -1)  ## suppressing warnings about zero-length arrows
+  plotFUN(ordi, choices = c(1,2))
+  plotFUN(ordi, choices = c(2,3))
+  plot(fscores[which(datatable[, HVidvar] == HVnames[1]),1], fscores[which(datatable[, HVidvar] == HVnames[1]), 2],
+       cxlim = c(min(fscores[,1]), max(fscores[,1])), ylim = c(min(fscores[,2]), max(fscores[,2])),
+       col = "black", pch = 19, main = paste(HVnames[1], "(black) and", HVnames[2], "(red)"), xlab = "PC1", ylab = "PC2")
+  options(sets)
+  par(new = TRUE)
+  points(fscores[which(datatable[, HVidvar] == HVnames[2]),1], fscores[which(datatable[, HVidvar] == HVnames[2]), 2],
+         col = "red", pch = 19)
+  par(new = FALSE)
+  barplot(PEV,
+          main = paste(file.suffix, "OrdiScreeplot.pdf", sep = "_"),
+          ylab = "% explained variance", xlab = "Principal components")
+  graphics.off()
+}
+
+#' HYPERVOLUME COMPUTATION WRAPPER
+#'
+#' Calculates two hypervolumes and compares them in terms of
+#'   overlap and distance. When appropriate (i.e. \code{HVmethod == "box"}),
+#'   it also calculates the disjunct factor and repeats the calculations
+#'   with larger bandwidths (if \code{freeBW == TRUE})
+#'
+#' @param big.table is a \code{data.table} contained the raw data for the two hypervolumes.
+#'   Used to subset \code{HVpoints} according to HVnames, so rows have to correspond
+#' @param HVpoints \code{data.table} of points used to build hypervolumes and final number of axes.
+#' @param HVnames \code{character} vector of length 2 of hypervolume names.
+#' @inheritParams hypervolumes
+#'
+#' @import data.table
+#' @importFrom hypervolume hypervolume hypervolume_distance get_volume estimate_bandwidth hypervolume_set
+#'
+#' @return a \code{list} with entries:
+#'  \itemize {
+#'    \item 'HV1'.
+#'    \item 'HV2'.
+#'    \item 'volume.set' - the result of \code{hypervolume::hypervolume_set}.
+#'    \item 'hv.centroid.dist' and 'hv.min.dist' - the result of \code{hypervolume::hypervolume_distance(..., type = "centroid")} and \code{hypervolume::hypervolume_distance(..., type = "minimum")}.
+#'    \item 'Bandwidth' - \code{NA} if \code{HVmethod} is not "box" or "gaussian").
+#'    \item 'HV1.disjfact' and 'HV2.disjfact' (\code{NA} if \code{HVmethod} is not "box").
+#'    \item 'SVM_nu' and 'SVM_gama' (\code{NA} if \code{HVmethod} is "box" or "gaussian").
+#'  }
+
+.HVcalc <- function(big.table, HVpoints, noAxes, HVmethod, ordination,
+                    HVnames, bw, verbose, ...) {
+  if (ordination != "none") {
+    HV1name <- paste(HVnames[1], "- Ordination factor scores")
+    HV2name <- paste(HVnames[2], "- Ordination factor scores")
+  } else {
+    HV1name <- HVnames[1]
+    HV2name <- HVnames[2]
+  }
+
+  if (HVmethod %in% c("box", "gaussian")) {
+    HV1name <- paste(HV1name,"- fixed bandwidth to", bw)
+    HV2name <- paste(HV2name,"- fixed bandwidth to", bw)
+
+    HV1 <- hypervolume(data = HVpoints[which(big.table$Type == HVnames[1]), 1:noAxes],
+                       method = HVmethod, kde.bandwidth = bw,
+                       name = HV1name,
+                       verbose = verbose, ...)
+
+    HV2 <- hypervolume(data = HVpoints[which(big.table$Type == HVnames[2]), 1:noAxes],
+                       method = HVmethod, kde.bandwidth = bw,
+                       name = HV2name,
+                       verbose = verbose, ...)
+  } else {
+    HV1 <- hypervolume(data = HVpoints[which(big.table$Type == HVnames[1]), 1:noAxes],
+                       method = HVmethod, name = HV1name,
+                       verbose = verbose, ...)
+
+    HV2 <- hypervolume(data = HVpoints[which(big.table$Type == HVnames[2]), 1:noAxes],
+                       method = HVmethod, name = HV2name,
+                       verbose = verbose, ...)
+  }
+
+  volume.set <- hypervolume_set(HV1, HV2, check.memory = FALSE, verbose = verbose)
+
+  hv.centroid.dist <- hypervolume_distance(HV1, HV2, type = "centroid")
+  hv.min.dist <- hypervolume_distance(HV1, HV2, type = "minimum", check.memory = FALSE)
+
+
+  if (HVmethod %in% c("box", "gaussian")) {
+    Bandwidth <- c(HV1@Parameters$kde.bandwidth[1], HV2@Parameters$kde.bandwidth[1])
+    SVM_nu <- NA
+    SVM_gamma <- NA
+  } else {
+    Bandwidth <- NA
+    SVM_nu <- HV1@Parameters$svm.nu
+    SVM_gamma <- HV1@Parameters$svm.gamma
+  }
+
+  ## Disjunct factor is no longer an output (hypervolume v 2.0.8) -
+  ## now calculated "manually" when using the box method (not relevant in gaussian/svm)
+  if (HVmethod == "box") {
+    HV1.disjfact <- HV1@Volume / (nrow(HVpoints[which(big.table$Type == HVnames[1]), 1:noAxes]) * prod(2 * HV1@Parameters$kde.bandwidth))
+    HV2.disjfact <- HV2@Volume / (nrow(HVpoints[which(big.table$Type == HVnames[2]), 1:noAxes]) * prod(2 * HV2@Parameters$kde.bandwidth))
+  } else {
+    HV1.disjfact <- NA
+    HV2.disjfact <- NA
+  }
+
+  list("HV1" = HV1,
+       "HV2" = HV2,
+       "volume.set" = volume.set,
+       "hv.centroid.dist" = hv.centroid.dist,
+       "hv.min.dist" = hv.min.dist,
+       "Bandwidth" = Bandwidth,
+       "HV1.disjfact" = HV1.disjfact,
+       "HV2.disjfact" = HV2.disjfact,
+       "SVM_nu" = SVM_nu,
+       "SVM_gamma" = SVM_gamma)
+}
 
