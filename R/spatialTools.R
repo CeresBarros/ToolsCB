@@ -8,7 +8,7 @@
 #'
 #' @return an \code{sf} object without duplicated columns
 #'
-#' @importFrom sf st_set_geometry st_geometry
+#' @importFrom sf st_set_geometry st_geometry st_geometry<-
 
 sfRmDupNACols <- function(sfObj) {
   transposed <- t(st_set_geometry(sfObj, NULL))
@@ -99,6 +99,7 @@ renameCleanSfFields <- function(sfObj, namesTable, rmNAs = TRUE) {
 #'   or an error if geometries could not be validated.
 #'
 #' @importFrom sf st_is_valid st_make_valid
+#' @importFrom stats na.omit
 
 validateGeomsSf <- function(sfObj, dim) {
   ## Any corrupt or invalid geometries?
@@ -128,8 +129,9 @@ validateGeomsSf <- function(sfObj, dim) {
 #' @return a \code{shapefile}
 #'
 #' @importFrom googledrive drive_download as_id
-#' @importFrom sf st_read st_zm
+#' @importFrom sf st_read st_zm as_Spatial
 #' @importFrom raster shapefile
+#' @importFrom utils unzip
 
 prepKMZ2shapefile <- function(url, archive, destinationPath, overwrite = TRUE) {
   ## check
@@ -160,7 +162,7 @@ prepKMZ2shapefile <- function(url, archive, destinationPath, overwrite = TRUE) {
   if (any(names(sfObj) %in% "Description"))
     sfObj$Description <- NULL  ## weird unnecessary column
   ## convert to shapefile
-  shpObj <- as(st_zm(sfObj), "Spatial")
+  shpObj <- as_Spatial(st_zm(sfObj))
 
   ## delete unecessary .kmz/.kml files and save .shp
   file.remove(fileKML, fileKMZ)
@@ -210,7 +212,7 @@ outerBuffer <- function(x) {
 #' @return joined \code{shapefile} or \code{raster}
 #'
 #' @importFrom reproducible prepInputs
-#' @importFrom raster crs
+#' @importFrom raster crs bind
 
 loadBindSpatialObjs <- function(files, destinationPath, urls = NULL) {
   ## name URLs with file names
@@ -362,6 +364,8 @@ cropToStudyArea <- function(study.area, tocrop, method = "bilinear") {
 #' @export
 #'
 #' @return a presence/absence \code{matrix}
+#'
+#' @importFrom stats model.matrix
 vector2binmatrix <- function(x) {
   x <- as.character(x)
   return(model.matrix( ~ x-1))
