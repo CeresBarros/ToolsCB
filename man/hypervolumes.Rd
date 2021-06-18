@@ -14,7 +14,8 @@ hypervolumes(
   do.scale = NULL,
   HVmethod = "box",
   freeBW = FALSE,
-  bw = NULL,
+  bwHV1 = NULL,
+  bwHV2 = NULL,
   no.runs = 1,
   plotOrdi = TRUE,
   plotHV = TRUE,
@@ -48,7 +49,9 @@ using an ordination to reduce dimensionality. See Blonder et al 2014.}
 
 \item{freeBW}{determines whether a bandwidth estimator will be used to calculate bandwith per variable}
 
-\item{bw}{determines the bandwidth value across all variables. Only works if \code{freeBW} is FALSE}
+\item{bwHV1}{determines the bandwidth value for first hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}}
+
+\item{bwHV2}{determines the bandwidth value for second hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}}
 
 \item{no.runs}{determines how many times the HV calculations and comparisons are repeated}
 

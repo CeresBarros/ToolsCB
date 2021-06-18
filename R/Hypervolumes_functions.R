@@ -15,7 +15,8 @@
 #' @param noAxes determines the number of axes/columns to use for hypervolume calculation
 #' @param do.scale activates scaling prior to the ordination/calculation of HVs
 #' @param freeBW determines whether a bandwidth estimator will be used to calculate bandwith per variable
-#' @param bw determines the bandwidth value across all variables. Only works if \code{freeBW} is FALSE
+#' @param bwHV1 determines the bandwidth value for first hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}
+#' @param bwHV2 determines the bandwidth value for second hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}
 #' @param HVmethod determines the method used to calculate hypervolumes - passed to \code{hypervolume::hypervolume} method argument
 #' @param no.runs determines how many times the HV calculations and comparisons are repeated
 #' @param plotOrdi activates/desactivates plotting for ordinations - plots are saved to PDFs not plotted interactively
@@ -37,7 +38,7 @@
 
 hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.vars = NULL,
                          noAxes = NULL, do.scale = NULL, HVmethod = "box",
-                         freeBW = FALSE, bw = NULL,
+                         freeBW = FALSE, bwHV1 = NULL, bwHV2 = NULL,
                          no.runs = 1, plotOrdi = TRUE, plotHV = TRUE, saveOrdi = TRUE,
                          outputs.dir, file.suffix, verbose = TRUE, ...) {
   ## do some checks:
@@ -53,9 +54,18 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
   if (!is.null(noAxes) & ordination == "none")
     message(paste("You chose to use", noAxes, "ordination axes, but no ordination technique.\n",
                   "Ordination will be skipped"))
-  if (!is.null(bw) & freeBW)
-    message(paste("You chose a fixed bandwith value of", bw, "for all variables, but freeBW is TRUE.\n",
-                  "Bandwidths will be estimated per dimension using the default estimator. See ?estimate_bandwidth"))
+  if ((!is.null(bwHV1) | !is.null(bwHV2)) & freeBW) {
+      message(paste("You provided bandwidth values, but freeBW is TRUE.\n",
+                    "Bandwidths will be estimated per dimension using the default estimator.",
+                    "See ?hypervolume::estimate_bandwidth"))
+  }
+
+  if (!all(is.null(bwHV1), is.null(bwHV2))) {
+    message("Only one set of bandwidths provided, both will be re-estimated.",
+            "If this is not intended provide both sets of bandwidths.")
+  }
+
+
 
   if (is.null(init.vars)) {
     init.vars = c(1:ncol(HVdata1))
@@ -128,24 +138,29 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
     rm(ordi.list); gc(reset = TRUE)  ## clean workspace and memory
   }
 
-  if (is.null(bw) & HVmethod %in% c("box", "gaussian")) {
-    ## if necessary estimate bandwith across HVs (see Blonder et al. 2017)
-    message("Bandwith values will be calculated using the default estimator. See ?estimate_bandwidth")
-    bw <- estimate_bandwidth(HVpoints[, 1:noAxes])
+  if (HVmethod %in% c("box", "gaussian")) {
+    if (any(is.null(bwHV1), is.null(bwHV2)) | isTRUE(freeBW)) {
+      ## if necessary estimate bandwidth for each HV (see Blonder et al. 2017)
+      message("Bandwidth values will be calculated using the default estimator. See ?estimate_bandwidth")
+      bwHV1 <- estimate_bandwidth(HVpoints[which(big.table$Type == HVnames[1]), 1:noAxes])
+      bwHV2 <- estimate_bandwidth(HVpoints[which(big.table$Type == HVnames[2]), 1:noAxes])
+    }
   }
+
 
   ## ----------------------------------------------------------------------------
   ## HYPERVOLUMES
   ## Do not parellelise - generates random NA's in the data for some reason
   for (i in 1:no.runs) {
-    out <- .HVcalc(big.table, HVpoints, noAxes, HVmethod, ordination, HVnames, bw, verbose, ...)
+    out <- .HVcalc(big.table, HVpoints, noAxes, HVmethod, ordination, HVnames, bwHV1, bwHV2, verbose, ...)
     HV1.disjfact <- out$HV1.disjfact
     HV2.disjfact <- out$HV2.disjfact
 
     if (freeBW == TRUE & HVmethod == "box") {
       while (HV1.disjfact >= 0.9 | HV2.disjfact >= 0.9) {
-        bw <- bw + 0.05
-        out <- .HVcalc(big.table, HVpoints, noAxes, HVmethod, ordination, HVnames, bw, verbose, ...)
+        bwHV1 <- bwHV1 + 0.05
+        bwHV2 <- bwHV2 + 0.05
+        out <- .HVcalc(big.table, HVpoints, noAxes, HVmethod, ordination, HVnames, bwHV1, bwHV2, verbose, ...)
         HV1.disjfact <- out$HV1.disjfact
         HV2.disjfact <- out$HV2.disjfact
       }
@@ -396,7 +411,7 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
 #'  }
 
 .HVcalc <- function(big.table, HVpoints, noAxes, HVmethod, ordination,
-                    HVnames, bw, verbose, ...) {
+                    HVnames, bwHV1, bwHV2, verbose, ...) {
   if (ordination != "none") {
     HV1name <- paste(HVnames[1], "- Ordination factor scores")
     HV2name <- paste(HVnames[2], "- Ordination factor scores")
@@ -406,16 +421,16 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
   }
 
   if (HVmethod %in% c("box", "gaussian")) {
-    HV1name <- paste(HV1name,"- fixed bandwidth to", bw)
-    HV2name <- paste(HV2name,"- fixed bandwidth to", bw)
+    HV1name <- paste(HV1name,"- fixed bandwidth to", bwHV1)
+    HV2name <- paste(HV2name,"- fixed bandwidth to", bwHV2)
 
     HV1 <- hypervolume(data = HVpoints[which(big.table$Type == HVnames[1]), 1:noAxes],
-                       method = HVmethod, kde.bandwidth = bw,
+                       method = HVmethod, kde.bandwidth = bwHV1,
                        name = HV1name,
                        verbose = verbose, ...)
 
     HV2 <- hypervolume(data = HVpoints[which(big.table$Type == HVnames[2]), 1:noAxes],
-                       method = HVmethod, kde.bandwidth = bw,
+                       method = HVmethod, kde.bandwidth = bwHV2,
                        name = HV2name,
                        verbose = verbose, ...)
   } else {
