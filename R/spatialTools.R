@@ -121,7 +121,7 @@ validateGeomsSf <- function(sfObj, dim) {
 #'
 #' @param url is a Google Drive URl
 #' @param archive is the .zip file name where the .kmz is contained
-#' @param destination path is the path to where archive will downloaded to, and where the final shapefile will be saved.
+#' @param destinationPath path is the path to where archive will downloaded to, and where the final shapefile will be saved.
 #' @param overwrite passed to \code{googledrive::drive_download} and \code{sp::shapefile}
 #'
 #' @export
@@ -334,8 +334,6 @@ checkProjections <- function(sfObj.list){
 #' @param method passed to \code{raster::projectRaster} - might need to be changed for factors
 #'
 #' @export
-#'
-#' @return
 #'
 #' @importFrom raster projectRaster crs crop mask
 
