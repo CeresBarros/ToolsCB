@@ -53,11 +53,6 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
   if (!is.null(bw) & freeBW)
     message(paste("You chose a fixed bandwith value of", bw, "for all variables, but freeBW is TRUE.\n
                                     Bandwidths will be estimated per dimension using the default estimator. See ?estimate_bandwidth"))
-  if (is.null(bw) & HVmethod %in% c("box", "gaussian")) {
-    ## if necessary estimate bandwith across HVs (see Blonder et al. 2017)
-    message("Bandwith values will be calculated using the default estimator. See ?estimate_bandwidth")
-    bw <- estimate_bandwidth(HVpoints[, 1:noAxes])
-  }
 
   if (is.null(init.vars)) {
     init.vars = c(1:ncol(HVdata1))
@@ -122,6 +117,13 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
 
     rm(ordi.list); gc(reset = TRUE)  ## clean workspace and memory
   }
+
+  if (is.null(bw) & HVmethod %in% c("box", "gaussian")) {
+    ## if necessary estimate bandwith across HVs (see Blonder et al. 2017)
+    message("Bandwith values will be calculated using the default estimator. See ?estimate_bandwidth")
+    bw <- estimate_bandwidth(HVpoints[, 1:noAxes])
+  }
+
   ## ----------------------------------------------------------------------------
   ## HYPERVOLUMES
   ## Do not parellelise - generates random NA's in the data for some reason
