@@ -11,9 +11,9 @@ prepKMZ2shapefile(url, archive, destinationPath, overwrite = TRUE)
 
 \item{archive}{is the .zip file name where the .kmz is contained}
 
-\item{overwrite}{passed to \code{googledrive::drive_download} and \code{sp::shapefile}}
+\item{destinationPath}{path is the path to where archive will downloaded to, and where the final shapefile will be saved.}
 
-\item{destination}{path is the path to where archive will downloaded to, and where the final shapefile will be saved.}
+\item{overwrite}{passed to \code{googledrive::drive_download} and \code{sp::shapefile}}
 }
 \value{
 a \code{shapefile}

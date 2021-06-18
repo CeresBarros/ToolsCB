@@ -13,9 +13,6 @@ cropToStudyArea(study.area, tocrop, method = "bilinear")
 
 \item{method}{passed to \code{raster::projectRaster} - might need to be changed for factors}
 }
-\value{
-
-}
 \description{
 CROP & MASK TO STUDY AREA
 }

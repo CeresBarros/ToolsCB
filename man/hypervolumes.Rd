@@ -16,8 +16,9 @@ hypervolumes(
   freeBW = FALSE,
   bw = NULL,
   no.runs = 1,
-  plot = TRUE,
-  savePCA = TRUE,
+  plotOrdi = TRUE,
+  plotHV = TRUE,
+  saveOrdi = TRUE,
   outputs.dir,
   file.suffix,
   verbose = TRUE,
@@ -51,9 +52,11 @@ using an ordination to reduce dimensionality. See Blonder et al 2014.}
 
 \item{no.runs}{determines how many times the HV calculations and comparisons are repeated}
 
-\item{plot}{activates/desactivates plotting}
+\item{plotOrdi}{activates/desactivates plotting for ordinations - plots are saved to PDFs not plotted interactively}
 
-\item{savePCA}{activates/desactivates saving PCA outputs}
+\item{plotHV}{activates/desactivates plotting for hypervolumes - plots are saved to PDFs not plotted interactively}
+
+\item{saveOrdi}{activates/desactivates saving ordinations outputs}
 
 \item{outputs.dir}{is the directory to store results}
 

@@ -10,10 +10,10 @@ HVordination(
   init.vars = NULL,
   ordination = "PCA",
   noAxes = NULL,
-  plot = TRUE,
+  plotOrdi = TRUE,
   outputs.dir = NULL,
   file.suffix = NULL,
-  savePCA = TRUE
+  saveOrdi = TRUE
 )
 }
 \arguments{
@@ -30,13 +30,13 @@ ordination factor scores (one of "PCA", "HillSmith", "dudi.mix"). Defaults to us
 
 \item{noAxes}{determines the number of axes/columns to use for hypervolume calculation}
 
-\item{plot}{activates/desactivates plotting}
+\item{plotOrdi}{activates/desactivates plotting for ordinations - plots are saved to PDFs not plotted interactively}
 
 \item{outputs.dir}{is the directory to store results}
 
 \item{file.suffix}{is a character string used as a suffix in file names}
 
-\item{savePCA}{activates/desactivates saving PCA outputs}
+\item{saveOrdi}{activates/desactivates saving ordinations outputs}
 }
 \value{
 a \code{list} of points used to build hypervolumes and final number of axes.
