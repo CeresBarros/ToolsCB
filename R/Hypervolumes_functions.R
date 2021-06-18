@@ -142,7 +142,7 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
     HV1.disjfact <- out$HV1.disjfact
     HV2.disjfact <- out$HV2.disjfact
 
-    if (freeBW == TRUE & HVmethod == "box")) {
+    if (freeBW == TRUE & HVmethod == "box") {
       while (HV1.disjfact >= 0.9 | HV2.disjfact >= 0.9) {
         bw <- bw + 0.05
         out <- .HVcalc(big.table, HVpoints, noAxes, HVmethod, ordination, HVnames, bw, verbose, ...)
