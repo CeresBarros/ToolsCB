@@ -130,7 +130,7 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
     ordi.list <- HVordination(datatable = big.table, init.vars = init.vars, ordination = ordination,
                               HVidvar = which(names(big.table) == "Type"),
                               noAxes = noAxes, plotOrdi = plotOrdi, saveOrdi = saveOrdi,
-                              outputs.dir = outputs.dir, file.suffix = paste(HVnames[1], HVnames[2], sep = "_"))
+                              outputs.dir = outputs.dir, file.suffix = paste(file.suffix, HVnames[1], HVnames[2], sep = "_"))
 
     HVpoints <- ordi.list[[1]]
     noAxes <- ordi.list[[2]]
