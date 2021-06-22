@@ -11,7 +11,7 @@ hypervolumes(
   ordination = "PCA",
   init.vars = NULL,
   noAxes = NULL,
-  do.scale = NULL,
+  do.scale = FALSE,
   HVmethod = "box",
   freeBW = FALSE,
   bwHV1 = NULL,

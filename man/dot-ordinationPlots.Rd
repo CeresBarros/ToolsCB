@@ -2,7 +2,7 @@
 % Please edit documentation in R/Hypervolumes_functions.R
 \name{.ordinationPlots}
 \alias{.ordinationPlots}
-\title{ORDINATION PLOT SAVEING FUNCTION}
+\title{ORDINATION PLOT SAVING FUNCTION}
 \usage{
 .ordinationPlots(
   ordi,

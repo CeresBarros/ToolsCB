@@ -37,7 +37,7 @@
 #' @importFrom utils write.table
 
 hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.vars = NULL,
-                         noAxes = NULL, do.scale = NULL, HVmethod = "box",
+                         noAxes = NULL, do.scale = FALSE, HVmethod = "box",
                          freeBW = FALSE, bwHV1 = NULL, bwHV2 = NULL,
                          no.runs = 1, plotOrdi = TRUE, plotHV = TRUE, saveOrdi = TRUE,
                          outputs.dir, file.suffix, verbose = TRUE, ...) {
@@ -55,9 +55,9 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
     message(paste("You chose to use", noAxes, "ordination axes, but no ordination technique.\n",
                   "Ordination will be skipped"))
   if ((!is.null(bwHV1) | !is.null(bwHV2)) & freeBW) {
-      message(paste("You provided bandwidth values, but freeBW is TRUE.\n",
-                    "Bandwidths will be estimated per dimension using the default estimator.",
-                    "See ?hypervolume::estimate_bandwidth"))
+    message(paste("You provided bandwidth values, but freeBW is TRUE.\n",
+                  "Bandwidths will be estimated per dimension using the default estimator.",
+                  "See ?hypervolume::estimate_bandwidth"))
   }
 
   if (!all(is.null(bwHV1), is.null(bwHV2))) {
@@ -105,13 +105,7 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
   ## In case PFG relative abundances are to be used, there's no need to rescale.
   ## To avoid wrapping the whole function in the "if" the dataframe used in the PCAs is replaced
   if (do.scale) {
-    ## Attributing a very small value (1e-6) to variables that have only 0s enables scaling of all variables w/o producing NaNs
-    big.table[, which(colSums(big.table[, init.vars]) == 0)] <- 1e-6
-
-    ## Scaling using root mean squares (by having center=FALSE, scale=TRUE) to avoid producing NaNs in constant variables
-    ## Scaling needs to be done with both datasets together, otherwise intersections are forced
-    big.table[, init.vars] <- as.data.frame(scale(big.table[, init.vars],
-                                                  center = FALSE, scale = TRUE))
+    big.table <- .scaleVars(big.table, init.vars)
   }
 
   ## ----------------------------------------------------------------------------
@@ -337,7 +331,7 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
   return(list("HVpoints" = HVpoints, "noAxes" = noAxes))
 }
 
-#' ORDINATION PLOT SAVEING FUNCTION
+#' ORDINATION PLOT SAVING FUNCTION
 #'
 #' Calculates an ordination across two datasets prior to calculating two hypervolumes (one from each dataset)
 #'
@@ -481,3 +475,23 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
        "SVM_gamma" = SVM_gamma)
 }
 
+
+#' SCALE VARIABLES
+#'
+#' Scales variables/columns in \code{init.vars} using \code{scale(..., center = FALSE, scale = TRUE)}
+#' Variables that only have 0s, will be assigned 1e-6
+#'
+#' @inheritParams HVordination
+#'
+#' @return scaled data.table
+#'
+.scaleVars <- function(datatable, init.vars) {
+  ## Attributing a very small value (1e-6) to variables that have only 0s enables scaling of all variables w/o producing NaNs
+  datatable[, which(colSums(datatable[, init.vars]) == 0)] <- 1e-6
+
+  ## Scaling using root mean squares (by having center=FALSE, scale=TRUE) to avoid producing NaNs in constant variables
+  ## Scaling needs to be done with both datasets together, otherwise intersections are forced
+  datatable[, init.vars] <- as.data.frame(scale(datatable[, init.vars],
+                                                center = FALSE, scale = TRUE))
+  return(datatable)
+}
