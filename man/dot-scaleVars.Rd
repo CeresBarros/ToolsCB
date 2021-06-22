@@ -7,14 +7,14 @@
 .scaleVars(datatable, init.vars)
 }
 \arguments{
-\item{datatable}{is a \code{data.table} contained the raw data for the two hypervolumes}
+\item{datatable}{a table object coercible to \code{data.frame}}
 
 \item{init.vars}{is a vector with the variable indices (column numbers) to use. Defaults to NULL
 and all variables are used - ATTENTION the user should not have more than 8 variables unless
 using an ordination to reduce dimensionality. See Blonder et al 2014.}
 }
 \value{
-scaled data.table
+scaled data.frame
 }
 \description{
 Scales variables/columns in \code{init.vars} using \code{scale(..., center = FALSE, scale = TRUE)}

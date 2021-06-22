@@ -481,11 +481,13 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
 #' Scales variables/columns in \code{init.vars} using \code{scale(..., center = FALSE, scale = TRUE)}
 #' Variables that only have 0s, will be assigned 1e-6
 #'
+#' @param datatable a table object coercible to \code{data.frame}
 #' @inheritParams HVordination
 #'
-#' @return scaled data.table
+#' @return scaled data.frame
 #'
 .scaleVars <- function(datatable, init.vars) {
+  datatable <- as.data.frame(datatable)
   ## Attributing a very small value (1e-6) to variables that have only 0s enables scaling of all variables w/o producing NaNs
   datatable[, which(colSums(datatable[, init.vars]) == 0)] <- 1e-6
 
