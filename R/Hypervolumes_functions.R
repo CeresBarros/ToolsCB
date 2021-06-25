@@ -14,9 +14,12 @@
 #'   using an ordination to reduce dimensionality. See Blonder et al 2014.
 #' @param noAxes determines the number of axes/columns to use for hypervolume calculation
 #' @param do.scale activates scaling prior to the ordination/calculation of HVs
-#' @param freeBW determines whether a bandwidth estimator will be used to calculate bandwith per variable
+#' @param freeBW determines whether a bandwidth estimator will be used to calculate bandwith per variable.
+#'    Only used if \code{HVmethod} is "box" or "gaussian".
 #' @param bwHV1 determines the bandwidth value for first hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}
+#'    Only used if \code{HVmethod} is "box" or "gaussian".
 #' @param bwHV2 determines the bandwidth value for second hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}
+#'    Only used if \code{HVmethod} is "box" or "gaussian".
 #' @param HVmethod determines the method used to calculate hypervolumes - passed to \code{hypervolume::hypervolume} method argument
 #' @param no.runs determines how many times the HV calculations and comparisons are repeated
 #' @param plotOrdi activates/desactivates plotting for ordinations - plots are saved to PDFs not plotted interactively
@@ -54,15 +57,17 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
   if (!is.null(noAxes) & ordination == "none")
     message(paste("You chose to use", noAxes, "ordination axes, but no ordination technique.\n",
                   "Ordination will be skipped"))
-  if ((!is.null(bwHV1) | !is.null(bwHV2)) & freeBW) {
-    message(paste("You provided bandwidth values, but freeBW is TRUE.\n",
-                  "Bandwidths will be estimated per dimension using the default estimator.",
-                  "See ?hypervolume::estimate_bandwidth"))
-  }
+  if (HVmethod %in% c("box", "gaussian")) {
+    if ((!is.null(bwHV1) | !is.null(bwHV2)) & freeBW) {
+      message(paste("You provided bandwidth values, but freeBW is TRUE.\n",
+                    "Bandwidths will be estimated per dimension using the default estimator.",
+                    "See ?hypervolume::estimate_bandwidth"))
+    }
 
-  if (!all(is.null(bwHV1), is.null(bwHV2))) {
-    message("Only one set of bandwidths provided, both will be re-estimated.",
-            "If this is not intended provide both sets of bandwidths.")
+    if (all(is.null(bwHV1), is.null(bwHV2))) {
+      message("Only one set of bandwidths provided, both will be re-estimated.",
+              "If this is not intended provide both sets of bandwidths.")
+    }
   }
 
 
