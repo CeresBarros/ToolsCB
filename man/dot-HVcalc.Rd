@@ -32,9 +32,11 @@ ordination factor scores (one of "PCA", "HillSmith", "dudi.mix"). Defaults to us
 
 \item{HVnames}{\code{character} vector of length 2 of hypervolume names.}
 
-\item{bwHV1}{determines the bandwidth value for first hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}}
+\item{bwHV1}{determines the bandwidth value for first hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}
+Only used if \code{HVmethod} is "box" or "gaussian".}
 
-\item{bwHV2}{determines the bandwidth value for second hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}}
+\item{bwHV2}{determines the bandwidth value for second hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}
+Only used if \code{HVmethod} is "box" or "gaussian".}
 
 \item{verbose}{is passed to \code{hypervolume::*} functions to control printing of diagnostic outputs}
 

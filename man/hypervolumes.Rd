@@ -47,11 +47,14 @@ using an ordination to reduce dimensionality. See Blonder et al 2014.}
 
 \item{HVmethod}{determines the method used to calculate hypervolumes - passed to \code{hypervolume::hypervolume} method argument}
 
-\item{freeBW}{determines whether a bandwidth estimator will be used to calculate bandwith per variable}
+\item{freeBW}{determines whether a bandwidth estimator will be used to calculate bandwith per variable.
+Only used if \code{HVmethod} is "box" or "gaussian".}
 
-\item{bwHV1}{determines the bandwidth value for first hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}}
+\item{bwHV1}{determines the bandwidth value for first hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}
+Only used if \code{HVmethod} is "box" or "gaussian".}
 
-\item{bwHV2}{determines the bandwidth value for second hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}}
+\item{bwHV2}{determines the bandwidth value for second hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}
+Only used if \code{HVmethod} is "box" or "gaussian".}
 
 \item{no.runs}{determines how many times the HV calculations and comparisons are repeated}
 
