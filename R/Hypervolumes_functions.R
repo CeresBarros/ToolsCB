@@ -363,18 +363,21 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
   } else {
     scatter
   }
+
+  plotTitle <- paste(HVnames[1], "(black) and", HVnames[2], "(red)")
+  colVect <- ifelse(datatable[, HVidvar] == HVnames[1], "black", "red")
+  pchVect <- ifelse(datatable[, HVidvar] == HVnames[1], 19, 1)
+
   cairo_pdf(filename = file.path(outputs.dir, paste(file.suffix, "Ordination.pdf", sep = "_")), width = 10, height = 10)
   layout(matrix(c(1:4), nrow = 2, ncol = 2, byrow = TRUE))
   sets <- options(warn = -1)  ## suppressing warnings about zero-length arrows
   plotFUN(ordi, choices = c(1,2))
   plotFUN(ordi, choices = c(2,3))
-  plot(fscores[which(datatable[, HVidvar] == HVnames[1]),1], fscores[which(datatable[, HVidvar] == HVnames[1]), 2],
-       cxlim = c(min(fscores[,1]), max(fscores[,1])), ylim = c(min(fscores[,2]), max(fscores[,2])),
-       col = "black", pch = 19, main = paste(HVnames[1], "(black) and", HVnames[2], "(red)"), xlab = "PC1", ylab = "PC2")
+  plot(fscores[, 1], fscores[, 2],
+       xlim = range(fscores[,1]), ylim = range(fscores[,2]),
+       col = colVect, pch = pchVect,
+       main = plotTitle, xlab = "PC1", ylab = "PC2")
   options(sets)
-  par(new = TRUE)
-  points(fscores[which(datatable[, HVidvar] == HVnames[2]),1], fscores[which(datatable[, HVidvar] == HVnames[2]), 2],
-         col = "red", pch = 19)
   par(new = FALSE)
   barplot(PEV,
           main = paste(file.suffix, "OrdiScreeplot.pdf", sep = "_"),
