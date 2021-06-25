@@ -450,7 +450,6 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
   hv.centroid.dist <- hypervolume_distance(HV1, HV2, type = "centroid")
   hv.min.dist <- hypervolume_distance(HV1, HV2, type = "minimum", check.memory = FALSE)
 
-
   if (HVmethod %in% c("box", "gaussian")) {
     Bandwidth <- c(HV1@Parameters$kde.bandwidth[1], HV2@Parameters$kde.bandwidth[1])
     SVM_nu <- NA
