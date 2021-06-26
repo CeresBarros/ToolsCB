@@ -50,8 +50,6 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
   if (length(setdiff(names(HVdata1), names(HVdata2))) |
       length(setdiff(names(HVdata2), names(HVdata1))))
     stop("HVdata1 and HVdata2 columns do not match")
-  if (any(is.na(HVdata1)) | any(is.na(HVdata2)))
-    stop("NAs must be removed prior to computations")
   if (!ordination %in% c("none", "PCA", "HillSmith", "dudi.mix"))
     stop("Argument ordination must be one of the following: 'none', 'PCA', 'HillSmith' or 'dudi.mix'")
   if (!is.null(noAxes) & ordination == "none")
@@ -65,12 +63,10 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
     }
 
     if (all(is.null(bwHV1), is.null(bwHV2))) {
-      message("Only one set of bandwidths provided, both will be re-estimated.",
+      message("Only one set of bandwidths provided, both will be re-estimated.\n",
               "If this is not intended provide both sets of bandwidths.")
     }
   }
-
-
 
   if (is.null(init.vars)) {
     init.vars = c(1:ncol(HVdata1))
@@ -106,6 +102,9 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
   ## Joining tables and redo init.vars
   big.table <- rbind(HVdata1[, init.vars2], HVdata2[, init.vars2])
   init.vars <- grep("Type", names(big.table), invert = TRUE)
+
+  if (any(is.na(big.table)))
+    stop("NAs must be removed prior to computations")
 
   ## In case PFG relative abundances are to be used, there's no need to rescale.
   ## To avoid wrapping the whole function in the "if" the dataframe used in the PCAs is replaced
