@@ -28,6 +28,7 @@
 #' @param outputs.dir is the directory to store results
 #' @param file.suffix is a character string used as a suffix in file names
 #' @param verbose is passed to \code{hypervolume::*} functions to control printing of diagnostic outputs
+#' @param plotHVDots a \code{list} of further arguments passed to \code{hypervolume:::plot.HypervolumeList}.
 #' @param ... further arguments passed to \code{hypervolume::hypervolume}.
 #'
 #' @return Nothing is returned. Hypervolumes and comparisons are saved \code{outputs.dir}
@@ -38,12 +39,13 @@
 #' @import pdist
 #' @importFrom grDevices cairo_pdf graphics.off
 #' @importFrom utils write.table
+#' @importFrom hypervolume plot.HypervolumeList
 
 hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.vars = NULL,
                          noAxes = NULL, do.scale = FALSE, HVmethod = "box",
                          freeBW = FALSE, bwHV1 = NULL, bwHV2 = NULL,
                          no.runs = 1, plotOrdi = TRUE, plotHV = TRUE, saveOrdi = TRUE,
-                         outputs.dir, file.suffix, verbose = TRUE, ...) {
+                         outputs.dir, file.suffix, verbose = TRUE, plotHVDots = NULL, ...) {
   ## do some checks:
   if (!all(is(HVdata1, "data.frame"), is(HVdata2, "data.frame")))
     stop("HVdata1 and HVdata2 are not two dataframes")
@@ -191,9 +193,9 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
       cairo_pdf(filename = file.path(outputs.dir, paste0(file.suffix, "_Hypervolumes_", i,".pdf")),
                 onefile = TRUE,
                 width = 5, height = 5)
-      plot(out$HV1)
-      plot(out$HV2)
-      plot(out$volume.set)
+      do.call(plot, args = c(list(x = out$HV1), plotHVDots))
+      do.call(plot, args = c(list(x = out$HV2), plotHVDots))
+      do.call(plot, args = c(list(x = out$volume.set), plotHVDots))
       graphics.off()
     }
   }

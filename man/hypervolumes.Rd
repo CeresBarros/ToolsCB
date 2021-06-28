@@ -23,6 +23,7 @@ hypervolumes(
   outputs.dir,
   file.suffix,
   verbose = TRUE,
+  plotHVDots = NULL,
   ...
 )
 }
@@ -69,6 +70,8 @@ Only used if \code{HVmethod} is "box" or "gaussian".}
 \item{file.suffix}{is a character string used as a suffix in file names}
 
 \item{verbose}{is passed to \code{hypervolume::*} functions to control printing of diagnostic outputs}
+
+\item{plotHVDots}{a \code{list} of further arguments passed to \code{hypervolume:::plot.HypervolumeList}.}
 
 \item{...}{further arguments passed to \code{hypervolume::hypervolume}.}
 }
