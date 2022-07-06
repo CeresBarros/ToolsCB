@@ -110,7 +110,7 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
   init.vars2 <- sort(c(init.vars, which(names(HVdata1) == "Type")))
 
   ## Joining tables and redo init.vars
-  big.table <- rbind(HVdata1[, init.vars2], HVdata2[, init.vars2])
+  big.table <- rbind(HVdata1[, ..init.vars2], HVdata2[, ..init.vars2])
   init.vars <- grep("Type", names(big.table), invert = TRUE)
 
   if (any(is.na(big.table)))
@@ -125,7 +125,7 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
   ## ----------------------------------------------------------------------------
   ## ORDINATION only one ordination is calculated on the whole dataset
   if (ordination == "none") {
-    HVpoints <- big.table[, init.vars]
+    HVpoints <- big.table[, ..init.vars]
     noAxes <- length(init.vars)
 
     if (noAxes == 1) stop("Only one dimension was selected. Please select at least two.")
@@ -266,7 +266,7 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
 
   if (ordination == "PCA") {
     ## Q-mode; centered and using already scaled data
-    ordi <- prcomp(datatable[, init.vars], center = TRUE, scale. = FALSE)
+    ordi <- prcomp(datatable[, ..init.vars], center = TRUE, scale. = FALSE)
     fscores <- predict(ordi)
 
     ## correlations between variables and first axis
@@ -522,7 +522,10 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
   ## Scaling needs to be done with both datasets together, otherwise intersections are forced
   datatable[, init.vars] <- as.data.frame(scale(datatable[, init.vars],
                                                 center = FALSE, scale = TRUE))
-  return(datatable)
+  return(as.data.table(datatable))
+}
+
+
 #' PLOT 3D HYPERVOLUMES WITH ORDINATION LOADINGS AND POST-HOC FITTED VECTORS
 #'
 #' Plots two 3D hypervolumes that are based on ordination scores, showing
