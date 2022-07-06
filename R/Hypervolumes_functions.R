@@ -1,10 +1,12 @@
+globalVariables(c("HVidvar", "..init.vars", "..init.vars2"))
+
 #' CALCULATE AND COMPARE TWO HYPERVOLUMES
 #'
 #' Calculates two \code{hypervolumes} on two sets of "raw" data or on the factor scores of
 #' an ordination done on the entire dataset (across the two sets of data).
 #'
-#' @param HVdata1 the \code{data.frame} from which the first hypervolume will be calculated
-#' @param HVdata2 the \code{data.frame} from  which the second hypervolume will be calculated.
+#' @param HVdata1 the \code{data.table} (or a object that can be converted to \code{data.table}) from which the first hypervolume will be calculated
+#' @param HVdata2 the \code{data.table} (or a object that can be converted to \code{data.table}) from  which the second hypervolume will be calculated.
 #'   \code{HVdata1} and \code{HVdata2} must have the same column names and ideally the same number of rows.
 #' @param ordination determines whether hypervolumes will be calculated on the raw data ("none") of on
 #'   ordination factor scores (one of "PCA", "HillSmith", "dudi.mix"). Defaults to using a PCA.
