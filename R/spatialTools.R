@@ -368,3 +368,59 @@ vector2binmatrix <- function(x) {
   x <- as.character(x)
   return(model.matrix( ~ x-1))
 }
+
+
+#' FAST RASTERIZE ALL POLYGONS COVEVED BY POLYGON
+#'
+#' A faster version of \code{rasterize} with the argument \code{getCover} that
+#' for rasterizing polygon values that are touch a raster cell (rather than only it's center)
+#' @param rasterToMatch is the raster to use to burn polygon values to
+#' @param shp is sf of \code{SpatialPolygonsDataFrame} object
+#' @param field character. The field of shp to extract values from.
+#'   If NULL, 1s will be assigned to all cells that touch polygons
+#' @param noDataVal Numeric, compatible with "Float64". value assigned to no data. Defaults to 0.
+#'
+#' @export
+#'
+#' @importFrom raster raster mask
+#' @importFrom sf as_Spatial
+#' @importFrom gdalUtils gdal_rasterize
+#' @importFrom rgdal writeOGR
+#'
+rasterizeCover <- function(rasterToMatch, shp, field, noDataVal = 0) {
+  ## checks
+  if (class(rasterToMatch) != "RasterLayer")
+    stop("rasterToMatch must be RasterLayer")
+  if (!any(class(shp) %in% c("sf", "SpatialPolygonsDataFrame")))
+    stop("shp must be sf or SpatialPolygonsDataFrame")
+  if (any(class(shp) %in% c("sf")))
+    shp <- as_Spatial(shp)
+  if (!is.numeric(noDataVal) & !is.integer(noDataVal))
+    stop("noDataVal must be numeric/integer")
+
+
+  ## create temporary files/directories
+  tempShp <- basename(tempfile())
+  writeOGR(shp, tempdir(), tempShp, 'ESRI Shapefile')
+  tempRas <- tempfile(fileext = '.tif')
+
+  ## rasterize
+  if (!is.null(field)) {
+    gdal_rasterize(sprintf('%s/%s.shp', tempdir(), tempShp),
+                   tempRas, at = T, a = field,
+                   init = noDataVal,
+                   te = c(bbox(rasterToMatch)),
+                   tr = res(rasterToMatch))
+  } else {
+    gdal_rasterize(sprintf('%s/%s.shp', tempdir(), tempShp),
+                   tempRas, at = T,
+                   burn = 1,
+                   init = noDataVal,
+                   te = c(bbox(rasterToMatch)),
+                   tr = res(rasterToMatch))
+  }
+
+  tempRas <- raster(tempRas)
+  tempRas <- mask(tempRas, mask = rasterToMatch)
+  tempRas
+}

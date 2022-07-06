@@ -504,4 +504,435 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
   datatable[, init.vars] <- as.data.frame(scale(datatable[, init.vars],
                                                 center = FALSE, scale = TRUE))
   return(datatable)
+#' PLOT 3D HYPERVOLUMES WITH ORDINATION LOADINGS AND POST-HOC FITTED VECTORS
+#'
+#' Plots two 3D hypervolumes that are based on ordination scores, showing
+#' variable loadings and vectors fitted post-hoc to the ordination
+#'
+#' @param HVlist a \code{HypervolumeList}
+#' @param loadings_coords a data.table or data.frame of ordination factor
+#'   loadings for the 3 axes to be plotted
+#' @param PHvect_coords a data.table or data.frame of post-hoc fitted vectors
+#'   loadings for the 3 axes to be plotted
+#' @param loadings_labels character vector of labels for each ordination factor.
+#'   Defaults to \code{row.names(loadings_coords)}
+#' @param PHvect_labels character vector of labels for each post-hoc fitted vector.
+#'   Defaults to \code{row.names(PHvect_coords)}
+#' @param loadings_col a colour for ordination factor arrows and labels.
+#' @param PHvect_col a colour for post-hoc fitted vector arrows and labels.
+#' @param cex.label passed to \code{basicPlotteR::addTextLabels}
+#' @param lwd passed to \code{scatterplot3d::scatterplot3d}
+#' @param ... arguments passed to \code{.plot.HypervolumeListEdited}
+#'
+#' @importFrom basicPlotteR addTextLabels
+#' @export
+
+plotHypervolumes3D <- function(HVlist, loadings_coords = NULL, PHvect_coords = NULL,
+                               loadings_labels = NULL, PHvect_labels = NULL,
+                               loadings_col = "grey20", cex.label = 1, lwd = 1,
+                               PHvect_col = "darkgreen", ...) {
+
+  if (!is.null(loadings_coords)) {
+    if (ncol(loadings_coords) != 3) {
+      stop("loadings_coords must have three columns for 3D plotting")
+    }
+    if (is.null(loadings_labels)) {
+      loadings_labels <- paste0("loadingVar_", row.names(loadings_coords))
+    }
+  }
+
+  if (!is.null(PHvect_coords)){
+    if (ncol(PHvect_coords) != 3) {
+      stop("PHvect_coords must have three columns for 3D plotting")
+    }
+    if (is.null(PHvect_labels)) {
+      PHvect_labels <-  paste0("PHVec_", row.names(PHvect_coords))
+    }
+  }
+
+  HVPlot <- .plot.HypervolumeListEdited(x = HVlist, show.3d = TRUE, rglGraphics = FALSE, ...)
+
+  if (!is.null(loadings_coords)) {
+    loadings_coords$label <- loadings_labels
+    loadings_coords$type <- "loadings"
+    ## adding factor loadings
+    HVPlot$points3d(loadings_coords[, 1:3],
+                    type = "l",
+                    col = makeTransparent(loadings_col, alpha = 200), lwd = lwd)
+  } else {
+    loadings_coords <- data.table(matrix(data = "", ncol = HVlist@HVList[[1]]@Dimensionality + 2,
+                                         dimnames = list(rownames = NULL,
+                                                         colnames = c(colnames(HVlist@Data), "label", "type"))))[0]
+  }
+
+  if (!is.null(PHvect_coords)) {
+    ## create a label column
+    PHvect_coords$label <- PHvect_labels
+    PHvect_coords$type <- "PHvect"
+
+    ## adding trait vectors
+    HVPlot$points3d(PHvect_coords[, 1:3],
+                    type = "l",
+                    col = makeTransparent(PHvect_col, alpha = 200), lwd = lwd)
+  } else {
+    PHvect_coords <- data.table(matrix(data = "", ncol = HVlist@HVList[[1]]@Dimensionality + 2,
+                                       dimnames = list(rownames = NULL,
+                                                       colnames = c(colnames(HVlist@Data), "label", "type"))))[0]
+  }
+
+  ## plotting labels
+  ## labels need to be plotted altogether to avoid overlapping
+  ## function doesn't take a colour vector, so the labels that have another colour are left empty
+  allVectors <- rbind(loadings_coords, PHvect_coords)
+
+  if (nrow(allVectors)) {
+    ## text coordinates
+    textCoords <- HVPlot$xyz.convert(allVectors[rowSums(allVectors[,1:3]) != 0, 1:3])
+
+    ## factor loading labels
+    plotlabels <- allVectors$label[rowSums(allVectors[,1:3]) != 0]
+    plotlabels[allVectors$type[rowSums(allVectors[,1:3]) != 0] == "PHvect"] <- ""
+    addTextLabels(xCoords = textCoords$x, yCoords = textCoords$y,
+                  labels = plotlabels, cex.label = cex.label, col.label = loadings_col, col.line = loadings_col, lwd = 0.15, lty = 2,
+                  avoidPoints = TRUE)
+
+    ## trait labels
+    plotlabels <- allVectors$label[rowSums(allVectors[,1:3]) != 0]
+    plotlabels[allVectors$type[rowSums(allVectors[,1:3]) != 0] == "loadings"] <- ""
+    addTextLabels(xCoords = textCoords$x, yCoords = textCoords$y,
+                  labels = plotlabels, cex.label = cex.label,
+                  col.label = PHvect_col, col.line = PHvect_col, lwd = 0.15, lty = 2,
+                  avoidPoints = TRUE)
+  }
+}
+
+#' Edited version of \code{hypervolume::plot.HypervolumeList}
+#'
+#' Added centroid colours, corrected cex.data
+#' graphics changed to \code{scatterplot3d}, instead of \code{rgl}
+
+#' @inheritParams hypervolume::plot.HypervolumeList
+#' @param rglGraphics if TRUE will plot 3D hypervolumes using \code{rgl}.
+#'   Otherwise, \code{scatterplot3d} is used
+#' @param centroid.cols a vector of as many colours as hypervolumes used
+#'   to colour centroids
+#' @param ... passed to \code{points} if \code{show.3d == FALSE}, or
+#'   otherwise to \code{scatterplot3d}.
+#'
+#' @importFrom grDevices col2rgb rainbow rgb
+#' @importFrom graphics axis box contour legend mtext text
+#' @importFrom stats quantile
+#' @importFrom scatterplot3d scatterplot3d
+#' @importFrom rgl plot3d points3d mtext3d
+#' @importFrom MASS kde2d
+#' @export
+
+.plot.HypervolumeListEdited <- function(x, show.3d = FALSE, rglGraphics = TRUE, plot.3d.axes.id = NULL, show.axes = TRUE,
+                                        show.frame = TRUE, show.random = TRUE, show.density = TRUE,
+                                        show.data = TRUE, names = NULL, show.legend = TRUE, limits = NULL,
+                                        show.contour = TRUE, contour.lwd = 1.5, contour.type = "kde",
+                                        contour.alphahull.alpha = 0.25, contour.ball.radius.factor = 1,
+                                        contour.kde.level = 0.01, contour.raster.resolution = 100,
+                                        show.centroid = TRUE, cex.centroid = 2,
+                                        colors = rainbow(floor(length(x@HVList) * 1.5), alpha = 0.8),
+                                        centroid.cols = rainbow(floor(length(x@HVList) * 1.5), alpha = 0.8),
+                                        point.alpha.min = 0.2, point.dark.factor = 0.5,
+                                        cex.random = 0.5, cex.data = 0.75, cex.axis = 0.75, cex.names = 1,
+                                        cex.legend = 0.75, num.points.max.data = 1000, num.points.max.random = 2000,
+                                        reshuffle = TRUE, plot.function.additional = NULL, verbose = FALSE,
+                                        ...) {
+  sapply(x@HVList, function(z) {
+    if (verbose == TRUE) {
+      cat(sprintf("Showing %d random points of %d for %s\n",
+                  min(nrow(z@RandomPoints), num.points.max.random),
+                  nrow(z@RandomPoints), z@Name))
+    }
+    if (show.data && length(z@Data) > 0) {
+      npd <- ifelse(all(is.nan(z@Data)), 0, nrow(z@Data))
+      if (verbose == TRUE) {
+        cat(sprintf("Showing %d data points of %d for %s\n",
+                    min(num.points.max.data, npd), npd, z@Name))
+      }
+    }
+  })
+  if (!requireNamespace("alphahull", quietly = TRUE)) {
+    warning("The package 'alphahull' is needed for contour plotting with contour.type='alphahull'. Please install it to continue.\n\n *** Temporarily setting contour.type='kde'.",
+            call. = FALSE)
+    contour.type <- "kde"
+  }
+  alldims = sapply(x@HVList, function(z) {
+    z@Dimensionality
+  })
+  allnames = sapply(x@HVList, function(z) {
+    z@Name
+  })
+  stopifnot(all(alldims[1] == alldims))
+  all <- NULL
+  alldata <- NULL
+  for (i in 1:length(x@HVList)) {
+    ivals = sample(nrow(x@HVList[[i]]@RandomPoints), min(c(num.points.max.random,
+                                                           nrow(x@HVList[[i]]@RandomPoints))))
+    subsampledpoints = data.frame(x@HVList[[i]]@RandomPoints[ivals,
+                                                             , drop = FALSE])
+    densityvals = x@HVList[[i]]@ValueAtRandomPoints[ivals]
+    if (nrow(subsampledpoints) > 0) {
+      subsampledpoints = cbind(subsampledpoints, ID = rep(i,
+                                                          nrow(subsampledpoints)), Density = (densityvals -
+                                                                                                min(densityvals, na.rm = TRUE))/(max(densityvals,
+                                                                                                                                     na.rm = TRUE) - min(densityvals, na.rm = TRUE)))
+      subsampledpoints[is.nan(subsampledpoints[, "Density"]),
+                       "Density"] <- 1
+      all <- rbind(all, subsampledpoints)
+    }
+    thisdata = x@HVList[[i]]@Data
+    alldata <- rbind(alldata, cbind(thisdata, ID = rep(i,
+                                                       nrow(thisdata))))
+  }
+  alldata <- as.data.frame(alldata)
+  if (num.points.max.data < nrow(alldata) && !is.null(num.points.max.data)) {
+    alldata <- alldata[sample(nrow(alldata), min(c(num.points.max.data,
+                                                   nrow(alldata)))), ]
+  }
+  if (is.null(all)) {
+    warning("No random points to plot.")
+    if (is.null(dimnames(x@HVList[[1]]@RandomPoints)[[2]])) {
+      all <- matrix(0, ncol = 2 + alldims, nrow = 1, dimnames = list(NULL,
+                                                                     c(paste("X", 1:alldims, sep = ""),
+                                                                       "ID", "Density")))
+    }
+    else {
+      all <- matrix(0, ncol = 2 + alldims, nrow = 1, dimnames = list(NULL,
+                                                                     c(dimnames(x@HVList[[1]]@RandomPoints)[[2]],
+                                                                       "ID", "Density")))
+    }
+    all <- as.data.frame(all)
+  }
+  if (reshuffle == TRUE) {
+    all <- all[sample(nrow(all), replace = FALSE), , drop = FALSE]
+    alldata <- alldata[sample(nrow(alldata), replace = FALSE),
+                       , drop = FALSE]
+  }
+  no_names_supplied = FALSE
+  if (is.null(names)) {
+    dn = dimnames(all)[[2]]
+    names = dn[1:(ncol(all) - 2)]
+    no_names_supplied = TRUE
+  }
+  if (!is.null(limits) & !is.list(limits)) {
+    varlimlist = vector("list", ncol(all) - 2)
+    for (i in 1:length(varlimlist)) {
+      varlimlist[[i]] <- limits
+    }
+    limits = varlimlist
+  }
+  colorlist <- colors[all$ID]
+  alphavals <- (all$Density - quantile(all$Density, 0.025,
+                                       na.rm = T))/(quantile(all$Density, 0.975, na.rm = T) -
+                                                      quantile(all$Density, 0.025, na.rm = T))
+  alphavals[is.nan(alphavals)] <- 0.5
+  alphavals[alphavals < 0] <- 0
+  alphavals[alphavals > 1] <- 1
+  alphavals <- point.alpha.min + (1 - point.alpha.min) * alphavals
+  if (show.density == FALSE) {
+    alphavals <- rep(1, length(colorlist))
+  }
+  for (i in 1:length(colorlist)) {
+    colorlist[i] <- hypervolume:::rgb_2_rgba(colorlist[i], alphavals[i])
+  }
+  colorlistdata = colors[alldata$ID]
+  for (i in 1:length(colorlistdata)) {
+    colorlistdata[i] <- hypervolume:::rgb_2_set_hsv(colorlistdata[i], v = 1 -
+                                                      point.dark.factor)
+  }
+  if (ncol(all) < 2) {
+    stop("Plotting only available in n>=2 dimensions.")
+  }
+  if (show.3d == FALSE) {
+    op = par(no.readonly = T)
+    par(mfrow = c(ncol(all) - 2, ncol(all) - 2))
+    par(mar = c(0, 0, 0, 0))
+    par(oma = c(0.5, 0.5, 0.5, 0.5))
+    for (i in 1:(ncol(all) - 2)) {
+      for (j in 1:(ncol(all) - 2)) {
+        if (j > i) {
+          plot(all[, j], all[, i], type = "n",
+               axes = FALSE, xlim = limits[[j]], ylim = limits[[i]],
+               bty = "n")
+          if (show.random == TRUE) {
+            points(all[, j], all[, i], col = colorlist,
+                   cex = cex.random, pch = list(...)$pch)
+          }
+          if (show.data & nrow(alldata) > 0) {
+            points(alldata[, j], alldata[, i], col = colorlistdata,
+                   cex = cex.data, pch = list(...)$pch)
+          }
+          if (show.centroid == TRUE) {
+            for (whichid in 1:length(unique(all$ID))) {
+              allss <- subset(all, all$ID == whichid)
+              centroid_x <- mean(allss[, j], na.rm = TRUE)
+              centroid_y <- mean(allss[, i], na.rm = TRUE)
+              points(centroid_x, centroid_y, col = colors[whichid],
+                     cex = cex.centroid, pch = list(...)$pch)
+              points(centroid_x, centroid_y, col = "white",
+                     cex = cex.centroid, pch = 1, lwd = 1.5)
+            }
+          }
+          if (show.contour == TRUE) {
+            for (whichid in 1:length(unique(all$ID))) {
+              allss <- subset(all, all$ID == whichid)
+              if (nrow(allss) > 0) {
+                contourx <- allss[, j]
+                contoury <- allss[, i]
+                rp = cbind(contourx, contoury)
+                vol_this = x@HVList[[whichid]]@Volume
+                density_this = nrow(rp)/vol_this
+                dim_this = x@HVList[[whichid]]@Dimensionality
+                radius_critical <- density_this^(-1/dim_this) *
+                  contour.ball.radius.factor
+                if (contour.type == "alphahull") {
+                  poly_outline = hypervolume:::do_outline_alpha(rp = rp,
+                                                                alpha = contour.alphahull.alpha)
+                  plot(poly_outline, add = TRUE, wpoints = FALSE,
+                       wlines = "none", lwd = contour.lwd,
+                       col = colors[whichid])
+                }
+                else if (contour.type == "ball") {
+                  poly_outline <- hypervolume:::do_outline_ball(rp = rp,
+                                                                radius = radius_critical)
+                  sp::plot(poly_outline, add = TRUE,
+                           lwd = contour.lwd, col = colors[whichid])
+                }
+                else if (contour.type == "kde") {
+                  m_kde = kde2d(rp[, 1], rp[, 2], n = 50,
+                                h = radius_critical)
+                  contour(m_kde, add = TRUE, levels = contour.kde.level,
+                          drawlabels = FALSE, lwd = contour.lwd,
+                          col = colors[whichid])
+                }
+                else if (contour.type == "raster") {
+                  poly_raster <- hypervolume:::do_outline_raster(as.matrix(rp),
+                                                                 res = contour.raster.resolution)
+                  sp::plot(poly_raster, add = TRUE, lwd = contour.lwd,
+                           col = colors[whichid])
+                }
+              }
+            }
+          }
+          if (!is.null(plot.function.additional)) {
+            plot.function.additional(j, i)
+          }
+          if (show.frame == TRUE) {
+            box()
+          }
+        }
+        else if (j == i) {
+          plot(0, 0, type = "n", xlim = c(0, 1),
+               ylim = c(0, 1), axes = FALSE)
+          text(0.5, 0.5, names[j], cex = cex.names)
+        }
+        else if (j == 1 & i == (ncol(all) - 2)) {
+          plot(0, 0, type = "n", xlim = c(0, 1),
+               ylim = c(0, 1), axes = FALSE)
+          if (show.legend == TRUE) {
+            legend("topleft", legend = allnames,
+                   text.col = colors, bty = "n", cex = cex.legend)
+          }
+        }
+        else {
+          plot(0, 0, type = "n", axes = FALSE)
+        }
+        if (j == i + 1) {
+          if (show.axes == TRUE) {
+            axis(side = 1, cex.axis = cex.axis)
+            axis(side = 2, cex.axis = cex.axis)
+          }
+        }
+      }
+    }
+    par(op)
+  }
+  else {
+    if (is.null(plot.3d.axes.id)) {
+      plot.3d.axes.id = 1:3
+    }
+    if (no_names_supplied == TRUE) {
+      axesnames <- names[plot.3d.axes.id]
+    }
+    else {
+      axesnames <- names
+    }
+    if (length(plot.3d.axes.id) != 3) {
+      stop("Must specify three axes")
+    }
+    if (show.density == TRUE) {
+      for (i in 1:length(colorlist)) {
+        colorlist[i] <- hypervolume:::rgb_2_set_hsv(colorlist[i], s = (alphavals[i]^2))
+      }
+    }
+    if (rglGraphics) {
+      plot3d(all[, plot.3d.axes.id], col = colorlist,
+             expand = 1.05, xlab = axesnames[1], ylab = axesnames[2],
+             zlab = axesnames[3], xlim = limits[[1]], ylim = limits[[2]],
+             zlim = limits[[3]], size = cex.random, type = "p",
+             box = show.frame, axes = show.axes)
+    } else {
+      s3d <- scatterplot3d(x = all[, plot.3d.axes.id][, 1], y = all[, plot.3d.axes.id][, 2], z = all[, plot.3d.axes.id][, 3],
+                           color = colorlist, xlab=axesnames[1], ylab=axesnames[2], zlab=axesnames[3],
+                           xlim=limits[[1]], ylim=limits[[2]], zlim=limits[[3]],
+                           cex.symbols = cex.random, cex.axis = cex.axis, type = "p", ...)
+    }
+
+    if (show.legend == TRUE) {
+      if (rglGraphics) {
+        for (i in 1:length(allnames)) {
+          mtext3d(allnames[i], edge = "x-+",
+                  line = 1 + i * cex.legend * 1.25, color = colors[i],
+                  cex = cex.legend)
+        }
+      } else {
+        for (i in 1:length(allnames)) {
+          mtext(allnames[i], side = 1,line=1+i*cex.legend*1.25, col=colors[i], cex=cex.legend)
+        }
+      }
+    }
+
+    if (show.data) {
+      if (!any(is.nan(as.matrix(alldata[, plot.3d.axes.id])))) {
+        if (rglGraphics) {
+          points3d(x = alldata[, plot.3d.axes.id[1]],
+                   y = alldata[, plot.3d.axes.id[2]], z = alldata[, plot.3d.axes.id[3]],
+                   col = colorlistdata,
+                   cex = cex.data, pch = list(...)$pch)
+        } else {
+          s3d$points3d(x = alldata[,plot.3d.axes.id[1]], y = alldata[,plot.3d.axes.id[2]], z = alldata[,plot.3d.axes.id[3]],
+                       col = colorlistdata, cex = cex.data, pch = list(...)$pch)
+        }
+      }
+
+    }
+    if (show.centroid == TRUE) {
+      for (whichid in 1:length(unique(all$ID))) {
+        allss <- subset(all, all$ID == whichid)
+        centroid_1 <- mean(allss[, plot.3d.axes.id[1]],
+                           na.rm = TRUE)
+        centroid_2 <- mean(allss[, plot.3d.axes.id[2]],
+                           na.rm = TRUE)
+        centroid_3 <- mean(allss[, plot.3d.axes.id[3]],
+                           na.rm = TRUE)
+        if (rglGraphics) {
+          points3d(x = centroid_1, y = centroid_2,
+                   z = centroid_3, col = centroid.cols[whichid], size = cex.centroid)
+        } else {
+          s3d$points3d(x = centroid_1, y = centroid_2, z = centroid_3,
+                       col = centroid.cols[whichid], cex = cex.centroid, pch = list(...)$pch)
+          s3d$points3d(x = centroid_1, y = centroid_2, z = centroid_3,
+                       col = "white", cex = cex.centroid, pch = 1, lwd = 1.5)
+        }
+
+      }
+    }
+  }
+  if (!rglGraphics) {
+    return(s3d)
+  }
 }
