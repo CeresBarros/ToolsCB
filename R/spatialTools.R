@@ -316,8 +316,8 @@ neighboursMatrix <- function(mat) {
   return(neighs)
 }
 
-## CHECK PROJECTIONS ------------------------------------
-## sfObj.list is a list of spatial objects
+#' CHECK PROJECTIONS
+#' @param sfObj.list is a list of spatial objects
 checkProjections <- function(sfObj.list){
   projs <- sapply(sfObj.list, FUN = function(x) {
     return(
