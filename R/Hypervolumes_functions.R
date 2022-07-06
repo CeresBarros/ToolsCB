@@ -75,7 +75,7 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
   }
 
   if (is.null(init.vars)) {
-    init.vars = c(1:ncol(HVdata1))
+    init.vars <- c(1:ncol(HVdata1))
   } else{
     if (!all(is(init.vars, "numeric"), is(init.vars, "integer")))
       stop("init.vars must be a numeric/integer vector of columns indices")
@@ -88,17 +88,17 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
     dir.create(outputs.dir)
   }
 
+  if (length(HVidvar) > 1) stop("Provide one single column for HV IDs")
+
   if (any(is(HVidvar, "integer"), is(HVidvar, "numeric"))) {
-    HVnames <- unique(c(as.character(HVdata1[, HVidvar]), as.character(HVdata2[, HVidvar])))
+    HVnames <- unique(c(as.character(HVdata1[[HVidvar]]), as.character(HVdata2[[HVidvar]])))
     if (length(HVnames) > 2)
       stop("Only 2 hypervolumes can be used and HVidvar contains >2 IDs")
   } else
     stop("HVidvar should be the column number")
 
-  if (length(HVidvar) > 1) stop("Provide one single column for HV IDs")
-
   ## check if variables contain the ID variable; if so remove it
-  if (HVidvar %in% init.vars) init.vars = init.vars[-which(init.vars == HVidvar)]
+  if (HVidvar %in% init.vars) init.vars <- init.vars[-which(init.vars == HVidvar)]
 
   HVdata1$Type <- HVnames[1]
   HVdata2$Type <- HVnames[2]
@@ -216,13 +216,14 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
 #'
 #' @inheritParams hypervolumes
 #'
+#' @return a \code{list} of points used to build hypervolumes and final number of axes.
+#'
 #' @export
 #'
 #' @import data.table
 #' @importFrom ade4 dudi.hillsmith dudi.mix
 #' @importFrom stats prcomp predict
 #' @importFrom methods is
-#' @return a \code{list} of points used to build hypervolumes and final number of axes.
 
 HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA",
                          noAxes = NULL, plotOrdi = TRUE, outputs.dir = NULL,
@@ -236,14 +237,13 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
     if (is.null(outputs.dir) | is.null(file.suffix)) stop("Provide an output directory and/or file name")
   }
 
+  if (length(HVidvar) > 1) stop("Provide one single column for HV IDs")
+
   if (!exists("HVidvar")) stop("Provide column number that contains HV IDs")
   if (class(HVidvar) == "integer" | class(HVidvar) == "numeric") {
     HVnames <- unique(datatable[, HVidvar])
     if (length(HVnames) > 2) stop("Only 2 hypervolumes can be used and HVidvar contains >2 IDs")
   } else stop("HVidvar should be the column number")
-
-  if (length(HVidvar) > 1) stop("Provide one single column for HV IDs")
-
 
   if (is.null(init.vars)) {
     init.vars = c(1:ncol(datatable))
@@ -253,7 +253,7 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
   }
 
   ## check if variables contain the ID variable; if so remove it
-  if (HVidvar %in% init.vars) init.vars = init.vars[-which(init.vars == HVidvar)]
+  if (HVidvar %in% init.vars) init.vars <- init.vars[-which(init.vars == HVidvar)]
 
   if (ordination == "PCA") {
     ## Q-mode; centered and using already scaled data
