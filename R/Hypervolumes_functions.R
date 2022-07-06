@@ -26,7 +26,8 @@ globalVariables(c("HVidvar", "..init.vars", "..init.vars2"))
 #' @param no.runs determines how many times the HV calculations and comparisons are repeated
 #' @param plotOrdi activates/desactivates plotting for ordinations - plots are saved to PDFs not plotted interactively
 #' @param plotHV activates/desactivates plotting for hypervolumes - plots are saved to PDFs not plotted interactively
-#' @param saveOrdi activates/desactivates saving ordinations outputs
+#' @param saveOrdi activates/deactivates saving ordination object
+#' @param saveOrdiSumm activates/deactivates saving ordination summary outputs
 #' @param outputs.dir is the directory to store results
 #' @param file.suffix is a character string used as a suffix in file names
 #' @param verbose is passed to \code{hypervolume::*} functions to control printing of diagnostic outputs
@@ -47,7 +48,7 @@ globalVariables(c("HVidvar", "..init.vars", "..init.vars2"))
 hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.vars = NULL,
                          noAxes = NULL, do.scale = FALSE, HVmethod = "box",
                          freeBW = FALSE, bwHV1 = NULL, bwHV2 = NULL,
-                         no.runs = 1, plotOrdi = TRUE, plotHV = TRUE, saveOrdi = TRUE,
+                         no.runs = 1, plotOrdi = TRUE, plotHV = TRUE, saveOrdi = FALSE, saveOrdiSumm = TRUE,
                          outputs.dir, file.suffix, verbose = TRUE, plotHVDots = NULL, ...) {
   ## do some checks:
   if (!all(is(HVdata1, "data.frame"), is(HVdata2, "data.frame")))
@@ -131,8 +132,8 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
     }
   } else {
     ordi.list <- HVordination(datatable = big.table, init.vars = init.vars, ordination = ordination,
-                              HVidvar = which(names(big.table) == "Type"),
-                              noAxes = noAxes, plotOrdi = plotOrdi, saveOrdi = saveOrdi,
+                              HVidvar = which(names(big.table) == "Type"), noAxes = noAxes,
+                              plotOrdi = plotOrdi, saveOrdi = saveOrdi, saveOrdiSumm = saveOrdiSumm,
                               outputs.dir = outputs.dir, file.suffix = paste(file.suffix, HVnames[1], HVnames[2], sep = "_"))
 
     HVpoints <- ordi.list[[1]]
@@ -224,13 +225,14 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
 #' @return a \code{list} of points used to build hypervolumes and final number of axes.
 
 HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA",
-                         noAxes = NULL, plotOrdi = TRUE, outputs.dir = NULL, file.suffix = NULL, saveOrdi = TRUE) {
+                         noAxes = NULL, plotOrdi = TRUE, outputs.dir = NULL,
+                         file.suffix = NULL, saveOrdi = FALSE, saveOrdiSumm = TRUE) {
 
   if (!ordination %in% c("PCA", "HillSmith", "dudi.mix")) stop("Argument ordination must be one of the following: 'none', 'PCA', 'HillSmith' or 'dudi.mix'")
   if (!is.null(noAxes) & ordination == "none")
     message(paste("You chose to use", noAxes, "ordination axes, but no ordination technique.\n
                   Ordination will be skipped"))
-  if (saveOrdi) {
+  if (saveOrdi | saveOrdiSumm) {
     if (is.null(outputs.dir) | is.null(file.suffix)) stop("Provide an output directory and/or file name")
   }
 
@@ -321,8 +323,13 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
                      ordination, outputs.dir, file.suffix)
   }
 
-  ## Saving PCA summary outputs
+  ## Saving PCA object
   if (saveOrdi) {
+    saveRDS(ordi, file.path(outputs.dir, paste(file.suffix, "OrdinationObj.rds", sep = "_")))
+  }
+
+  ## Saving PCA summary outputs
+  if (saveOrdiSumm) {
     if (ordination %in% c("HillSmith", "dudi.mix")) {
 
       summPCA <- rbind("Standard deviation" = sqrt(eigenv),
