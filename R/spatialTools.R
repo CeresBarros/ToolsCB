@@ -184,6 +184,7 @@ prepKMZ2shapefile <- function(url, archive, destinationPath, overwrite = TRUE) {
 #' @return a convex hull polygon
 #'
 #' @importFrom sp SpatialPoints polygons
+#' @importFrom dismo convHull
 
 outerBuffer <- function(x) {
   if (class(x) == "SpatialPolygons" | class(x) == "SpatialPolygonsDataFrame") {

@@ -40,6 +40,7 @@
 #' @importFrom grDevices cairo_pdf graphics.off
 #' @importFrom utils write.table
 #' @importFrom hypervolume plot.HypervolumeList
+#' @importFrom methods is
 
 hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.vars = NULL,
                          noAxes = NULL, do.scale = FALSE, HVmethod = "box",
@@ -217,7 +218,7 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
 #' @import data.table
 #' @importFrom ade4 dudi.hillsmith dudi.mix
 #' @importFrom stats prcomp predict
-#'
+#' @importFrom methods is
 #' @return a \code{list} of points used to build hypervolumes and final number of axes.
 
 HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA",
