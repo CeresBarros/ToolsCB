@@ -1,13 +1,12 @@
 #' Summarize data
 #'
-#' Gives count, mean, standard deviation, standard error of the mean,
-#'   and confidence interval
+#' Gives count, mean, standard deviation, standard error of the mean, and confidence interval (default 95\%).
 #'
-#' @param data a \code{data.frame}.
+#' @param data a data frame.
 #' @param measurevar the name of a column that contains the variable to be summarized
 #' @param groupvars a vector containing names of columns that contain grouping variables
 #' @param na.rm a boolean that indicates whether to ignore NA's, defaults to FALSE.
-#' @param conf.interval the percent range of the confidence interval (default is 0.95)
+#' @param conf.interval the percent range of the confidence interval (default is 95\%)
 #' @param .drop passed to \code{ddply}
 #'
 #' @export
