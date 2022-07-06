@@ -51,8 +51,12 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
                          no.runs = 1, plotOrdi = TRUE, plotHV = TRUE, saveOrdi = FALSE, saveOrdiSumm = TRUE,
                          outputs.dir, file.suffix, verbose = TRUE, plotHVDots = NULL, ...) {
   ## do some checks:
-  if (!all(is(HVdata1, "data.frame"), is(HVdata2, "data.frame")))
-    stop("HVdata1 and HVdata2 are not two dataframes")
+  if (!is(HVdata1, "data.table")) {
+    HVdata1 <- as.data.table(HVdata1)
+  }
+  if (!is(HVdata2, "data.table")) {
+    HVdata2 <- as.data.table(HVdata2)
+  }
   if (length(setdiff(names(HVdata1), names(HVdata2))) |
       length(setdiff(names(HVdata2), names(HVdata1))))
     stop("HVdata1 and HVdata2 columns do not match")
@@ -68,8 +72,8 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
                     "See ?hypervolume::estimate_bandwidth"))
     }
 
-    if (all(is.null(bwHV1), is.null(bwHV2))) {
-      message("Only one set of bandwidths provided, both will be re-estimated.\n",
+    if (any(is.null(bwHV1), is.null(bwHV2))) {
+      message("One or no sets of bandwidths provided; both will be re-estimated.\n",
               "If this is not intended provide both sets of bandwidths.")
     }
   }
@@ -126,8 +130,8 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
 
     if (noAxes == 1) stop("Only one dimension was selected. Please select at least two.")
     if (noAxes > 8) {
-      warning("A minimum total explained variance of 90% is explained by >8 PCs.\n
-                  Constraining no. of PCs to 8 anyway.")
+      warning("Hypervolumes with > 8 dimensions are not allowed\n
+                  Constraining no. of PCs to 8")
       noAxes <- 8
     }
   } else {
@@ -229,6 +233,10 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
                          noAxes = NULL, plotOrdi = TRUE, outputs.dir = NULL,
                          file.suffix = NULL, saveOrdi = FALSE, saveOrdiSumm = TRUE) {
 
+  if (!is(datatable, "data.table")) {
+    datatable <- as.data.table(datatable)
+  }
+
   if (!ordination %in% c("PCA", "HillSmith", "dudi.mix")) stop("Argument ordination must be one of the following: 'none', 'PCA', 'HillSmith' or 'dudi.mix'")
   if (!is.null(noAxes) & ordination == "none")
     message(paste("You chose to use", noAxes, "ordination axes, but no ordination technique.\n
@@ -240,9 +248,10 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
   if (length(HVidvar) > 1) stop("Provide one single column for HV IDs")
 
   if (!exists("HVidvar")) stop("Provide column number that contains HV IDs")
-  if (class(HVidvar) == "integer" | class(HVidvar) == "numeric") {
-    HVnames <- unique(datatable[, HVidvar])
-    if (length(HVnames) > 2) stop("Only 2 hypervolumes can be used and HVidvar contains >2 IDs")
+
+  if (any(is(HVidvar, "integer"), is(HVidvar, "numeric"))) {
+    HVnames <- unique(datatable[[HVidvar]])
+    if (length(HVnames) > 2) warning("Only 2 hypervolumes can be compared and HVidvar contains >2 IDs!")
   } else stop("HVidvar should be the column number")
 
   if (is.null(init.vars)) {
