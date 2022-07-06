@@ -384,9 +384,14 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
     scatter
   }
 
-  plotTitle <- paste(HVnames[1], "(black) and", HVnames[2], "(red)")
-  colVect <- ifelse(datatable[, HVidvar] == HVnames[1], "black", "red")
-  pchVect <- ifelse(datatable[, HVidvar] == HVnames[1], 19, 1)
+  colVect <- as.numeric(as.factor(datatable[[HVidvar]]))
+  if (length(HVnames) == 2) {
+    pchVect <- ifelse(datatable[[HVidvar]] == HVnames[1], 19, 1)
+    plotTitle <- paste(HVnames[1], "(black) and", HVnames[2], "(red)")
+  } else {
+    pchVect <- rep(19, nrow(datatable))
+    plotTitle <- NULL
+  }
 
   cairo_pdf(filename = file.path(outputs.dir, paste(file.suffix, "Ordination.pdf", sep = "_")), width = 10, height = 10)
   layout(matrix(c(1:4), nrow = 2, ncol = 2, byrow = TRUE))
