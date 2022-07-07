@@ -10,29 +10,63 @@ Date: 2021-06-28
 Version: 0.0.3.9010
 Imports:
   ade4,
+  alphahull,
+  basicPlotteR,
+  caret,
+  cheddar,
+  crayon,
   data.table,
+  dismo,
   dplyr,
+  econetwork,
+  foreign,
+  future,
+  future.apply,
+  gamlss,
+  gdalUtils,
+  ggplot2,
+  ggpubr,
   googledrive,
   grDevices,
   graphics,
+  hash,
+  Hmisc,
   hypervolume,
+  igraph,
+  MASS,
+  Matrix,
+  methods,
+  NetIndices,
   pdist,
   plyr,
   raster,
   reproducible,
+  Require,
+  reshape2,
+  rgdal,
+  rgl,
+  rredlist,
+  scatterplot3d,
   sf,
   sp,
   stats,
   tools,
-  utils
+  utils,
+  vegan
 Suggests:
+  ape,
+  phangorn,
   knitr,
   rmarkdown,
   rstudioapi
+Remotes:
+  JosephCrispell/basicPlotteR,
+  PredictiveEcology/Require@development,
+  gitlab::CeresBarros/econetwork@saveMemWIntegers
 BugReports: https://github.com/CeresBarros/ToolsCB/issues
 License: GPL-3
 Language: en-EN
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.0
 VignetteBuilder: knitr, rmarkdown
