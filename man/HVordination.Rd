@@ -13,7 +13,8 @@ HVordination(
   plotOrdi = TRUE,
   outputs.dir = NULL,
   file.suffix = NULL,
-  saveOrdi = TRUE
+  saveOrdi = FALSE,
+  saveOrdiSumm = TRUE
 )
 }
 \arguments{
@@ -36,7 +37,9 @@ ordination factor scores (one of "PCA", "HillSmith", "dudi.mix"). Defaults to us
 
 \item{file.suffix}{is a character string used as a suffix in file names}
 
-\item{saveOrdi}{activates/desactivates saving ordinations outputs}
+\item{saveOrdi}{activates/deactivates saving ordination object}
+
+\item{saveOrdiSumm}{activates/deactivates saving ordination summary outputs}
 }
 \value{
 a \code{list} of points used to build hypervolumes and final number of axes.

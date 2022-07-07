@@ -14,7 +14,7 @@ summarySE(
 )
 }
 \arguments{
-\item{data}{a \code{data.frame}.}
+\item{data}{a data frame.}
 
 \item{measurevar}{the name of a column that contains the variable to be summarized}
 
@@ -22,7 +22,7 @@ summarySE(
 
 \item{na.rm}{a boolean that indicates whether to ignore NA's, defaults to FALSE.}
 
-\item{conf.interval}{the percent range of the confidence interval (default is 0.95)}
+\item{conf.interval}{the percent range of the confidence interval (default is 95\%)}
 
 \item{.drop}{passed to \code{ddply}}
 }
@@ -31,6 +31,5 @@ A \code{data.frame} of summary statistics of each variable
  by grouping variables
 }
 \description{
-Gives count, mean, standard deviation, standard error of the mean,
-  and confidence interval
+Gives count, mean, standard deviation, standard error of the mean, and confidence interval (default 95\%).
 }

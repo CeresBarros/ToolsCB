@@ -19,7 +19,8 @@ hypervolumes(
   no.runs = 1,
   plotOrdi = TRUE,
   plotHV = TRUE,
-  saveOrdi = TRUE,
+  saveOrdi = FALSE,
+  saveOrdiSumm = TRUE,
   outputs.dir,
   file.suffix,
   verbose = TRUE,
@@ -28,9 +29,9 @@ hypervolumes(
 )
 }
 \arguments{
-\item{HVdata1}{the \code{data.frame} from which the first hypervolume will be calculated}
+\item{HVdata1}{the \code{data.table} (or a object that can be converted to \code{data.table}) from which the first hypervolume will be calculated}
 
-\item{HVdata2}{the \code{data.frame} from  which the second hypervolume will be calculated.
+\item{HVdata2}{the \code{data.table} (or a object that can be converted to \code{data.table}) from  which the second hypervolume will be calculated.
 \code{HVdata1} and \code{HVdata2} must have the same column names and ideally the same number of rows.}
 
 \item{HVidvar}{the name or number of the column (in \code{HVdata1/2}) containing the ID of each hypervolume.}
@@ -63,7 +64,9 @@ Only used if \code{HVmethod} is "box" or "gaussian".}
 
 \item{plotHV}{activates/desactivates plotting for hypervolumes - plots are saved to PDFs not plotted interactively}
 
-\item{saveOrdi}{activates/desactivates saving ordinations outputs}
+\item{saveOrdi}{activates/deactivates saving ordination object}
+
+\item{saveOrdiSumm}{activates/deactivates saving ordination summary outputs}
 
 \item{outputs.dir}{is the directory to store results}
 
