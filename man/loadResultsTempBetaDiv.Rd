@@ -7,13 +7,12 @@
 loadResultsTempBetaDiv(res.dir, out.dir, quant)
 }
 \arguments{
+\item{res.dir}{is the directory where scenario simulation results were saved}
+
 \item{out.dir}{is the directory where outputs will be saved}
 
 \item{quant}{is the quantile threshold of extinction chosen}
 }
 \description{
 compiles calculations of temporal beta diversity results and saves the data.table
-}
-\details{
-#' @template res.dir
 }

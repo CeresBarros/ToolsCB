@@ -16,8 +16,9 @@ compileResultsMasterScen(
 )
 }
 \arguments{
-\item{file.ls}{is the list of file.paths for the master matrices
-#' @template res.dir}
+\item{file.ls}{is the list of file.paths for the master matrices}
+
+\item{res.dir}{is the directory where scenario simulation results were saved}
 
 \item{out.dir}{is the directory where outputs will be saved}
 

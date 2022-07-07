@@ -16,8 +16,9 @@ loadResultsMetrics(
 )
 }
 \arguments{
-\item{bl.dir}{is the directory where baseline simulation results were saved
-#' @template res.dir}
+\item{bl.dir}{is the directory where baseline simulation results were saved}
+
+\item{res.dir}{is the directory where scenario simulation results were saved}
 
 \item{out.dir}{is the directory where outputs will be saved}
 

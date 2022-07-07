@@ -321,7 +321,7 @@ do.PAmaster <- function(files, opt = FALSE, k = 0) {
 #' LOAD METRICS RESULTS FUNCTION
 #' compiles simulation resuls and saves the data.table
 #' @param bl.dir is the directory where baseline simulation results were saved
-#' #' @template res.dir
+#' @template res.dir
 #' @template out.dir
 #' @param quant is the quantile threshold of extinction chosen
 #' @param onlyBL load only baseline networks?
@@ -537,7 +537,7 @@ loadResultsMetrics <- function(bl.dir = NULL, res.dir = NULL, out.dir = NULL,
 #' compiles simulation results and saves the data.table
 #'
 #' @param file.ls is the list of file.paths for the master matrices
-#' #' @template res.dir
+#' @template res.dir
 #' @template out.dir
 #' @param quant is the quantile threshold of extinction chosen
 #' @param useCache is NULL, but will default to TRUE if the argument is not defined in the parent.frame()
@@ -591,7 +591,7 @@ compileResultsMasterBL <- function(file.ls, res.dir, out.dir, quant, dietcat,
 #' compiles simulation results and saves the data.table
 #'
 #' @param file.ls is the list of file.paths for the master matrices
-#' #' @template res.dir
+#' @template res.dir
 #' @template out.dir
 #' @param quant is the quantile threshold of extinction chosen
 #' @param useCache is NULL, but will default to TRUE if the argument is not defined in the parent.frame()
@@ -924,7 +924,7 @@ loadAndSummarizeResults <- function(...) {
 #'
 #' compiles calculations of temporal beta diversity results and saves the data.table
 #'
-#' #' @template res.dir
+#' @template res.dir
 #' @template out.dir
 #' @param quant is the quantile threshold of extinction chosen
 #'
@@ -977,7 +977,7 @@ loadResultsTempBetaDiv <- function(res.dir, out.dir, quant) {
 #' compiles calculations of spatial beta diversity results and saves the data.table
 #'
 #' @param bl.dir is the directory where baseline simulation results were saved
-#' #' @template res.dir
+#' @template res.dir
 #' @template out.dir
 #' @param quant is the quantile threshold of extinction chosen
 #'
