@@ -130,7 +130,7 @@ netw.metrics <- function(web = NULL, normalise = FALSE, verbose = TRUE) {
   propI <- 1- (propB + propT)
 
   if (normalise) {
-    if (verbose) warning("Calculating normalised metrics of generality/vulnerability")
+    if (verbose) message("Calculating normalised metrics of generality/vulnerability")
     normGen <- MeanGenerality_norm(web)
     normVul <- MeanVulnerability_norm(web)
     SDnormGen <- SDGenerality_norm2(web)
