@@ -9,6 +9,7 @@
 #'
 #' @template SPPCODE
 #' @param SPPNAME Latin species name
+#' @importFrom utils read.table
 #' @export
 whois <- function(SPPCODE = NULL, SPPNAME = NULL) {
 
@@ -91,6 +92,7 @@ fun.PRESENCE.ABSENCE <- function(species.dist = NULL, threshold = NULL, opt.only
 #' @param mask.dir folder where study area mask rasters and dbf file with pixel IDs can be found
 #'
 #' @importFrom raster raster
+#' @importFrom foreign read.dbf
 #' @export
 fun.dbf2raster <- function(SPPPA, mask.dir = NULL) {
   if (is.null(mask.dir)) stop("Must specify folder directory for mask files")
@@ -241,7 +243,7 @@ col_convert <- function(M, corresp, merge.fun = "max", na.rm = TRUE) {
 
 #' EXTRACT PRESENCE ABSENCE MATRICES FROM SPECIES DISTRIBUTIONS
 #'
-#' @param x is a list of file paths to the distributions to be used
+#' @param files is a list of file paths to the distributions to be used
 #' @param opt is either TRUE of FALSE (default) and determines if only optimal habitats are used as presences
 #' @param k presence threshold [0,1], used if \code{opt = FALSE}. \code{opt} and
 #'   \code{k} are only used for Luigi Maiorano's spp distributions
@@ -319,8 +321,8 @@ do.PAmaster <- function(files, opt = FALSE, k = 0) {
 #' LOAD METRICS RESULTS FUNCTION
 #' compiles simulation resuls and saves the data.table
 #' @param bl.dir is the directory where baseline simulation results were saved
-#' @param res.dir is the directory where scenario simulation results were saved
-#' @param out.dir is the directory where the output data.table will be saved as an RData file
+#' #' @template res.dir
+#' @template out.dir
 #' @param quant is the quantile threshold of extinction chosen
 #' @param onlyBL load only baseline networks?
 #' @param onlyScen load only scenario networks?
@@ -535,8 +537,8 @@ loadResultsMetrics <- function(bl.dir = NULL, res.dir = NULL, out.dir = NULL,
 #' compiles simulation results and saves the data.table
 #'
 #' @param file.ls is the list of file.paths for the master matrices
-#' @param res.dir is the directory where scenario simulation results were saved
-#' @param out.dir is the directory where the output data.table will be saved as an RData file
+#' #' @template res.dir
+#' @template out.dir
 #' @param quant is the quantile threshold of extinction chosen
 #' @param useCache is NULL, but will default to TRUE if the argument is not defined in the parent.frame()
 #' @param cacheRepo passed to \code{reproducible::Cache}.
@@ -589,8 +591,8 @@ compileResultsMasterBL <- function(file.ls, res.dir, out.dir, quant, dietcat,
 #' compiles simulation results and saves the data.table
 #'
 #' @param file.ls is the list of file.paths for the master matrices
-#' @param res.dir is the directory where scenario simulation results were saved
-#' @param out.dir is the directory where the output data.table will be saved as an RData file
+#' #' @template res.dir
+#' @template out.dir
 #' @param quant is the quantile threshold of extinction chosen
 #' @param useCache is NULL, but will default to TRUE if the argument is not defined in the parent.frame()
 #' @param cacheRepo is NULL, but will default to temp.dir() if the argument is not defined in the parent.frame()
@@ -644,6 +646,10 @@ compileResultsMasterScen <- function (file.ls, res.dir, out.dir, quant, dietcat,
 
 
 #' internal function
+#'
+#' @param file.ls file list
+#' @template dietcat
+#'
 #' @importFrom data.table rbindlist
 .compileMasterBL <- function(file.ls, dietcat) {
   rbindlist(fill = TRUE,
@@ -656,6 +662,10 @@ compileResultsMasterScen <- function (file.ls, res.dir, out.dir, quant, dietcat,
 }
 
 #' internal function
+#'
+#' @param file.ls file list
+#' @template dietcat
+#'
 #' @importFrom data.table rbindlist
 .compileMasterScen <- function(file.ls, dietcat) {
   rbindlist(fill = TRUE,
@@ -671,7 +681,7 @@ compileResultsMasterScen <- function (file.ls, res.dir, out.dir, quant, dietcat,
 #' COMPILE SDM PROJECTIONS PRESENCE/ABSENCES
 #'
 #' @param fileLs is the list of file names (not paths!) to the different SDM projections
-#' @param fileFolderis the path to the parent folder containing all files (and directories to the SDM projections)
+#' @param fileFolder is the path to the parent folder containing all files (and directories to the SDM projections)
 #'
 #' @importFrom data.table rbindlist dcast as.data.table
 #'
@@ -712,7 +722,7 @@ compileSDMsppRichness <- function(fileLs, fileFolder) {
 #' @param x is the .RData file containing the list of networks.
 #' @param returnMaster controls whether the function returns the master matrix or not. Defaults
 #'   to FALSE and returns the saved file path
-#' @param reDO controls whether masters will be recalculated and re-saved
+#' @param redo controls whether masters will be recalculated and re-saved
 #'   in case their saved files already exist
 #' @param save controls saving
 #' @param dietcat diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)
@@ -776,7 +786,7 @@ makeAndSaveMasterBL <- function(x, returnMaster = FALSE, dietcat,
 #' @param x is the .RData file containing the list of networks.
 #' @param returnMaster controls whether the function returns the master matrix or not. Defaults
 #'   to FALSE and returns the saved file path
-#' @param reDO controls whether masters will be recalculated and re-saved
+#' @param redo controls whether masters will be recalculated and re-saved
 #'   in case their saved files already exist
 #' @param save controls saving
 #' @template dietcat
@@ -856,6 +866,9 @@ makeAndSaveMasterScen <- function(x, returnMaster = FALSE, dietcat,
 #'   this function is a wrapper to \code{loadResultsMetrics} and \code{calcNetworkMetricsSummStats}
 #'   functions and passes all arguments to these functions, as well as \code{reproducible::Cache}
 #'
+#' @param ... passed to \code{loadResultsMetrics}, \code{calcNetworkMetricsSummStats}
+#'   and \code{reproducible::Cache}
+#'
 #' @importFrom reproducible Cache
 loadAndSummarizeResults <- function(...) {
   dots <- list(...,
@@ -911,8 +924,8 @@ loadAndSummarizeResults <- function(...) {
 #'
 #' compiles calculations of temporal beta diversity results and saves the data.table
 #'
-#' @param res.dir is the directory where scenario simulation results were saved
-#' @param out.dir is the directory where the output data.table will be saved as an RData file
+#' #' @template res.dir
+#' @template out.dir
 #' @param quant is the quantile threshold of extinction chosen
 #'
 #' @importFrom data.table rbindlist
@@ -964,8 +977,8 @@ loadResultsTempBetaDiv <- function(res.dir, out.dir, quant) {
 #' compiles calculations of spatial beta diversity results and saves the data.table
 #'
 #' @param bl.dir is the directory where baseline simulation results were saved
-#' @param res.dir is the directory where scenario simulation results were saved
-#' @param out.dir is the directory where the output data.table will be saved as an RData file
+#' #' @template res.dir
+#' @template out.dir
 #' @param quant is the quantile threshold of extinction chosen
 #'
 #' @importFrom data.table rbindlist
