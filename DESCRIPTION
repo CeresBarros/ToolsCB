@@ -10,7 +10,6 @@ Date: 2021-06-28
 Version: 0.0.4
 Imports:
   ade4,
-  alphahull,
   basicPlotteR,
   caret,
   cheddar,
@@ -29,19 +28,15 @@ Imports:
   googledrive,
   grDevices,
   graphics,
-  hash,
   Hmisc,
   hypervolume,
   igraph,
   MASS,
-  Matrix,
   methods,
-  NetIndices,
   pdist,
   plyr,
   raster,
   reproducible,
-  Require,
   reshape2,
   rgdal,
   rgl,
@@ -54,9 +49,13 @@ Imports:
   utils,
   vegan
 Suggests:
+  alphahull,
   ape,
+  hash,
   phangorn,
   knitr,
+  Matrix,
+  NetIndices,
   rmarkdown,
   rstudioapi
 Remotes:
