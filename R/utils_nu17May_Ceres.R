@@ -350,7 +350,7 @@ CalculatePredatorOverlap <- function(M){
 #' @importFrom graphics hist
 #' @importFrom igraph is.igraph degree
 #' @export
-density.degree.distribution <- function(M, cumulative = TRUE, ...){
+densityDegreeDistribution <- function(M, cumulative = TRUE, ...){
   graph <- graph.adjacency(M)
   if (!is.igraph(graph)) {
     stop("Not a graph object")
