@@ -499,7 +499,7 @@ calcTempBetaDiv.master <- function(masterScen.file, masterBL.files,
 #'
 #' @export
 networkTempBetaDiv.master <- function(pixXsppMat1, pixXsppMat2,
-                                      method = "all", ...) {
+                                      method = "all") {
   ## make a named vector of output metrics
   betaMetrics <- c(sorensen = "beta_sore", simpson = "beta_simp",
                    nested = "beta_nest", jaccard = "diss_jacc",
