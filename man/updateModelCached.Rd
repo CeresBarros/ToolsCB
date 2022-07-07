@@ -9,7 +9,11 @@ updateModelCached(..., cacheObj1 = NULL, cacheObj2 = NULL)
 \arguments{
 \item{...}{arguments passed to \code{update}}
 
-\item{cacheObj1/2}{an object used by Cache for digesting, to avoid digesting
+\item{cacheObj1}{an object used by Cache for digesting, to avoid digesting
+the (potentially) large data arguments e.g.: model coefficients and a
+sample of a column drawn with a set seed.}
+
+\item{cacheObj2}{an object used by Cache for digesting, to avoid digesting
 the (potentially) large data arguments e.g.: model coefficients and a
 sample of a column drawn with a set seed.}
 }

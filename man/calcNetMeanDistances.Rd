@@ -13,9 +13,6 @@ calcNetMeanDistances(distObj)
 }
 \arguments{
 \item{distObj}{a \code{dist} object calculated using \code{econetwork::disPairwise}}
-
-\item{outputs}{a data.table with columns \code{PAGENAME}  (the network ID)
-and \code{meanDistance}}
 }
 \description{
 ----------------------------------------------

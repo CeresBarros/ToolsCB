@@ -12,6 +12,8 @@ netw.metrics(web = NULL, normalise = FALSE, verbose = TRUE)
 
 \item{normalise}{use normalised version of generality, vulnerability (and their
 standard deviations)?}
+
+\item{verbose}{print messages?}
 }
 \description{
 CALCULATE NETWORK METRICS

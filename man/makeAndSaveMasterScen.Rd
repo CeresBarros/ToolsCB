@@ -23,10 +23,10 @@ to FALSE and returns the saved file path}
 \item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
 across all networks)}
 
-\item{save}{controls saving}
-
-\item{reDO}{controls whether masters will be recalculated and re-saved
+\item{redo}{controls whether masters will be recalculated and re-saved
 in case their saved files already exist}
+
+\item{save}{controls saving}
 }
 \description{
 MAKE AND SAVE SCENARIO MASTER MATRICES (SPP X PIXEL MATRICES) FUNCTION

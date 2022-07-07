@@ -26,8 +26,9 @@ alpha/gamma decomposition (using \code{econetwork::divPartition}), or "pairwise"
 to calculate pairwise beta-diversity between networks (using
 \code{econetwork::disPairwise}).}
 
-\item{res.dir}{is the "root" directory where "scenario networks" were stored and out.dir is
-were results will be placed (in a folder tree respecting scenario folders.)}
+\item{res.dir}{is the "root" directory where "scenario networks" were stored}
+
+\item{out.dir}{is the directory where outputs will be saved}
 
 \item{sampleNetworks}{controls if beta-diversity is to be calculated for a sample of networks (provide integer)
 or all networks (FALSE)}

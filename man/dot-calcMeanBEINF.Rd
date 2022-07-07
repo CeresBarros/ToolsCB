@@ -8,8 +8,14 @@ adapted from `gamlss::meanBEINF`}
 .calcMeanBEINF(mu, nu, tau)
 }
 \arguments{
-\item{mu, }{@param nu, @param tau are vectors of values for the mu, nu and tau
-of the Beta-inflated distribution}
+\item{mu}{vector of values for the mu parameter of
+the Beta-inflated distribution}
+
+\item{nu}{vector of values for the nu parameter of
+the Beta-inflated distribution}
+
+\item{tau}{vector of values for the tau parameter of
+the Beta-inflated distribution}
 }
 \description{
 CALCULATION OF THE MEAN FROM A BETA-INFLATED DISTRIBUTION

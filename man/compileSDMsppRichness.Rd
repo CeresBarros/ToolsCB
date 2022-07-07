@@ -9,7 +9,7 @@ compileSDMsppRichness(fileLs, fileFolder)
 \arguments{
 \item{fileLs}{is the list of file names (not paths!) to the different SDM projections}
 
-\item{fileFolderis}{the path to the parent folder containing all files (and directories to the SDM projections)}
+\item{fileFolder}{is the path to the parent folder containing all files (and directories to the SDM projections)}
 }
 \description{
 COMPILE SDM PROJECTIONS PRESENCE/ABSENCES

@@ -4,7 +4,7 @@
 \alias{networkTempBetaDiv.master}
 \title{TAXONOMIC BETA-DIVERSITY FUNCTION FOR PIXEL BY SPP MATRICES}
 \usage{
-networkTempBetaDiv.master(pixXsppMat1, pixXsppMat2, method = "all", ...)
+networkTempBetaDiv.master(pixXsppMat1, pixXsppMat2, method = "all")
 }
 \arguments{
 \item{pixXsppMat1}{is a data.table of pixel id's (column "PAGENAME") and species (other columns)

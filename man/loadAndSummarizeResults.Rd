@@ -6,6 +6,10 @@
 \usage{
 loadAndSummarizeResults(...)
 }
+\arguments{
+\item{...}{passed to \code{loadResultsMetrics}, \code{calcNetworkMetricsSummStats}
+and \code{reproducible::Cache}}
+}
 \description{
 compiles and summarises simulation network metrics results.
   this function is a wrapper to \code{loadResultsMetrics} and \code{calcNetworkMetricsSummStats}

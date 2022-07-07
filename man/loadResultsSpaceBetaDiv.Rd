@@ -7,11 +7,10 @@
 loadResultsSpaceBetaDiv(bl.dir, res.dir, out.dir, quant)
 }
 \arguments{
-\item{bl.dir}{is the directory where baseline simulation results were saved}
+\item{bl.dir}{is the directory where baseline simulation results were saved
+#' @template res.dir}
 
-\item{res.dir}{is the directory where scenario simulation results were saved}
-
-\item{out.dir}{is the directory where the output data.table will be saved as an RData file}
+\item{out.dir}{is the directory where outputs will be saved}
 
 \item{quant}{is the quantile threshold of extinction chosen}
 }

@@ -34,6 +34,12 @@ crossValidFunction(
 \item{parallel}{logical. Uses \code{future.apply::future_lapply} to parallelise
 model fitting across the k-folds, using \code{plan(multiprocess)}. Defauls to FALSE}
 
+\item{cacheObj1}{object used by \code{reproducible::Cache} for digesting,
+to avoid digesting the (potentially) large data arguments}
+
+\item{cacheObj2}{object used by \code{reproducible::Cache} for digesting,
+to avoid digesting the (potentially) large data arguments}
+
 \item{cacheArgs}{a named \code{list} of arguments passed to inner \code{Cache} calls}
 
 \item{...}{further arguments passed to \code{future::plan}}
@@ -41,9 +47,6 @@ model fitting across the k-folds, using \code{plan(multiprocess)}. Defauls to FA
 \item{origDataVars}{the data used to fit the statsModule, needs to be passed to \code{gamlss::predictAll}
  (it may not be able to access it) but also to make sure newdata in \code{gamlss::predictAll}
 has the same variables (even if they're not used in the model)}
-
-\item{cacheObj1/2}{an object used by \code{reproducible::Cache} for digesting,
-to avoid digesting the (potentially) large data arguments}
 }
 \description{
 ----------------------------------------

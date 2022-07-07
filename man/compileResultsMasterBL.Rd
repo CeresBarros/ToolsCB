@@ -15,11 +15,10 @@ compileResultsMasterBL(
 )
 }
 \arguments{
-\item{file.ls}{is the list of file.paths for the master matrices}
+\item{file.ls}{is the list of file.paths for the master matrices
+#' @template res.dir}
 
-\item{res.dir}{is the directory where scenario simulation results were saved}
-
-\item{out.dir}{is the directory where the output data.table will be saved as an RData file}
+\item{out.dir}{is the directory where outputs will be saved}
 
 \item{quant}{is the quantile threshold of extinction chosen}
 

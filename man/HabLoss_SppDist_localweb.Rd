@@ -37,8 +37,6 @@ across all networks)}
 
 \item{HELP}{print help}
 
-\item{SPPCODE}{one or more species IDs}
-
 \item{PIX.HAB}{a pix x habitat \code{matrix}}
 }
 \description{

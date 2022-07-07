@@ -25,8 +25,9 @@ calcTempBetaDivBAMR(
 
 \item{BLweb}{a baseline web (not a file path) to be compared with the scenario webs}
 
-\item{res.dir}{is the "root" directory where "scenario networks" were stored and out.dir is
-were results will be placed (in a folder tree respecting scenario folders.)}
+\item{res.dir}{is the directory where scenario simulation results were saved}
+
+\item{out.dir}{is the directory where outputs will be saved}
 
 \item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
 across all networks)}

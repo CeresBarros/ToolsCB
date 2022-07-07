@@ -7,12 +7,12 @@
 do.PAmaster(files, opt = FALSE, k = 0)
 }
 \arguments{
+\item{files}{is a list of file paths to the distributions to be used}
+
 \item{opt}{is either TRUE of FALSE (default) and determines if only optimal habitats are used as presences}
 
 \item{k}{presence threshold [0,1], used if \code{opt = FALSE}. \code{opt} and
 \code{k} are only used for Luigi Maiorano's spp distributions}
-
-\item{x}{is a list of file paths to the distributions to be used}
 }
 \description{
 EXTRACT PRESENCE ABSENCE MATRICES FROM SPECIES DISTRIBUTIONS
