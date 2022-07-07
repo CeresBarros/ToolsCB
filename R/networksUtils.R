@@ -58,6 +58,7 @@ ras2matrix <- function(ras) {
 #' @importFrom data.table data.table setkey
 #' @importFrom sf st_as_sf st_drop_geometry
 #' @importFrom reproducible prepInputs Cache
+#' @importFrom raster getValues
 #' @export
 makeBioregDT <- function(rasterToMatch = NULL, maskID = NULL, args = NULL) {
   if (any(is.null(rasterToMatch), is.null(maskID))) {
@@ -203,6 +204,7 @@ replaceNAs.data.table <- function(DT, value = 0L) {
 #' @importFrom ggplot2 ggplot geom_tile scale_fill_brewer scale_fill_distiller theme coord_equal
 #' @importFrom ggpubr theme_pubr
 #' @importFrom raster raster
+#' @importFrom methods as
 #' @export
 robustnessMaps <- function(ras, mask = NULL, maskCol = NULL,
                            factorLayer = FALSE) {

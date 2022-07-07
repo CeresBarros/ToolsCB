@@ -387,6 +387,7 @@ vector2binmatrix <- function(x) {
 #' @importFrom sf as_Spatial
 #' @importFrom gdalUtils gdal_rasterize
 #' @importFrom rgdal writeOGR
+#' @importFrom sp bbox
 #'
 rasterizeCover <- function(rasterToMatch, shp, field, noDataVal = 0) {
   ## checks

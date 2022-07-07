@@ -22,7 +22,10 @@
 # beta.nes computes a distance matrix using Nestedness-resultant pair-wise
 # dissimilarity
 
+#' Sorensen's beta-diversity
+#' @param x a \code{data.frame}
 #' @export
+#' @importFrom stats as.dist
 beta.sor <- function(x){
   ## x must be a data frame
   matr<-as.matrix(x);
@@ -40,11 +43,14 @@ beta.sor <- function(x){
       result[j,i]<-Sorensen.ij;
     }
   }
-  d<-as.dist(result);
+  d <- as.dist(result);
   d
 }
 
+#' Simpsons's beta-diversity
+#' @param x a \code{data.frame}
 #' @export
+#' @importFrom stats as.dist
 beta.sim <- function(x){
   ## x must be a data frame
   matr<-as.matrix(x);
@@ -66,7 +72,10 @@ beta.sim <- function(x){
   d
 }
 
+#' Nested beta-diversity
+#' @param x a \code{data.frame}
 #' @export
+#' @importFrom stats as.dist
 beta.nes <- function(x){
   ## x must be a data frame
   matr<-as.matrix(x);

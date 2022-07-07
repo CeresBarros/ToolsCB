@@ -13,6 +13,7 @@
 #' @param pTable matrix of pTable-values values obtained from e.g. \code{Hmisc::rcorr(...)$pTable}
 #'
 #' @export
+#' @importFrom Hmisc rcorr
 
 prepCorrTable <- function(x = NULL, corTable = NULL, pTable = NULL, method = "pearson") {
   ## checks

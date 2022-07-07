@@ -11,6 +11,7 @@
 #' @param distObj a \code{dist} object calculated using \code{econetwork::disPairwise}
 #'
 #' @importFrom data.table data.table
+#' @importFrom stats sd
 #'
 #' @export
 calcNetMeanDistances <- function(distObj) {
@@ -36,7 +37,7 @@ calcNetMeanDistances <- function(distObj) {
 #' @template dietcat
 #'
 #' @importFrom plyr rbind.fill
-#'
+#' @importFrom stats median
 #' @export
 calc.extThresh <- function(x, quants, out.dir, dietcat) {
   ## loading all BL networks
@@ -90,7 +91,7 @@ calc.extThresh <- function(x, quants, out.dir, dietcat) {
 #' @param normalise use normalised version of generality, vulnerability (and their
 #'   standard deviations)?
 #'
-#' @importFrom igraph graph.adjacency walktrap.community modularity degree
+#' @importFrom igraph graph.adjacency walktrap.community modularity degree membership
 #'
 #' @export
 netw.metrics <- function(web = NULL, normalise = FALSE, verbose = TRUE) {
@@ -163,6 +164,8 @@ netw.metrics <- function(web = NULL, normalise = FALSE, verbose = TRUE) {
 #'
 #' @param web a square \code{matrix} representing an adjacency matrix.
 #' @template dietcat
+#'
+#' @importFrom cheddar PreyAveragedTrophicLevel PredationMatrixToLinks RemoveCannibalisticLinks Community ResourcesByNode
 #'
 #' @export
 tlstats <- function(web = NULL, dietcat = dietcat) {
@@ -376,6 +379,7 @@ spp.centrality <- function(networkList, sppExclude, metric = c("degree", "betwee
 #'
 #' @importFrom ade4 dudi.pca
 #' @import ggplot2
+#' @importFrom stats cor
 #'
 #' @export
 calcNetworkBLMetricsPCA <- function(metricsDT, PLOT = FALSE, dim) {

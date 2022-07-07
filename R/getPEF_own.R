@@ -1,7 +1,24 @@
-
+#' Modified \code{gamlss::getPEF}
+#'
+#' added \code{how = "mean"} and \code{level} to gamlss::getPEF
+#' added \code{output} to chose between function or predicted values
+#'
+#' @param obj see \code{gamlss::getPEF}
+#' @param term see \code{gamlss::getPEF}
+#' @param data see \code{gamlss::getPEF}
+#' @param n.points see \code{gamlss::getPEF}
+#' @param parameter see \code{gamlss::getPEF}
+#' @param level see \code{gamlss::getPEF}
+#' @param type see \code{gamlss::getPEF}
+#' @param how see \code{gamlss::getPEF}
+#' @param fixed.at see \code{gamlss::getPEF}
+#' @param plot see \code{gamlss::getPEF}
+#' @param output chose between outputting the function or predicted values
+#'
 #' @export
-## added "mean" and level to gamlss:getPEF
-## added output to chose between function of predicted values
+#' @importFrom graphics abline
+#' @importFrom stats splinefun median
+#' @importFrom utils tail
 getPEF.own <- function(obj = NULL, term = NULL, data = NULL, n.points = 100,
                        parameter = c("mu", "sigma", "nu", "tau"), level = NULL,
                        type = c("response", "link"), how = c("mean", "median", "last"), fixed.at = list(),

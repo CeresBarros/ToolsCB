@@ -1,87 +1,149 @@
 
 ################## BEGIN NODE METRICS ##################
 
+#' In-degree per node
+#' @template M
 InDegree <- TrophicGenerality <- NumberOfResources <- function(M){
   return(colSums(M));
 }
 
+#' Out-degree per node
+#' @template M
 OutDegree <- TrophicVulnerability <- NumberOfCosumers <- function(M){
   return(rowSums(M));
 }
 
+#' Node degree
+#' @template M
 Degree <- function(M){
   return(InDegree(M)+OutDegree(M));
 }
 
+#' Node normalised Generality
+#' @template M
 NormalisedGenerality <- function(M){
   return(TrophicGenerality(M)/(sum(M)/dim(M)[1]));
 }
 
+#' Node normalised Vulnerability
+#' @template M
 NormalisedVulnerability <- function(M){
   return(TrophicVulnerability(M)/(sum(M)/dim(M)[1]));
+}
+
+#' Calculate if a spp is an omnivore based on the number of different trophic levels predated by a spp
+#' @template M
+#' @param level a function to calculate the trophic level. See \code{cheddar}
+#'   for options
+IsOmnivore2 <- function(M, level = PreyAveragedTrophicLevel){
+  #Use PredationMatrixToLinks() to create a Cheddar community from a predation
+  community <- Community(data.frame(node = colnames(M)), trophic.links = PredationMatrixToLinks(M),
+                         properties = list(title = "Test2"))
+  community <- RemoveCannibalisticLinks(community, title='community');
+
+  # get resource spp for each predator
+  resource.spp <- ResourcesByNode(community)
+
+  #get no. resources
+  n.resources <- sapply(resource.spp, length)
+
+  # get all spp trophic levels
+  tl <- level(community)
+
+  # get the number of different trophic levels predated upon
+  resource.tl <- sapply(resource.spp, FUN = function(x){
+    return(length(unique(tl[x])))
+  })
+
+  # a spp is an omnivore if it predates 2 or more spp of different trophic levels
+  return(n.resources >= 2 & resource.tl >= 2)
 }
 
 ################## END NODE METRICS ##################
 
 ################## BEGIN NETWORK METRICS ##################
 
+#' Network mean Generality
+#' @template M
 MeanGenerality <- function(M){
   return(sum(colSums(M))/sum((colSums(M)!=0)));
 }
 
+#' Network mean Vulnerability
+#' @template M
 MeanVulnerability <- function(M){
   return(sum(rowSums(M))/sum((rowSums(M)!=0)));
 }
 
+#' Network SD Generality
+#' @template M
 SDGenerality <- function(M){
   return(sd(InDegree(M)[InDegree(M)!=0]));
 }
 
+#' Network SD Vulnerability
 SDVulnerability <- function(M){
   return(sd(OutDegree(M)[OutDegree(M)!=0]));
 }
 
+#' Network normalised mean Generality
+#' @template M
 MeanGenerality_norm <- function(M){
   norm_g <- NormalisedGenerality(M)
   return(mean(norm_g[norm_g!=0]))
 }
 
+#' Network normalised mean Generality -- following Williams and Martinez 2000
+#' @template M
 MeanGenerality_norm2 <- function(M){
   norm_g <- NormalisedGenerality(M)   ##  follows Williams and Martinez 2000
   return(mean(norm_g))
 }
 
+#' Network normalised mean Vulnerability
+#' @template M
 MeanVulnerability_norm <- function(M){
   norm_v <- NormalisedVulnerability(M)
   return(mean(norm_v[norm_v!=0]))
 }
 
+#' Network normalised mean Vulnerability -- following Williams and Martinez 2000
+#' @template M
 MeanVulnerability_norm2 <- function(M){
   norm_v <- NormalisedVulnerability(M)   ##  follows Williams and Martinez 2000
   return(mean(norm_v))
 }
 
+#' Network normalised SD Generality
+#' @template M
 SDGenerality_norm <- function(M){
   norm_g <- NormalisedGenerality(M)
   return(sd(norm_g[norm_g!=0])) ## this doesn't follow Williams and Martinez 2000 as it should
 }
 
+#' Network normalised SD Generality -- following Williams and Martinez 2000
+#' @template M
 SDGenerality_norm2 <- function(M){
   norm_g <- NormalisedGenerality(M)
   return(sd(norm_g)) ##  follows Williams and Martinez 2000
 }
 
+#' Network normalised SD Vulnerability
+#' @template M
 SDVulnerability_norm <- function(M){
   norm_v <- NormalisedVulnerability(M)
   return(sd(norm_v[norm_v!=0]))   ## this doesn't follow Williams and Martinez 2000 as it should
 }
 
+#' Network normalised SD Vulnerability -- following Williams and Martinez 2000
+#' @template M
 SDVulnerability_norm2 <- function(M){
   norm_v <- NormalisedVulnerability(M)
   return(sd(norm_v))   ##  follows Williams and Martinez 2000
 }
 
-
+#' Proportion of basal nodes
+#' @template M
 FractionOfBasal <- function(M){
   M_temp <- M;
   diag(M_temp) <- 0;
@@ -91,6 +153,8 @@ FractionOfBasal <- function(M){
   return(b_sps / dim(M)[1]);
 }
 
+#' Number of basal nodes
+#' @template M
 NumberOfBasal <- function(M){
   M_temp <- M;
   diag(M_temp) <- 0;
@@ -100,6 +164,8 @@ NumberOfBasal <- function(M){
   return(b_sps);
 }
 
+#' Proportion of top consumers
+#' @template M
 FractionOfTop <- function(M){
   M_temp <- M;
   diag(M_temp) <- 0;
@@ -109,6 +175,8 @@ FractionOfTop <- function(M){
   return(t_sps / dim(M)[1]);
 }
 
+#' Number of top consumers
+#' @template M
 NumberOfTop <- function(M){
   M_temp <- M;
   diag(M_temp) <- 0;
@@ -129,6 +197,8 @@ NumberOfTop <- function(M){
 #   return(t_indegree)
 # }
 
+#' Proportion of intermediate consumers
+#' @template M
 FractionOfIntermediate <- function(M){
   M_temp <- M;
   diag(M_temp) <- 0;
@@ -138,6 +208,8 @@ FractionOfIntermediate <- function(M){
   return(i_sps / dim(M)[1]);
 }
 
+#' Number of intermediate consumers
+#' @template M
 NumberOfIntermediate <- function(M){
   M_temp <- M;
   diag(M_temp) <- 0;
@@ -158,13 +230,15 @@ NumberOfIntermediate <- function(M){
 #   return(i_indegree)
 # }
 
-
-
+#' Proportion of cannibalistic links
+#' @template M
 FractionOfCannibalism <- function(M){
   return(sum(diag(M)) / dim(M)[1]);
 }
 
-## this is more like mean similarity than "maximum"
+#' Network similarity
+#' this is more like mean similarity than "maximum"
+#' @template M
 MaximumSimilarity <- function(M){
   S <- dim(M)[1];
 
@@ -196,31 +270,11 @@ MaximumSimilarity <- function(M){
 #   return(Fractionomnivory)
 # }
 
-# Calculate if a spp is an omnivore based on the number of different trophic levels predated by a spp
-IsOmnivore2 <- function(M, level = PreyAveragedTrophicLevel){
-  #Use PredationMatrixToLinks() to create a Cheddar community from a predation
-  community <- Community(data.frame(node = colnames(M)), trophic.links = PredationMatrixToLinks(M),
-                         properties = list(title = "Test2"))
-  community <- RemoveCannibalisticLinks(community, title='community');
-
-  # get resource spp for each predator
-  resource.spp <- ResourcesByNode(community)
-
-  #get no. resources
-  n.resources <- sapply(resource.spp, length)
-
-  # get all spp trophic levels
-  tl <- level(community)
-
-  # get the number of different trophic levels predated upon
-  resource.tl <- sapply(resource.spp, FUN = function(x){
-    return(length(unique(tl[x])))
-  })
-
-  # a spp is an omnivore if it predates 2 or more spp of different trophic levels
-  return(n.resources >= 2 & resource.tl >= 2)
-}
-
+#' Network omnivory
+#' @template M
+#' @template dietcat
+#' @param level a function to calculate the trophic level. See \code{cheddar}
+#'   for options
 Omnivory2 <- function(M, dietcat = NULL, level = PreyAveragedTrophicLevel){
   omnivs <- IsOmnivore2(M, level = level)
   if(!is.null(dietcat)){
@@ -230,6 +284,10 @@ Omnivory2 <- function(M, dietcat = NULL, level = PreyAveragedTrophicLevel){
 
 }
 
+#' Network mean food chain length
+#' @template M
+#'
+#' @importFrom cheddar TrophicChainsStats Community RemoveCannibalisticLinks PredationMatrixToLinks
 MeanFoodChainLength <- function(M){
 
   # Use PredationMatrixToLinks() to create a Cheddar community from a predation
@@ -261,7 +319,8 @@ MeanFoodChainLength <- function(M){
   return(sum(ch_lens)/length(ch_lens));
 }
 
-
+#' Network average predator overlap
+#' @template M
 CalculatePredatorOverlap <- function(M){
   cols <- dim(M)[2];
   M1 <- matrix(0, cols, cols);
@@ -281,7 +340,14 @@ CalculatePredatorOverlap <- function(M){
 
 ################## END NETWORK METRICS ##################
 
-# Ceres: added density of degree distribution calc
+#' Density of degree distribution calculation
+#'
+#' @template M
+#' @param cumulative cumulative degree distribution?
+#'
+#' @importFrom graphics hist
+#' @importFrom igraph is.igraph
+#' @export
 density.degree.distribution <- function(M, cumulative = TRUE, ...){
   graph <- graph.adjacency(M)
   if (!is.igraph(graph)) {
@@ -289,7 +355,7 @@ density.degree.distribution <- function(M, cumulative = TRUE, ...){
   }
   cs <- degree(graph, ...)
   hi <- hist(cs, -1:max(cs), plot = FALSE)$density
-  if(!cumulative) {
+  if (!cumulative) {
     res <- hi
   }
   else {

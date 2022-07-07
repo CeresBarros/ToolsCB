@@ -1,10 +1,13 @@
-####################################################################
-# Modified version of fitting from the brainwaver R package,
-# removing unnecessary code beyond the fitting of a truncated power law
-# and suppress histogram and writing outputs
-####################################################################
 
+#' Modified version of \code{fitting} from the \code{brainwaver} R package,
+#' that removes unnecessary code beyond the fitting of a truncated power law
+#' and suppresses histogram and writing outputs
+#'
+#' @param degree.dist see \code{brainwaver::fitting}
 #' @export
+#' @importFrom graphics hist
+#' @importFrom stats nlm
+#'
 fitting2 <- function(degree.dist) {
   n.regions <- length(degree.dist)
   # tmp <- hist(degree.dist, breaks = c(0:nmax))

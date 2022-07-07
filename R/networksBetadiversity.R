@@ -26,6 +26,7 @@
 #' @importFrom tools file_path_sans_ext
 #' @importFrom reproducible Cache
 #' @importFrom data.table rbindlist
+#' @importFrom utils object.size
 #'
 #' @export
 calcTempBetaDivBAMR <- function(ff, BLweb, res.dir, out.dir, dietcat = dietcat,
@@ -222,6 +223,8 @@ calcTempBetaDivBAMR <- function(ff, BLweb, res.dir, out.dir, dietcat = dietcat,
 #' @importFrom crayon blue
 #' @importFrom data.table data.table
 #' @importFrom econetwork divPartition disPairwise
+#' @importFrom vegan vegdist
+#' @importFrom utils capture.output
 #'
 #' @export
 networkTempBetaDiv <- function(web1, web2, dietcat, method = "all", mode = "composition") {
@@ -492,6 +495,7 @@ calcTempBetaDiv.master <- function(masterScen.file, masterBL.files,
 #'
 #' @return a data.table of beta-diversity indices per pixel ID (column "PAGENAME")
 #' @importFrom data.table rbindlist data.table melt
+#' @importFrom vegan vegdist
 #'
 #' @export
 networkTempBetaDiv.master <- function(pixXsppMat1, pixXsppMat2,
@@ -594,6 +598,7 @@ networkTempBetaDiv.master <- function(pixXsppMat1, pixXsppMat2,
 #' @importFrom econetwork disPairwise divPartition
 #' @importFrom future plan
 #' @importFrom future.apply future_lapply
+#' @importFrom utils object.size
 #'
 #' @export
 calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetworks = FALSE,
