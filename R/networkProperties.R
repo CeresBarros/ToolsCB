@@ -6,8 +6,6 @@
 #' Summarizes network pairwise distances into mean distance from a
 #'   focal network to others
 #'
-#' @param outputs a data.table with columns \code{PAGENAME}  (the network ID)
-#'   and \code{meanDistance}
 #' @param distObj a \code{dist} object calculated using \code{econetwork::disPairwise}
 #'
 #' @importFrom data.table data.table
@@ -90,6 +88,7 @@ calc.extThresh <- function(x, quants, out.dir, dietcat) {
 #' @param web a square \code{matrix} representing an adjacency matrix.
 #' @param normalise use normalised version of generality, vulnerability (and their
 #'   standard deviations)?
+#' @param verbose print messages?
 #'
 #' @importFrom igraph graph.adjacency walktrap.community modularity degree membership
 #'

@@ -12,7 +12,9 @@
 #' @param origDataVars the data used to fit the statsModule, needs to be passed to \code{gamlss::predictAll}
 #'   (it may not be able to access it) but also to make sure newdata in \code{gamlss::predictAll}
 #'  has the same variables (even if they're not used in the model)
-#' @param cacheObj1/2 an object used by \code{reproducible::Cache} for digesting,
+#' @param cacheObj1 object used by \code{reproducible::Cache} for digesting,
+#'  to avoid digesting the (potentially) large data arguments
+#' @param cacheObj2  object used by \code{reproducible::Cache} for digesting,
 #'  to avoid digesting the (potentially) large data arguments
 #' @param parallel logical. Uses \code{future.apply::future_lapply} to parallelise
 #'  model fitting across the k-folds, using \code{plan(multiprocess)}. Defauls to FALSE
@@ -80,6 +82,7 @@ crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol,
 #' @importFrom reproducible Cache
 #' @importFrom data.table as.data.table set
 #' @importFrom caret defaultSummary
+#' @importFrom stats update
 #'
 #' @export
 calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel, origDataVars, level = NULL, cacheArgs = NULL) {
@@ -146,7 +149,10 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel, origDataVa
 #' to allow caching without digesting the large data table and model
 #'
 #' @param ... arguments passed to \code{update}
-#' @param cacheObj1/2 an object used by Cache for digesting, to avoid digesting
+#' @param cacheObj1 an object used by Cache for digesting, to avoid digesting
+#'   the (potentially) large data arguments e.g.: model coefficients and a
+#'   sample of a column drawn with a set seed.
+#' @param cacheObj2 an object used by Cache for digesting, to avoid digesting
 #'   the (potentially) large data arguments e.g.: model coefficients and a
 #'   sample of a column drawn with a set seed.
 #'
@@ -159,8 +165,12 @@ updateModelCached <- function(..., cacheObj1 = NULL, cacheObj2 = NULL) {
 
 #' CALCULATION OF THE MEAN FROM A BETA-INFLATED DISTRIBUTION
 #' adapted from `gamlss::meanBEINF`
-#' @param mu, @param nu, @param tau are vectors of values for the mu, nu and tau
-#'  of the Beta-inflated distribution
+#' @param mu vector of values for the mu parameter of
+#'   the Beta-inflated distribution
+#' @param nu vector of values for the nu parameter of
+#'   the Beta-inflated distribution
+#' @param tau vector of values for the tau parameter of
+#'   the Beta-inflated distribution
 .calcMeanBEINF <- function(mu, nu, tau) {
   meanofY <- (tau + mu)/(1 + nu + tau)
   meanofY

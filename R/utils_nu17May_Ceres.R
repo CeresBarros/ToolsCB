@@ -82,6 +82,7 @@ SDGenerality <- function(M){
 }
 
 #' Network SD Vulnerability
+#' @template M
 SDVulnerability <- function(M){
   return(sd(OutDegree(M)[OutDegree(M)!=0]));
 }
@@ -344,9 +345,10 @@ CalculatePredatorOverlap <- function(M){
 #'
 #' @template M
 #' @param cumulative cumulative degree distribution?
+#' @param ... passed to \code{igraph::degree}
 #'
 #' @importFrom graphics hist
-#' @importFrom igraph is.igraph
+#' @importFrom igraph is.igraph degree
 #' @export
 density.degree.distribution <- function(M, cumulative = TRUE, ...){
   graph <- graph.adjacency(M)

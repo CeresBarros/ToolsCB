@@ -12,8 +12,8 @@
 
 #' @param ff is the a file path to list of networks obtained from a scenario of change.
 #' @param BLweb a baseline web (not a file path) to be compared with the scenario webs
-#' @param res.dir is the "root" directory where "scenario networks" were stored and out.dir is
-#'   were results will be placed (in a folder tree respecting scenario folders.)
+#' @template res.dir
+#' @template out.dir
 #' @template dietcat
 #' @param families determines for which families beta div will be calculated (this subsets the species)
 #' @param toDo controls if beta-diversity has to be recalculated for 'all' networks or
@@ -579,8 +579,8 @@ networkTempBetaDiv.master <- function(pixXsppMat1, pixXsppMat2,
 #'   alpha/gamma decomposition (using \code{econetwork::divPartition}), or "pairwise",
 #'   to calculate pairwise beta-diversity between networks (using
 #'   \code{econetwork::disPairwise}).
-#' @param res.dir is the "root" directory where "scenario networks" were stored and out.dir is
-#'   were results will be placed (in a folder tree respecting scenario folders.)
+#' @param res.dir is the "root" directory where "scenario networks" were stored
+#' @template out.dir
 #' @param sampleNetworks controls if beta-diversity is to be calculated for a sample of networks (provide integer)
 #'   or all networks (FALSE)
 #' @param noReps determines number of reps for the sampling and calculating beta-diversity

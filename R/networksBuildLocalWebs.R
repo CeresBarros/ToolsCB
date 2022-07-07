@@ -279,7 +279,6 @@ SppRm_localweb <- function(metaweb = NULL, SPPCODE = NULL,
 #' Function to build local networks according to LC changes and changes in spp dists
 #'
 #' @template metaweb
-#' @template SPPCODE
 #' @template SPP.HAB
 #' @template PIX.HAB
 #' @template ORIGSPP
