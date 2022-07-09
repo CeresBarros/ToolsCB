@@ -14,7 +14,6 @@
 #'
 #' @export
 #' @importFrom Hmisc rcorr
-
 prepCorrTable <- function(x = NULL, corTable = NULL, pTable = NULL, method = "pearson") {
   ## checks
   if (!is.null(x)) {

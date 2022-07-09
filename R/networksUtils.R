@@ -170,6 +170,8 @@ findIUCNAcceptedName <- function(species) {
 #' @param web a square and named \code{matrix} representing an adjacency network
 #' @param missingDietcat  the diet categories (i.e. basal nodes) that will
 #'   be added to \code{web}
+#'
+#' @export
 addDietCat <- function(web, missingDietcat) {
   temp <- cbind(matrix(0, nrow = nrow(web), ncol = length(missingDietcat)), web)
   temp <- rbind(matrix(0, nrow = length(missingDietcat), ncol = ncol(temp)), temp)

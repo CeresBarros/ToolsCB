@@ -684,7 +684,7 @@ compileResultsMasterScen <- function (file.ls, res.dir, out.dir, quant, dietcat,
 #' @param fileFolder is the path to the parent folder containing all files (and directories to the SDM projections)
 #'
 #' @importFrom data.table rbindlist dcast as.data.table
-#'
+#' @export
 compileSDMsppRichness <- function(fileLs, fileFolder) {
   outputList <- lapply(fileLs,
                        FUN = function(f){
@@ -728,6 +728,7 @@ compileSDMsppRichness <- function(fileLs, fileFolder) {
 #' @param dietcat diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)
 #'
 #' @importFrom raster extension
+#' @export
 makeAndSaveMasterBL <- function(x, returnMaster = FALSE, dietcat,
                                 redo = FALSE, save = TRUE) {
   ## checks
@@ -792,6 +793,7 @@ makeAndSaveMasterBL <- function(x, returnMaster = FALSE, dietcat,
 #' @template dietcat
 #'
 #' @importFrom raster extension
+#' @export
 makeAndSaveMasterScen <- function(x, returnMaster = FALSE, dietcat,
                                   redo = FALSE, save = TRUE) {
   ## checks
@@ -870,6 +872,7 @@ makeAndSaveMasterScen <- function(x, returnMaster = FALSE, dietcat,
 #'   and \code{reproducible::Cache}
 #'
 #' @importFrom reproducible Cache
+#' @export
 loadAndSummarizeResults <- function(...) {
   dots <- list(...,
                userTags = get("userTags", envir = parent.frame()),
@@ -929,6 +932,7 @@ loadAndSummarizeResults <- function(...) {
 #' @param quant is the quantile threshold of extinction chosen
 #'
 #' @importFrom data.table rbindlist
+#' @export
 loadResultsTempBetaDiv <- function(res.dir, out.dir, quant) {
   message("Compiling temporal beta diversity")
 
@@ -982,6 +986,7 @@ loadResultsTempBetaDiv <- function(res.dir, out.dir, quant) {
 #' @param quant is the quantile threshold of extinction chosen
 #'
 #' @importFrom data.table rbindlist
+#' @export
 loadResultsSpaceBetaDiv <- function(bl.dir, res.dir, out.dir, quant) {
   message("Compiling spatial beta diversity")
 

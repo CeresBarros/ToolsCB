@@ -9,7 +9,6 @@
 #' @return an \code{sf} object without duplicated columns
 #'
 #' @importFrom sf st_set_geometry st_geometry st_geometry<-
-
 sfRmDupNACols <- function(sfObj) {
   transposed <- t(st_set_geometry(sfObj, NULL))
   ## get duplicates and NAs (note that cols became rows)
@@ -55,7 +54,6 @@ sfRmDupNACols <- function(sfObj) {
 #' @return an \code{sf} object
 #'
 #' @importFrom sf st_set_geometry st_geometry
-
 renameCleanSfFields <- function(sfObj, namesTable, rmNAs = TRUE) {
   origNames <- names(st_set_geometry(sfObj, NULL))
   if (!all(origNames %in% namesTable$Name_shp))

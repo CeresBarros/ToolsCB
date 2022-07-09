@@ -7,23 +7,24 @@
 #'
 #' @param fullDT \code{data.table} with full dataset
 #' @param statsModel the statistical model to validate. Only works with gamlss models
-#' @param k integer with number of chunks that the data should be partioned in
+#' @param k integer with number of chunks that the data should be partitioned in
 #' @param idCol column with pixel/observation IDs (optional)
-#' @param origDataVars the data used to fit the statsModule, needs to be passed to \code{gamlss::predictAll}
+#' @param origData the data used to fit the statsModule, needs to be passed to \code{gamlss::predictAll}
 #'   (it may not be able to access it) but also to make sure newdata in \code{gamlss::predictAll}
 #'  has the same variables (even if they're not used in the model)
+#' @param level passed to \code{gamlss:::predict}
 #' @param cacheObj1 object used by \code{reproducible::Cache} for digesting,
 #'  to avoid digesting the (potentially) large data arguments
 #' @param cacheObj2  object used by \code{reproducible::Cache} for digesting,
 #'  to avoid digesting the (potentially) large data arguments
 #' @param parallel logical. Uses \code{future.apply::future_lapply} to parallelise
-#'  model fitting across the k-folds, using \code{plan(multiprocess)}. Defauls to FALSE
+#'  model fitting across the k-folds, using \code{plan(multiprocess)}. Defaults to FALSE
 #' @param ... further arguments passed to \code{future::plan}
 #' @param cacheArgs a named \code{list} of arguments passed to inner \code{Cache} calls
 #'
 #' @importFrom future.apply future_lapply
 #' @importFrom future plan
-
+#' @export
 crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol,
                                 parallel = FALSE, cacheObj1 = NULL, cacheObj2 = NULL,
                                 cacheArgs = NULL, level = NULL, ...) {
