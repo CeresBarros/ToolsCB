@@ -24,7 +24,7 @@ HabLoss_localweb(
 \item{PIX.HAB}{a pix x habitat \code{matrix}}
 
 \item{EXT.TRSH}{threshold of lost prey that determines spp extinction. Varies from 0 to 1,
-increasing with predator sensitivity (e.g. 0.9 = spp dies if it is left with 90\% of orignal prey)}
+increasing with predator sensitivity (e.g. 0.9 = spp dies if it is left with 90\\% of orignal prey)}
 
 \item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
 across all networks)}

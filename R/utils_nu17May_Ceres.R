@@ -33,7 +33,7 @@ NormalisedVulnerability <- function(M){
 
 #' Calculate if a spp is an omnivore based on the number of different trophic levels predated by a spp
 #' @template M
-#' @param level a function to calculate the trophic level. See \code{cheddar}
+#' @param level a function to calculate the trophic level. See `cheddar`
 #'   for options
 IsOmnivore2 <- function(M, level = PreyAveragedTrophicLevel){
   #Use PredationMatrixToLinks() to create a Cheddar community from a predation
@@ -274,7 +274,7 @@ MaximumSimilarity <- function(M){
 #' Network omnivory
 #' @template M
 #' @template dietcat
-#' @param level a function to calculate the trophic level. See \code{cheddar}
+#' @param level a function to calculate the trophic level. See `cheddar`
 #'   for options
 Omnivory2 <- function(M, dietcat = NULL, level = PreyAveragedTrophicLevel){
   omnivs <- IsOmnivore2(M, level = level)
@@ -345,7 +345,7 @@ CalculatePredatorOverlap <- function(M){
 #'
 #' @template M
 #' @param cumulative cumulative degree distribution?
-#' @param ... passed to \code{igraph::degree}
+#' @param ... passed to `igraph::degree`
 #'
 #' @importFrom graphics hist
 #' @importFrom igraph is.igraph degree

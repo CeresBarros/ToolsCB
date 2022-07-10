@@ -7,11 +7,11 @@
 #' @param groupvars a vector containing names of columns that contain grouping variables
 #' @param na.rm a boolean that indicates whether to ignore NA's, defaults to FALSE.
 #' @param conf.interval the percent range of the confidence interval (default is 95\%)
-#' @param .drop passed to \code{ddply}
+#' @param .drop passed to `ddply`
 #'
 #' @export
 #'
-#' @return A \code{data.frame} of summary statistics of each variable
+#' @return A `data.frame` of summary statistics of each variable
 #'  by grouping variables
 #'
 #' @importFrom plyr ddply rename
@@ -50,12 +50,12 @@ summarySE <- function(data = NULL, measurevar, groupvars = NULL, na.rm = FALSE,
 #' New version of length which can handle NA's
 #'
 #' @param x a vector
-#' @param na.rm if TRUE does not acount for NA's when taking the length of \code{x}.
-#'   Defaults to FALSE which has the same behaviour as \code{lenght}.
+#' @param na.rm if TRUE does not acount for NA's when taking the length of `x`.
+#'   Defaults to FALSE which has the same behaviour as `lenght`.
 #'
 #' @export
 #'
-#' @return an integer of the length of \code{x} accounting for NAs or not.
+#' @return an integer of the length of `x` accounting for NAs or not.
 
 length2 <- function(x, na.rm = FALSE) {
   if (na.rm) sum(!is.na(x)) else length(x)

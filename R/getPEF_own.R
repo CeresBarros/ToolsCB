@@ -1,18 +1,18 @@
-#' Modified \code{gamlss::getPEF}
+#' Modified `gamlss::getPEF`
 #'
-#' added \code{how = "mean"} and \code{level} to gamlss::getPEF
-#' added \code{output} to chose between function or predicted values
+#' added `how = "mean"` and `level` to gamlss::getPEF
+#' added `output` to chose between function or predicted values
 #'
-#' @param obj see \code{gamlss::getPEF}
-#' @param term see \code{gamlss::getPEF}
-#' @param data see \code{gamlss::getPEF}
-#' @param n.points see \code{gamlss::getPEF}
-#' @param parameter see \code{gamlss::getPEF}
-#' @param level see \code{gamlss::getPEF}
-#' @param type see \code{gamlss::getPEF}
-#' @param how see \code{gamlss::getPEF}
-#' @param fixed.at see \code{gamlss::getPEF}
-#' @param plot see \code{gamlss::getPEF}
+#' @param obj see `gamlss::getPEF`
+#' @param term see `gamlss::getPEF`
+#' @param data see `gamlss::getPEF`
+#' @param n.points see `gamlss::getPEF`
+#' @param parameter see `gamlss::getPEF`
+#' @param level see `gamlss::getPEF`
+#' @param type see `gamlss::getPEF`
+#' @param how see `gamlss::getPEF`
+#' @param fixed.at see `gamlss::getPEF`
+#' @param plot see `gamlss::getPEF`
 #' @param output chose between outputting the function or predicted values
 #'
 #' @export

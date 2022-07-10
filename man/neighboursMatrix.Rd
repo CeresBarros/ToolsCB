@@ -11,7 +11,7 @@ neighboursMatrix(mat)
 }
 \value{
 a matrix of 8 rows, with a columns per cell of the input matrix,
- which is treated by columns
+which is treated by columns
 }
 \description{
 finds the 8 neighbours of each cell in a matrix

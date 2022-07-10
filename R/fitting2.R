@@ -1,9 +1,9 @@
 
-#' Modified version of \code{fitting} from the \code{brainwaver} R package,
+#' Modified version of `fitting` from the `brainwaver` R package,
 #' that removes unnecessary code beyond the fitting of a truncated power law
 #' and suppresses histogram and writing outputs
 #'
-#' @param degree.dist see \code{brainwaver::fitting}
+#' @param degree.dist see `brainwaver::fitting`
 #' @export
 #' @importFrom graphics hist
 #' @importFrom stats nlm

@@ -22,5 +22,5 @@ multiplicative decomposition (the default) or as a percentage
 }
 \description{
 \code{abgDecompQ}  performs a alpha, beta, gamma multiplicative decomposition
-  using Leinster's diversity indices.
+using Leinster's diversity indices.
 }

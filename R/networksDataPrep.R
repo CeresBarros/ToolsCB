@@ -1,6 +1,6 @@
-#' ----------------------------------------------
-#' NETWORKS DATA PROCESSING FUNCTIONS
-#' ----------------------------------------------
+##  ----------------------------------------------
+##  NETWORKS DATA PROCESSING FUNCTIONS
+##  ----------------------------------------------
 
 #' IDENTIFY SPP BY CODE
 #'
@@ -62,8 +62,8 @@ fun.load.many.rdata <- function(file.list = NULL) {
 #'
 #' @param species.dist a species distribution dbf file
 #' @param threshold cell habitat percentage threshold to consider a species present
-#' @param opt.only if \code{TRUE} only presences in optimal habitats are
-#'   considered, if \code{FALSE} both secondary and optimal habitat presences are used
+#' @param opt.only if `TRUE` only presences in optimal habitats are
+#'   considered, if `FALSE` both secondary and optimal habitat presences are used
 #'
 #' @export
 fun.PRESENCE.ABSENCE <- function(species.dist = NULL, threshold = NULL, opt.only = NULL) {
@@ -86,7 +86,7 @@ fun.PRESENCE.ABSENCE <- function(species.dist = NULL, threshold = NULL, opt.only
 
 
 #' CONVERT SPECIES DATABASE FILES TO RASTERS
-#' @param SPPPA \code{data.frame}  of species presense and absences
+#' @param SPPPA `data.frame`  of species presense and absences
 #'  with firt column being the cell ID ('PAGENAME') and the second the species
 #'  presence/absence
 #' @param mask.dir folder where study area mask rasters and dbf file with pixel IDs can be found
@@ -127,7 +127,7 @@ fun.dbf2raster <- function(SPPPA, mask.dir = NULL) {
 #' CONVERT LIST OF WEBS/SPP IN PIXELS INTO A PIXELS x SSP MATRIX
 #' @param list.obj is a list of webs (if is.web = TRUE), or of vectors of species,
 #'   per pixel that is to be converted into a matrix of pix X spp
-#' @param is.web is \code{list.obj} a list of webs?
+#' @param is.web is `list.obj` a list of webs?
 #'
 #' @importFrom data.table rbindlist set
 #' @importFrom reshape2 dcast
@@ -204,13 +204,13 @@ pixXspp_function <- function(list.obj = NULL, is.web = TRUE) {
 
 
 #' CONVERT COLUMN NAMES IN MATRIX
-#' @param M a \code{matrix} whose columns names will be changed
-#' @param corresp is \code{data.frame} with rownames as the original column names
+#' @param M a `matrix` whose columns names will be changed
+#' @param corresp is `data.frame` with rownames as the original column names
 #'   and a single column with the final column names. If more than one original
-#'   column matches a final one, the function will merge values using \code{merge.fun}
-#' @param merge.fun funciton to use to merge columns. Default is \code{max},
+#'   column matches a final one, the function will merge values using `merge.fun`
+#' @param merge.fun funciton to use to merge columns. Default is `max`,
 #'   which takes the maximum value across columns. Other possibilities are
-#'   \code{mean} or \code{min}.
+#'   `mean` or `min`.
 #' @param na.rm is passed to merge.fun
 #' @export
 col_convert <- function(M, corresp, merge.fun = "max", na.rm = TRUE) {
@@ -245,8 +245,8 @@ col_convert <- function(M, corresp, merge.fun = "max", na.rm = TRUE) {
 #'
 #' @param files is a list of file paths to the distributions to be used
 #' @param opt is either TRUE of FALSE (default) and determines if only optimal habitats are used as presences
-#' @param k presence threshold [0,1], used if \code{opt = FALSE}. \code{opt} and
-#'   \code{k} are only used for Luigi Maiorano's spp distributions
+#' @param k presence threshold [0,1], used if `opt = FALSE`. `opt` and
+#'   `k` are only used for Luigi Maiorano's spp distributions
 #' @export
 do.PAmaster <- function(files, opt = FALSE, k = 0) {
   ## check file format
@@ -541,7 +541,7 @@ loadResultsMetrics <- function(bl.dir = NULL, res.dir = NULL, out.dir = NULL,
 #' @template out.dir
 #' @param quant is the quantile threshold of extinction chosen
 #' @param useCache is NULL, but will default to TRUE if the argument is not defined in the parent.frame()
-#' @param cacheRepo passed to \code{reproducible::Cache}.
+#' @param cacheRepo passed to `reproducible::Cache`.
 #' @template dietcat
 #'
 #' @importFrom reproducible Cache
@@ -865,11 +865,11 @@ makeAndSaveMasterScen <- function(x, returnMaster = FALSE, dietcat,
 #' LOAD AND SUMMARISE METRICS RESULTS FUNCTION
 #'
 #' compiles and summarises simulation network metrics results.
-#'   this function is a wrapper to \code{loadResultsMetrics} and \code{calcNetworkMetricsSummStats}
-#'   functions and passes all arguments to these functions, as well as \code{reproducible::Cache}
+#'   this function is a wrapper to `loadResultsMetrics` and `calcNetworkMetricsSummStats`
+#'   functions and passes all arguments to these functions, as well as `reproducible::Cache`
 #'
-#' @param ... passed to \code{loadResultsMetrics}, \code{calcNetworkMetricsSummStats}
-#'   and \code{reproducible::Cache}
+#' @param ... passed to `loadResultsMetrics`, `calcNetworkMetricsSummStats`
+#'   and `reproducible::Cache`
 #'
 #' @importFrom reproducible Cache
 #' @export

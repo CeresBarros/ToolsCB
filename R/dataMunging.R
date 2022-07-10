@@ -1,12 +1,12 @@
 #' REPLACE NAs BY ANOTHER VALUE IN A DATA.TABLE
 #'
-#' @param x is a \code{data.table}
+#' @param x is a `data.table`
 #' @param val is the value to replace NAs for. By default, it looks
 #'  for and replaces 0s
 #'
 #' @export
 #'
-#' @return a \code{data.table}
+#' @return a `data.table`
 #'
 #' @importFrom data.table data.table
 

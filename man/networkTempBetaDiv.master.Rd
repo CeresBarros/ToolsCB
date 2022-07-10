@@ -25,7 +25,7 @@ a data.table of beta-diversity indices per pixel ID (column "PAGENAME")
 }
 \description{
 calculates beta diversity as the spp turnover between pairs of networks
-   defined in two pixel by species matrices (containing species presences absences from
-   networks in each pixel). Comparisons are made per pixel, between the two matrices,
-   belonging from two different points in time, or two scenarios.
+defined in two pixel by species matrices (containing species presences absences from
+networks in each pixel). Comparisons are made per pixel, between the two matrices,
+belonging from two different points in time, or two scenarios.
 }

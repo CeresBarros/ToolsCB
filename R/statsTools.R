@@ -1,6 +1,6 @@
 #' CALCULATION OF THE MEAN FROM A BETA-INFLATED DISTRIBUTION
 #'
-#' adapted from \code{gamlss::meanBEINF}
+#' adapted from `gamlss::meanBEINF`
 #'
 #' @param mu vector of values for the mu parameter Beta-inflated distribution
 #' @param nu vector of values for the nu parameter Beta-inflated distribution

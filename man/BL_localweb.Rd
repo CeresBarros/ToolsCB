@@ -2,12 +2,7 @@
 % Please edit documentation in R/networksBuildLocalWebs.R
 \name{BL_localweb}
 \alias{BL_localweb}
-\title{----------------------------------------------
-FUNCTIONS TO SPATIALIZE NETWORKS
-(build local webs)
-Ceres May 2016, revamped >2018
-----------------------------------------------
-Function to calculate local webs - Baseline}
+\title{Function to calculate local webs - Baseline}
 \usage{
 BL_localweb(
   metaweb = NULL,
@@ -33,10 +28,5 @@ across all networks)}
 \item{HELP}{print help}
 }
 \description{
-----------------------------------------------
-FUNCTIONS TO SPATIALIZE NETWORKS
-(build local webs)
-Ceres May 2016, revamped >2018
-----------------------------------------------
 Function to calculate local webs - Baseline
 }

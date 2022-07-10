@@ -12,6 +12,6 @@ and \code{reproducible::Cache}}
 }
 \description{
 compiles and summarises simulation network metrics results.
-  this function is a wrapper to \code{loadResultsMetrics} and \code{calcNetworkMetricsSummStats}
-  functions and passes all arguments to these functions, as well as \code{reproducible::Cache}
+this function is a wrapper to \code{loadResultsMetrics} and \code{calcNetworkMetricsSummStats}
+functions and passes all arguments to these functions, as well as \code{reproducible::Cache}
 }

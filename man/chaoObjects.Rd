@@ -13,7 +13,7 @@ chaoObjects(spxp, phy)
 }
 \description{
 \code{chaoObjects} is a data preparation function.
-  It returns adequate arguments for \code{abgDecompQ}, \code{BetaDisQ} and
-  \code{divLeinster} to perform a diversity analysis using Chao's diversity index.
-  Warning: this formula only works with an ultrametric tree!
+It returns adequate arguments for \code{abgDecompQ}, \code{BetaDisQ} and
+\code{divLeinster} to perform a diversity analysis using Chao's diversity index.
+Warning: this formula only works with an ultrametric tree!
 }

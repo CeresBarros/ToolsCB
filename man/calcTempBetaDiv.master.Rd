@@ -42,11 +42,11 @@ the output beta-diversity file path
 }
 \description{
 this function loads and prepares networks to
-    calculate temporal spp turnover (beta diversity) and saves
-    the outputs. Beta diversity is calculated per pairs of pixels
-    of the same location, but different scenarios (a baseline
-    scenario and a change scenario). This function was designed to be
-    parallelized. The user should provide one scenario file at
-    a time and a vector of baseline files (which will be matched to the
-    scenario - SDM stat. model match)
+calculate temporal spp turnover (beta diversity) and saves
+the outputs. Beta diversity is calculated per pairs of pixels
+of the same location, but different scenarios (a baseline
+scenario and a change scenario). This function was designed to be
+parallelized. The user should provide one scenario file at
+a time and a vector of baseline files (which will be matched to the
+scenario - SDM stat. model match)
 }

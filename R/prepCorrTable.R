@@ -7,10 +7,10 @@
 #'               Adapted from http://myowelt.blogspot.com/2008/04/beautiful-correlation-tables-in-r.html
 #' @param x a matrix or any object compatible with as.matrix, from where the covariance matrix will be calculated.
 #'          alternatively, corTable and pTable matrices can be supplied.
-#' @param method see \code{Hmisc::rcorr} \code{type} argument.
-#' @param corTable matrix of correlation values obtained from e.g. \code{Hmisc::rcorr(...)$r}.
+#' @param method see `Hmisc::rcorr` `type` argument.
+#' @param corTable matrix of correlation values obtained from e.g. `Hmisc::rcorr(...)$r`.
 #'                 If supplied, x will be ignored
-#' @param pTable matrix of pTable-values values obtained from e.g. \code{Hmisc::rcorr(...)$pTable}
+#' @param pTable matrix of pTable-values values obtained from e.g. `Hmisc::rcorr(...)$pTable`
 #'
 #' @export
 #' @importFrom Hmisc rcorr

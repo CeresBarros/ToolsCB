@@ -4,7 +4,7 @@
 \alias{makeAndSaveMasterBL}
 \title{MAKE AND SAVE BASELINE MASTER MATRICES (SPP X PIXEL MATRICES) FUNCTION
 compiles all scenario networks into a data.table and saves it to an
- .rds file}
+.rds file}
 \usage{
 makeAndSaveMasterBL(
   x,
@@ -30,5 +30,5 @@ in case their saved files already exist}
 \description{
 MAKE AND SAVE BASELINE MASTER MATRICES (SPP X PIXEL MATRICES) FUNCTION
 compiles all scenario networks into a data.table and saves it to an
- .rds file
+.rds file
 }

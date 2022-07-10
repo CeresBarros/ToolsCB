@@ -1,10 +1,10 @@
-#' ----------------------------------------------
-#' NETWORKS UTILITY FUNCTIONS
-#' ----------------------------------------------
+## ----------------------------------------------
+## NETWORKS UTILITY FUNCTIONS
+## ----------------------------------------------
 
 #' CONVERT RASTER TO MATRIX OF PRESENCE/ABSENCES
 #'
-#' @param ras a \code{raster} with species presence data.
+#' @param ras a `raster` with species presence data.
 #'
 #' @importFrom data.table data.table
 #' @importFrom reshape2 dcast
@@ -37,22 +37,22 @@ ras2matrix <- function(ras) {
 #' to identify biogeographi region names per network pixel ID
 #'
 #' @param rasterToMatch must be provided and match pixel IDs and names
-#'   in \code{maskID}
+#'   in `maskID`
 #' @param maskID table with at least the column 'PageName' (the "names"
 #'   of non-NA pixels). NA-ed pixels in rasterToMatch should not appear
 #'   in this table.
-#' @param args named list of other arguments passed to \code{reproducible::prepInputs}
+#' @param args named list of other arguments passed to `reproducible::prepInputs`
 #'   to download and process a layer of biogeographic regions. The
 #'   following defaults are used, if not provided:
-#'   \code{url = "https://www.eea.europa.eu/data-and-maps/data/biogeographical-regions-europe-3/zipped-shapefile-format-vector-polygon/zipped-shapefile-format-vector-polygon/at_download/file"}
-#'   \code{archive = "file.zip"}
-#'   \code{targetFile = "BiogeoRegions2016.shp"}
-#'   \code{rasterToMatch = mask10k}
-#'   \code{fun = "raster::shapefile"}
-#'   \code{overwrite = TRUE}
-#'   \code{destinationPath = "Habitats/Bioregions"}
-#'   \code{useCache = FALSE}
-#'   \code{cacheRepo = options("reproducible.cachePath")}
+#'   `url = "https://www.eea.europa.eu/data-and-maps/data/biogeographical-regions-europe-3/zipped-shapefile-format-vector-polygon/zipped-shapefile-format-vector-polygon/at_download/file"`
+#'   `archive = "file.zip"`
+#'   `targetFile = "BiogeoRegions2016.shp"`
+#'   `rasterToMatch = mask10k`
+#'   `fun = "raster::shapefile"`
+#'   `overwrite = TRUE`
+#'   `destinationPath = "Habitats/Bioregions"`
+#'   `useCache = FALSE`
+#'   `cacheRepo = options("reproducible.cachePath")`
 #'
 #' @importFrom dplyr %>%
 #' @importFrom data.table data.table setkey
@@ -131,8 +131,8 @@ makeBioregDT <- function(rasterToMatch = NULL, maskID = NULL, args = NULL) {
 
 
 #' FIND SPECIES IUCN STATUS
-#' @param species character vector of species scientific names. see \code{rredlist::rl_search}
-#' @param region region to search in. see \code{rredlist::rl_regions}
+#' @param species character vector of species scientific names. see `rredlist::rl_search`
+#' @param region region to search in. see `rredlist::rl_regions`
 #'
 #' @importFrom rredlist rl_search
 #' @export
@@ -155,7 +155,7 @@ findIUCNStatus <- function(species, region = NULL) {
 }
 
 #' FIND SPECIES ACCEPTED NAMES (IUCN)
-#' @param species character vector of species scientific names. see \code{rredlist::rl_search}
+#' @param species character vector of species scientific names. see `rredlist::rl_search`
 #'
 #' @importFrom rredlist rl_synonyms
 #' @export
@@ -167,9 +167,9 @@ findIUCNAcceptedName <- function(species) {
 
 #' ADD MISSING DIET CATEGORIES (BASL NODES) TO A NETWORK
 #'
-#' @param web a square and named \code{matrix} representing an adjacency network
+#' @param web a square and named `matrix` representing an adjacency network
 #' @param missingDietcat  the diet categories (i.e. basal nodes) that will
-#'   be added to \code{web}
+#'   be added to `web`
 #'
 #' @export
 addDietCat <- function(web, missingDietcat) {
@@ -200,8 +200,8 @@ replaceNAs.data.table <- function(DT, value = 0L) {
 #'
 #' @param ras is a raster of a robustness metric (like mean robustness across scenarios)
 #' @param mask is an optional mask to be plotted under the robustness metric (i.e. to show the full study area as dark grey surface)
-#' @param maskCol is the colour used to fill mask values. Defaults to \code{"grey30"}
-#' @param factorLayer is a boolean indicating whether values in \code{ras} should be treated \code{as.factor}
+#' @param maskCol is the colour used to fill mask values. Defaults to `"grey30"`
+#' @param factorLayer is a boolean indicating whether values in `ras` should be treated `as.factor`
 #'
 #' @importFrom ggplot2 ggplot geom_tile scale_fill_brewer scale_fill_distiller theme coord_equal
 #' @importFrom ggpubr theme_pubr
@@ -260,11 +260,11 @@ robustnessMaps <- function(ras, mask = NULL, maskCol = NULL,
 
 #' CONVERT LIST OF ADJENCY MATRICES TO IGRAPH
 #'
-#' Wrapper around \code{igraph::graph_from_adjacency_matrix} that
-#'  outputs \code{NA} for empty networks.
+#' Wrapper around `igraph::graph_from_adjacency_matrix` that
+#'  outputs `NA` for empty networks.
 #'
 #' @param networkList is a list of adjacency matrices that can be converted to
-#'   \code{igraph} using \code{igraph::graph_from_adjacency_matrix}
+#'   `igraph` using `igraph::graph_from_adjacency_matrix`
 #'
 #' @importFrom igraph graph_from_adjacency_matrix
 .convert2igraph <- function(networkList) {

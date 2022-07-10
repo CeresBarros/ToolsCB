@@ -1,8 +1,8 @@
-#' ----------------------------------------------
-#' NETWORKS BETADIVERSITY
-#' ----------------------------------------------
+## ----------------------------------------------
+## NETWORKS BETADIVERSITY
+## ----------------------------------------------
 
-#' TEMPORAL BETA-DIVERSITY PER TETRAPOD FAMILY WRAPPER FUNCTION   ---------------------------
+#' TEMPORAL BETA-DIVERSITY PER TETRAPOD FAMILY WRAPPER FUNCTION
 #'
 #' This function loads and prepares networks to calculate temporal
 #' spp turnover (beta diversity) for each tetrapod family separately and saves the outputs.
@@ -18,9 +18,9 @@
 #' @param families determines for which families beta div will be calculated (this subsets the species)
 #' @param toDo controls if beta-diversity has to be recalculated for 'all' networks or
 #'   just 'missing' ones.
-#' @param method is passed to \code{networkTempBetaDiv}
-#' @param mode is passed to \code{networkTempBetaDiv}
-#' @param cacheRepo passed to \code{reproducible::Cache}
+#' @param method is passed to `networkTempBetaDiv`
+#' @param mode is passed to `networkTempBetaDiv`
+#' @param cacheRepo passed to `reproducible::Cache`
 #'
 #' @importFrom crayon red
 #' @importFrom tools file_path_sans_ext
@@ -148,8 +148,8 @@ calcTempBetaDivBAMR <- function(ff, BLweb, res.dir, out.dir, dietcat = dietcat,
 #' @param web2.ls is a list of networks to be indexed by i
 #' @template dietcat
 #' @param charMatch is used to subset species in the networks beloging to a specific family.
-#' @param method is passed to \code{networkTempBetaDiv}
-#' @param mode is passed to \code{networkTempBetaDiv}
+#' @param method is passed to `networkTempBetaDiv`
+#' @param mode is passed to `networkTempBetaDiv`
 
 .networkTempBetaDiversityFamilies <- function(i, web1.ls, web2.ls, dietcat,
                                               charMatch, method, mode = "composition") {
@@ -205,7 +205,7 @@ calcTempBetaDivBAMR <- function(ff, BLweb, res.dir, out.dir, dietcat = dietcat,
 #' @param web1 first adjency matrix (species network)
 #' @param web2 second adjency matrix (species network)
 #' @template dietcat
-#' @param method is the method used to calculate beta diversity in 'composition' \code{mode}.
+#' @param method is the method used to calculate beta diversity in 'composition' `mode`.
 #'    Options are Sorensen's ("sorensen") and Simpson's ("simpson") beta-diversity
 #'    and their nested component ("nested") (see Baselga 2010), the Jaccard
 #'    dissimilarity index ("jaccard"), a multiplicative decomposition of alpha/gamma
@@ -214,11 +214,11 @@ calcTempBetaDivBAMR <- function(ff, BLweb, res.dir, out.dir, dietcat = dietcat,
 #'    calculate beta-diversity (i.e., turnover) in terms of species composition.
 #'    Defaults to "all"
 #' @param mode can be "decompHills", "pairwiseHills" or "composition". "decompHills" and "pairwiseHills"
-#'    use the \code{econetworks} package to calculate beta-diversity based on
+#'    use the `econetworks` package to calculate beta-diversity based on
 #'    species and link composition, either through alpha/gamma decomposition
 #'    ("decompHills") or by calculating pairwise beta-diversity ("pairwiseHills").
 #'    In both cases, diversity is calculated using a Hills numbers approach. "composition" calculates
-#'    beta-diversity based on species composition only, using one of \code{method}.
+#'    beta-diversity based on species composition only, using one of `method`.
 #'
 #' @importFrom crayon blue
 #' @importFrom data.table data.table
@@ -367,17 +367,17 @@ networkTempBetaDiv <- function(web1, web2, dietcat, method = "all", mode = "comp
 #'     parallelized. The user should provide one scenario file at
 #'     a time and a vector of baseline files (which will be matched to the
 #'     scenario - SDM stat. model match)
-#' @param method passed to \code{networkTempBetaDiv.master}
+#' @param method passed to `networkTempBetaDiv.master`
 #' @param masterScen.file one scenario pixelXspp matrix file path, which
-#'     can be made by \code{makeAndSaveMasterScen}.
+#'     can be made by `makeAndSaveMasterScen`.
 #' @param masterBL.files a vectorlis of baseline pixelXspp matrix files, which
-#'     can be made by \code{makeAndSaveMasterBL}.
+#'     can be made by `makeAndSaveMasterBL`.
 #' @param scen.dir is the "root" directory where "scenario networks" were stored
 #' @param out.dir is were  beta-diversity tables will be saved (in a folder tree
 #'    respecting scenario folders.)
 #' @param families character. determines for which families beta div will be calculated
 #'    (this subsets the species). Can be all, one or a combination of
-#'    \code{c("allTaxon", "bird", "mammal", "reptile", "amphibian")}, "allTaxon" meaning
+#'    `c("allTaxon", "bird", "mammal", "reptile", "amphibian")`, "allTaxon" meaning
 #'    no subsetting is done and beta-diversity metrics are calculated across all
 #'    species. Defaults to all of these.
 #' @param toDo controls if beta-diversity hhas to be recalculated for 'all'
@@ -484,8 +484,8 @@ calcTempBetaDiv.master <- function(masterScen.file, masterBL.files,
 #'
 #' @param pixXsppMat1 is a data.table of pixel id's (column "PAGENAME") and species (other columns)
 #'    filled with 0s (absences from pixel network) and 1s (presences in pixel network)
-#' @param pixXsppMat2 same as \code{pixXsppMat1}. The network compositions to be compared with
-#'    \code{pixXsppMat1}
+#' @param pixXsppMat2 same as `pixXsppMat1`. The network compositions to be compared with
+#'    `pixXsppMat1`
 #' @param method is the method used to calculate beta diversity. Options are Sorensen's ("sorensen")
 #'    and Simpson's ("simpson") beta-diversity and their nested component ("nested") (see Baselga 2010),
 #'    the Jaccard dissimilarity index ("jaccard"), a multiplicative decomposition of alpha/gamma
@@ -576,9 +576,9 @@ networkTempBetaDiv.master <- function(pixXsppMat1, pixXsppMat2,
 #'
 #' @param ff is the a file path to list of networks obtained from a scenario of change.
 #' @param mode can be either "decomp", to calculate beta-diversity as an
-#'   alpha/gamma decomposition (using \code{econetwork::divPartition}), or "pairwise",
+#'   alpha/gamma decomposition (using `econetwork::divPartition`), or "pairwise",
 #'   to calculate pairwise beta-diversity between networks (using
-#'   \code{econetwork::disPairwise}).
+#'   `econetwork::disPairwise`).
 #' @param res.dir is the "root" directory where "scenario networks" were stored
 #' @template out.dir
 #' @param sampleNetworks controls if beta-diversity is to be calculated for a sample of networks (provide integer)
@@ -591,7 +591,7 @@ networkTempBetaDiv.master <- function(pixXsppMat1, pixXsppMat2,
 #' @param noCores only used in 'parallel' is TRUE. defaults to 2.
 #' @param toDo controls if beta-diversity has to be recalculated for 'all'
 #'     scenarios or just 'missing' ones
-#' @param cacheRepo passed to \code{reproducible::Cache}.
+#' @param cacheRepo passed to `reproducible::Cache`.
 #'
 #' @importFrom tools file_path_sans_ext
 #' @importFrom reproducible Cache

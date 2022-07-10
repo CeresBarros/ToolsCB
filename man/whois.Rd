@@ -2,10 +2,7 @@
 % Please edit documentation in R/networksDataPrep.R
 \name{whois}
 \alias{whois}
-\title{----------------------------------------------
-NETWORKS DATA PROCESSING FUNCTIONS
-----------------------------------------------
-IDENTIFY SPP BY CODE}
+\title{IDENTIFY SPP BY CODE}
 \usage{
 whois(SPPCODE = NULL, SPPNAME = NULL)
 }

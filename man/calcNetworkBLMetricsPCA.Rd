@@ -15,5 +15,5 @@ calcNetworkBLMetricsPCA(metricsDT, PLOT = FALSE, dim)
 }
 \description{
 Calculates a PCA on a matrix of network metrics usin\code{ade4::dudi.pca}.
-  The function automatically excludes covariates with >0.9 correlation
+The function automatically excludes covariates with >0.9 correlation
 }

@@ -3,7 +3,7 @@
 \name{.calcMeanBEINF}
 \alias{.calcMeanBEINF}
 \title{CALCULATION OF THE MEAN FROM A BETA-INFLATED DISTRIBUTION
-adapted from `gamlss::meanBEINF`}
+adapted from \code{gamlss::meanBEINF}}
 \usage{
 .calcMeanBEINF(mu, nu, tau)
 }
@@ -19,5 +19,5 @@ the Beta-inflated distribution}
 }
 \description{
 CALCULATION OF THE MEAN FROM A BETA-INFLATED DISTRIBUTION
-adapted from `gamlss::meanBEINF`
+adapted from \code{gamlss::meanBEINF}
 }

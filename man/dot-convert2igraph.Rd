@@ -12,5 +12,5 @@
 }
 \description{
 Wrapper around \code{igraph::graph_from_adjacency_matrix} that
- outputs \code{NA} for empty networks.
+outputs \code{NA} for empty networks.
 }

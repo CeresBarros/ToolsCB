@@ -2,10 +2,7 @@
 % Please edit documentation in R/networksUtils.R
 \name{ras2matrix}
 \alias{ras2matrix}
-\title{----------------------------------------------
-NETWORKS UTILITY FUNCTIONS
-----------------------------------------------
-CONVERT RASTER TO MATRIX OF PRESENCE/ABSENCES}
+\title{CONVERT RASTER TO MATRIX OF PRESENCE/ABSENCES}
 \usage{
 ras2matrix(ras)
 }
@@ -13,8 +10,5 @@ ras2matrix(ras)
 \item{ras}{a \code{raster} with species presence data.}
 }
 \description{
-----------------------------------------------
-NETWORKS UTILITY FUNCTIONS
-----------------------------------------------
 CONVERT RASTER TO MATRIX OF PRESENCE/ABSENCES
 }

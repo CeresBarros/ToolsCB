@@ -2,12 +2,9 @@
 % Please edit documentation in R/networkProperties.R
 \name{calcNetMeanDistances}
 \alias{calcNetMeanDistances}
-\title{----------------------------------------------
-NETWORKS PROPERTIES/ANALYSIS FUNCTIONS
-----------------------------------------------
-CALCULATE MEAN BETA DIVERSITY (PAIRWISE DISTANCE
+\title{CALCULATE MEAN BETA DIVERSITY (PAIRWISE DISTANCE)
 Summarizes network pairwise distances into mean distance from a
-  focal network to others}
+focal network to others}
 \usage{
 calcNetMeanDistances(distObj)
 }
@@ -15,10 +12,7 @@ calcNetMeanDistances(distObj)
 \item{distObj}{a \code{dist} object calculated using \code{econetwork::disPairwise}}
 }
 \description{
-----------------------------------------------
-NETWORKS PROPERTIES/ANALYSIS FUNCTIONS
-----------------------------------------------
-CALCULATE MEAN BETA DIVERSITY (PAIRWISE DISTANCE
+CALCULATE MEAN BETA DIVERSITY (PAIRWISE DISTANCE)
 Summarizes network pairwise distances into mean distance from a
-  focal network to others
+focal network to others
 }

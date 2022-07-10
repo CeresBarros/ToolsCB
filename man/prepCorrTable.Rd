@@ -19,9 +19,9 @@ If supplied, x will be ignored}
 }
 \description{
 function to make a nice correlation table for latex/Rmd
-              usage example:
-              pTable <- rcorr()
-              tabl <- prepCorrTable(DT) %>% xtable::xtable(.)
-              print(tabl, type = "html.
-              Adapted from http://myowelt.blogspot.com/2008/04/beautiful-correlation-tables-in-r.html
+usage example:
+pTable <- rcorr()
+tabl <- prepCorrTable(DT) \%>\% xtable::xtable(.)
+print(tabl, type = "html.
+Adapted from http://myowelt.blogspot.com/2008/04/beautiful-correlation-tables-in-r.html
 }

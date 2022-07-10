@@ -1,8 +1,8 @@
-#' ----------------------------------------------
-#' FUNCTIONS TO SPATIALIZE NETWORKS
-#' (build local webs)
-#' Ceres May 2016, revamped >2018
-#' ----------------------------------------------
+## ----------------------------------------------
+## FUNCTIONS TO SPATIALIZE NETWORKS
+## (build local webs)
+## Ceres May 2016, revamped >2018
+## ----------------------------------------------
 
 #' Function to calculate local webs - Baseline
 #'
@@ -282,8 +282,8 @@ SppRm_localweb <- function(metaweb = NULL, SPPCODE = NULL,
 #' @template SPP.HAB
 #' @template PIX.HAB
 #' @template ORIGSPP
-#' @param PIX.HAB.ORIG baseline pixel x habitat \code{matrix}
-#' @param PIX.HAB.FUT future pixel x habitat \code{matrix}
+#' @param PIX.HAB.ORIG baseline pixel x habitat `matrix`
+#' @param PIX.HAB.FUT future pixel x habitat `matrix`
 #' @param FUTSPP species IDs of future species presences
 #' @template dietcat
 #' @template EXT.TRSH

@@ -18,6 +18,6 @@ diversity calcualtions as per Leinster & Cobbold 2012.}
 }
 \description{
 \code{divLeinster} calculates the diversity of each site of a site by species
-  matrix according to the q parameter (which provide more or less weight to
-  species abundance), following Leinster & Cobbold 2012.
+matrix according to the q parameter (which provide more or less weight to
+species abundance), following Leinster & Cobbold 2012.
 }

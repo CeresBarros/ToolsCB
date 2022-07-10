@@ -23,7 +23,7 @@
 # dissimilarity
 
 #' Sorensen's beta-diversity
-#' @param x a \code{data.frame}
+#' @param x a `data.frame`
 #' @export
 #' @importFrom stats as.dist
 beta.sor <- function(x){
@@ -48,7 +48,7 @@ beta.sor <- function(x){
 }
 
 #' Simpsons's beta-diversity
-#' @param x a \code{data.frame}
+#' @param x a `data.frame`
 #' @export
 #' @importFrom stats as.dist
 beta.sim <- function(x){
@@ -73,7 +73,7 @@ beta.sim <- function(x){
 }
 
 #' Nested beta-diversity
-#' @param x a \code{data.frame}
+#' @param x a `data.frame`
 #' @export
 #' @importFrom stats as.dist
 beta.nes <- function(x){

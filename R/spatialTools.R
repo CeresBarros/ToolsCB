@@ -6,7 +6,7 @@
 #'
 #' @export
 #'
-#' @return an \code{sf} object without duplicated columns
+#' @return an `sf` object without duplicated columns
 #'
 #' @importFrom sf st_set_geometry st_geometry st_geometry<-
 sfRmDupNACols <- function(sfObj) {
@@ -45,13 +45,13 @@ sfRmDupNACols <- function(sfObj) {
 #' RENAME AND SUBSET FIELDS IN SF OBJECT ACCORDING TO TABLE
 #'
 #' @inheritParams sfRmDupNACols
-#' @param namesTable is a two-column \code{data.frame} with the names to be replaced (1st column) and the new names (2nd column)
-#'  if there are NAs in the second columns, the original columns will be removed if \code{rmNAs == TRUE}
-#' @param rmNAs determines whether columns with missing new names are removed or not. Defaults to \code{TRUE}
+#' @param namesTable is a two-column `data.frame` with the names to be replaced (1st column) and the new names (2nd column)
+#'  if there are NAs in the second columns, the original columns will be removed if `rmNAs == TRUE`
+#' @param rmNAs determines whether columns with missing new names are removed or not. Defaults to `TRUE`
 #'
 #' @export
 #'
-#' @return an \code{sf} object
+#' @return an `sf` object
 #'
 #' @importFrom sf st_set_geometry st_geometry
 renameCleanSfFields <- function(sfObj, namesTable, rmNAs = TRUE) {
@@ -85,15 +85,15 @@ renameCleanSfFields <- function(sfObj, namesTable, rmNAs = TRUE) {
 
 #' VALIDATE GEOMETRIES
 #'
-#' Checks for corrupt geometries in an \code{sf} object
-#' and validates them using \code{sf::st_make_valid}
+#' Checks for corrupt geometries in an `sf` object
+#' and validates them using `sf::st_make_valid`
 
 #' @inheritParams sfRmDupNACols
 #' @param dim is used for faster caching
 #'
 #' @export
 #'
-#' @return an \code{sf} object with validated geometries. Or
+#' @return an `sf` object with validated geometries. Or
 #'   or an error if geometries could not be validated.
 #'
 #' @importFrom sf st_is_valid st_make_valid
@@ -120,11 +120,11 @@ validateGeomsSf <- function(sfObj, dim) {
 #' @param url is a Google Drive URl
 #' @param archive is the .zip file name where the .kmz is contained
 #' @param destinationPath path is the path to where archive will downloaded to, and where the final shapefile will be saved.
-#' @param overwrite passed to \code{googledrive::drive_download} and \code{sp::shapefile}
+#' @param overwrite passed to `googledrive::drive_download` and `sp::shapefile`
 #'
 #' @export
 #'
-#' @return a \code{shapefile}
+#' @return a `shapefile`
 #'
 #' @importFrom googledrive drive_download as_id
 #' @importFrom sf st_read st_zm as_Spatial
@@ -172,9 +172,9 @@ prepKMZ2shapefile <- function(url, archive, destinationPath, overwrite = TRUE) {
 
 #' DRAW CONVEX HULL AROUND POLYGON
 #'
-#' Draws a convex hull around vertice points of a polygon \code{shapefile}.
+#' Draws a convex hull around vertice points of a polygon `shapefile`.
 #'
-#' @param x a \code{SpatialPolygons}, or a \code{SpatialPolygonsDF} object
+#' @param x a `SpatialPolygons`, or a `SpatialPolygonsDF` object
 #' NOTE: this function as been passed to amc.
 #'
 #' @export
@@ -200,15 +200,15 @@ outerBuffer <- function(x) {
 
 #' JOIN SPATIAL OBJECTS FUNCTION
 #'
-#' joins \code{shapefiles} or \code{rasters}
+#' joins `shapefiles` or `rasters`
 #'
 #' @param files is a character string of file names
-#' @param destinationPath passed to \code{reproducible::prepInputs}
+#' @param destinationPath passed to `reproducible::prepInputs`
 #' @param urls a character vector or list of URLs for each file
 #'
 #' @export
 #'
-#' @return joined \code{shapefile} or \code{raster}
+#' @return joined `shapefile` or `raster`
 #'
 #' @importFrom reproducible prepInputs
 #' @importFrom raster crs bind
@@ -289,7 +289,7 @@ loadBindSpatialObjs <- function(files, destinationPath, urls = NULL) {
 #'
 #' finds the 8 neighbours of each cell in a matrix
 #'
-#' @param mat a \code{matrix}. Border of NA's is added to the matrix
+#' @param mat a `matrix`. Border of NA's is added to the matrix
 #'
 #' @export
 #'
@@ -328,9 +328,9 @@ checkProjections <- function(sfObj.list){
 
 #' CROP & MASK TO STUDY AREA
 #'
-#' @param study.area is a \code{Raster} or \code{Spatial} object
-#' @param tocrop a \code{Raster}
-#' @param method passed to \code{raster::projectRaster} - might need to be changed for factors
+#' @param study.area is a `Raster` or `Spatial` object
+#' @param tocrop a `Raster`
+#' @param method passed to `raster::projectRaster` - might need to be changed for factors
 #'
 #' @export
 #'
@@ -360,7 +360,7 @@ cropToStudyArea <- function(study.area, tocrop, method = "bilinear") {
 #'
 #' @export
 #'
-#' @return a presence/absence \code{matrix}
+#' @return a presence/absence `matrix`
 #'
 #' @importFrom stats model.matrix
 vector2binmatrix <- function(x) {
@@ -371,10 +371,10 @@ vector2binmatrix <- function(x) {
 
 #' FAST RASTERIZE ALL POLYGONS COVEVED BY POLYGON
 #'
-#' A faster version of \code{rasterize} with the argument \code{getCover} that
+#' A faster version of `rasterize` with the argument `getCover` that
 #' for rasterizing polygon values that are touch a raster cell (rather than only it's center)
 #' @param rasterToMatch is the raster to use to burn polygon values to
-#' @param shp is sf of \code{SpatialPolygonsDataFrame} object
+#' @param shp is sf of `SpatialPolygonsDataFrame` object
 #' @param field character. The field of shp to extract values from.
 #'   If NULL, 1s will be assigned to all cells that touch polygons
 #' @param noDataVal Numeric, compatible with "Float64". value assigned to no data. Defaults to 0.

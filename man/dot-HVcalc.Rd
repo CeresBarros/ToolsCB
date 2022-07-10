@@ -38,25 +38,25 @@ Only used if \code{HVmethod} is "box" or "gaussian".}
 \item{bwHV2}{determines the bandwidth value for second hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}
 Only used if \code{HVmethod} is "box" or "gaussian".}
 
-\item{verbose}{is passed to \code{hypervolume::*} functions to control printing of diagnostic outputs}
+\item{verbose}{is passed to \verb{hypervolume::*} functions to control printing of diagnostic outputs}
 
 \item{...}{further arguments passed to \code{hypervolume::hypervolume}.}
 }
 \value{
 a \code{list} with entries:
- \itemize{
-   \item 'HV1'
-   \item 'HV2'
-   \item 'volume.set' - the result of \code{hypervolume::hypervolume_set}
-   \item 'hv.centroid.dist' and 'hv.min.dist' - the result of \code{hypervolume::hypervolume_distance(..., type = "centroid")} and \code{hypervolume::hypervolume_distance(..., type = "minimum")}
-   \item 'Bandwidth' - \code{NA} if \code{HVmethod} is not "box" or "gaussian")
-   \item 'HV1.disjfact' and 'HV2.disjfact' (\code{NA} if \code{HVmethod} is not "box")
-   \item 'SVM_nu' and 'SVM_gama' (\code{NA} if \code{HVmethod} is "box" or "gaussian")
- }
+\itemize{
+\item 'HV1'
+\item 'HV2'
+\item 'volume.set' - the result of \code{hypervolume::hypervolume_set}
+\item 'hv.centroid.dist' and 'hv.min.dist' - the result of \code{hypervolume::hypervolume_distance(..., type = "centroid")} and \code{hypervolume::hypervolume_distance(..., type = "minimum")}
+\item 'Bandwidth' - \code{NA} if \code{HVmethod} is not "box" or "gaussian")
+\item 'HV1.disjfact' and 'HV2.disjfact' (\code{NA} if \code{HVmethod} is not "box")
+\item 'SVM_nu' and 'SVM_gama' (\code{NA} if \code{HVmethod} is "box" or "gaussian")
+}
 }
 \description{
 Calculates two hypervolumes and compares them in terms of
-  overlap and distance. When appropriate (i.e. \code{HVmethod == "box"}),
-  it also calculates the disjunct factor and repeats the calculations
-  with larger bandwidths (if \code{freeBW == TRUE})
+overlap and distance. When appropriate (i.e. \code{HVmethod == "box"}),
+it also calculates the disjunct factor and repeats the calculations
+with larger bandwidths (if \code{freeBW == TRUE})
 }

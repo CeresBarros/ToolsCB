@@ -11,7 +11,7 @@ do.PAmaster(files, opt = FALSE, k = 0)
 
 \item{opt}{is either TRUE of FALSE (default) and determines if only optimal habitats are used as presences}
 
-\item{k}{presence threshold [0,1], used if \code{opt = FALSE}. \code{opt} and
+\item{k}{presence threshold \link{0,1}, used if \code{opt = FALSE}. \code{opt} and
 \code{k} are only used for Luigi Maiorano's spp distributions}
 }
 \description{

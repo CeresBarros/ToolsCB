@@ -1,12 +1,12 @@
-#' ----------------------------------------------
-#' NETWORKS PROPERTIES/ANALYSIS FUNCTIONS
-#' ----------------------------------------------
+## ----------------------------------------------
+## NETWORKS PROPERTIES/ANALYSIS FUNCTIONS
+## ----------------------------------------------
 
-#' CALCULATE MEAN BETA DIVERSITY (PAIRWISE DISTANCE
+#' CALCULATE MEAN BETA DIVERSITY (PAIRWISE DISTANCE)
 #' Summarizes network pairwise distances into mean distance from a
 #'   focal network to others
 #'
-#' @param distObj a \code{dist} object calculated using \code{econetwork::disPairwise}
+#' @param distObj a `dist` object calculated using `econetwork::disPairwise`
 #'
 #' @importFrom data.table data.table
 #' @importFrom stats sd
@@ -85,7 +85,7 @@ calc.extThresh <- function(x, quants, out.dir, dietcat) {
 #' CALCULATE NETWORK METRICS
 #' Function to calculate several network metrics
 #'
-#' @param web a square \code{matrix} representing an adjacency matrix.
+#' @param web a square `matrix` representing an adjacency matrix.
 #' @param normalise use normalised version of generality, vulnerability (and their
 #'   standard deviations)?
 #' @param verbose print messages?
@@ -161,7 +161,7 @@ netw.metrics <- function(web = NULL, normalise = FALSE, verbose = TRUE) {
 #' CALCULATE TROPHIC LEVEL STATISTICS
 #' Function to calculate trophic level stats
 #'
-#' @param web a square \code{matrix} representing an adjacency matrix.
+#' @param web a square `matrix` representing an adjacency matrix.
 #' @template dietcat
 #'
 #' @importFrom cheddar PreyAveragedTrophicLevel PredationMatrixToLinks RemoveCannibalisticLinks Community ResourcesByNode
@@ -205,9 +205,9 @@ tlstats <- function(web = NULL, dietcat = dietcat) {
 #'
 #' @template metaweb
 #' @template SPPCODE
-#' @param MODE one of "SUBSET", "EATS" or "EATEN". Use \code{HELP = TRUE} for a
+#' @param MODE one of "SUBSET", "EATS" or "EATEN". Use `HELP = TRUE` for a
 #'   description of each option
-#' @param HELP print description of \code{MODE}?
+#' @param HELP print description of `MODE`?
 #'
 #' @export
 potential.inter <- function(metaweb = NULL, SPPCODE = NULL, MODE = NULL, HELP = TRUE) {
@@ -233,13 +233,13 @@ potential.inter <- function(metaweb = NULL, SPPCODE = NULL, MODE = NULL, HELP = 
 #' network can be a single network or a list of networks to extract spp centrality values from
 #' if network is a list, then species also needs to be a list of equal length
 #'
-#' @param networkList a named \code{list} of networks, even if containing a single network
+#' @param networkList a named `list` of networks, even if containing a single network
 #' @param sppExclude list of species to exclude from degree centrality calculations
 #'   (all other metrics are calcualted on the full network)
 #' @param metric centrality metric to calculate. Either "degree"
-#'   (using \code{igraph::degree(network, mode = "all", v = spp)}),
-#'   "betweenness" (using \code{igraph::betweenness(network, directed = TRUE)})
-#'   "eigenvector" centrality (using \code{eigen_centrality(graph = network, directed = FALSE, scale = FALSE)}).
+#'   (using `igraph::degree(network, mode = "all", v = spp)`),
+#'   "betweenness" (using `igraph::betweenness(network, directed = TRUE)`)
+#'   "eigenvector" centrality (using `eigen_centrality(graph = network, directed = FALSE, scale = FALSE)`).
 #'   (see Bauer et al 2010, Ecological Complexity).
 #' @param ... passed to reproducible::Cache
 #'
@@ -285,13 +285,13 @@ spp.centrality <- function(networkList, sppExclude, metric = c("degree", "betwee
 #'
 #' Internal function to calculate centrality of a list of species in a network
 #'
-#' @param network a network coercible to \code{matrix} and \code{igraph}
+#' @param network a network coercible to `matrix` and `igraph`
 #' @param sppExclude list of species to exclude the network before calculating degree
 #'   centrality (all other metrics are calculated on the full network)
 #' @param metric centrality metric to calculate. Either "degree"
-#'   (using \code{igraph::degree(network, mode = "all", v = spp)}),
-#'   "betweenness" (using \code{igraph::betweenness(network, directed = TRUE)})
-#'   "eigenvector" centrality (using \code{eigen_centrality(graph = network, directed = FALSE, scale = FALSE)}).
+#'   (using `igraph::degree(network, mode = "all", v = spp)`),
+#'   "betweenness" (using `igraph::betweenness(network, directed = TRUE)`)
+#'   "eigenvector" centrality (using `eigen_centrality(graph = network, directed = FALSE, scale = FALSE)`).
 #'   (see Bauer et al 2010, Ecological Complexity).
 #'
 #' @importFrom igraph graph_from_adjacency_matrix degree eigen_centrality betweenness
@@ -369,7 +369,7 @@ spp.centrality <- function(networkList, sppExclude, metric = c("degree", "betwee
 
 #' NETWORK METRICS PCA FUNCTION
 #'
-#' Calculates a PCA on a matrix of network metrics usin\code{ade4::dudi.pca}.
+#' Calculates a PCA on a matrix of network metrics usin`ade4::dudi.pca`.
 #'   The function automatically excludes covariates with >0.9 correlation
 #'
 #' @param metricsDT is a data.table of metrics (columns) calculated for each network (rows)

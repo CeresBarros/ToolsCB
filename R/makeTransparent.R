@@ -1,6 +1,6 @@
 #' Function  to make transparent versions of R colors.
 
-#' @param someColor takes a vector of color as \code{col} in \code{col2rgb}
+#' @param someColor takes a vector of color as `col` in `col2rgb`
 #' @param alpha determines the transparency on a 0-255 scale
 #'
 #' @export

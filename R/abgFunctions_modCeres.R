@@ -10,12 +10,12 @@
 
 #' Site diversity according to Leinster & Cobbold 2012.
 #'
-#' \code{divLeinster} calculates the diversity of each site of a site by species
+#' `divLeinster` calculates the diversity of each site of a site by species
 #'   matrix according to the q parameter (which provide more or less weight to
 #'   species abundance), following Leinster & Cobbold 2012.
 #'
-#' @param spxp sites (row) by species (cols) \code{matrix} with or without \code{rownames} and \code{colnames}
-#' @param Z similarity \code{matrix} used into all functions.
+#' @param spxp sites (row) by species (cols) `matrix` with or without `rownames` and `colnames`
+#' @param Z similarity `matrix` used into all functions.
 #' @param q parameter influencing the weight of species abundances on
 #'   diversity calcualtions as per Leinster & Cobbold 2012.
 #' @param check  should arguments be checked?
@@ -51,7 +51,7 @@ divLeinster <- function(spxp, Z = NULL, q = 2, check = TRUE){
 
 #' alpha-, beta- and gamma-diversity multiplicative decomposition
 #'
-#' \code{abgDecompQ}  performs a alpha, beta, gamma multiplicative decomposition
+#' `abgDecompQ`  performs a alpha, beta, gamma multiplicative decomposition
 #'   using Leinster's diversity indices.
 #'
 #' @inheritParams divLeinster
@@ -103,7 +103,7 @@ abgDecompQ <- function(spxp, Z = NULL, q = 2, mult = TRUE, check = TRUE) {
 
 #' Pairwise beta-diversity calculation
 #'
-#' \code{BetaDisQ} calculates the pairwise beta-diversity (minus 1) between sites of a site by species matrix according to the q parameter using the afformentionned functions
+#' `BetaDisQ` calculates the pairwise beta-diversity (minus 1) between sites of a site by species matrix according to the q parameter using the afformentionned functions
 #' Allows a parametrization of the dominance effect
 #'
 #' @inheritParams divLeinster
@@ -140,12 +140,12 @@ BetaDisQ <- function(spxp, Z = NULL, q = 2, check = TRUE, mult = TRUE){
 
 #' Data prep for diversity metrics
 #'
-#' \code{chaoObjects} is a data preparation function.
-#'   It returns adequate arguments for \code{abgDecompQ}, \code{BetaDisQ} and
-#'   \code{divLeinster} to perform a diversity analysis using Chao's diversity index.
+#' `chaoObjects` is a data preparation function.
+#'   It returns adequate arguments for `abgDecompQ`, `BetaDisQ` and
+#'   `divLeinster` to perform a diversity analysis using Chao's diversity index.
 #'   Warning: this formula only works with an ultrametric tree!
 #'
-#' @param spxp sites (row) by species (cols) \code{matrix} with or without \code{rownames} and \code{colnames}
+#' @param spxp sites (row) by species (cols) `matrix` with or without `rownames` and `colnames`
 #' @param phy ultrametric phylogenetic tree.
 
 chaoObjects <- function(spxp, phy){

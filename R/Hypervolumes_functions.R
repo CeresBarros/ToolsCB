@@ -2,27 +2,27 @@ globalVariables(c("HVidvar", "..init.vars", "..init.vars2"))
 
 #' CALCULATE AND COMPARE TWO HYPERVOLUMES
 #'
-#' Calculates two \code{hypervolumes} on two sets of "raw" data or on the factor scores of
+#' Calculates two `hypervolumes` on two sets of "raw" data or on the factor scores of
 #' an ordination done on the entire dataset (across the two sets of data).
 #'
-#' @param HVdata1 the \code{data.table} (or a object that can be converted to \code{data.table}) from which the first hypervolume will be calculated
-#' @param HVdata2 the \code{data.table} (or a object that can be converted to \code{data.table}) from  which the second hypervolume will be calculated.
-#'   \code{HVdata1} and \code{HVdata2} must have the same column names and ideally the same number of rows.
+#' @param HVdata1 the `data.table` (or a object that can be converted to `data.table`) from which the first hypervolume will be calculated
+#' @param HVdata2 the `data.table` (or a object that can be converted to `data.table`) from  which the second hypervolume will be calculated.
+#'   `HVdata1` and `HVdata2` must have the same column names and ideally the same number of rows.
 #' @param ordination determines whether hypervolumes will be calculated on the raw data ("none") of on
 #'   ordination factor scores (one of "PCA", "HillSmith", "dudi.mix"). Defaults to using a PCA.
-#' @param HVidvar the name or number of the column (in \code{HVdata1/2}) containing the ID of each hypervolume.
+#' @param HVidvar the name or number of the column (in `HVdata1/2`) containing the ID of each hypervolume.
 #' @param init.vars is a vector with the variable indices (column numbers) to use. Defaults to NULL
 #'   and all variables are used - ATTENTION the user should not have more than 8 variables unless
 #'   using an ordination to reduce dimensionality. See Blonder et al 2014.
 #' @param noAxes determines the number of axes/columns to use for hypervolume calculation
 #' @param do.scale activates scaling prior to the ordination/calculation of HVs
 #' @param freeBW determines whether a bandwidth estimator will be used to calculate bandwith per variable.
-#'    Only used if \code{HVmethod} is "box" or "gaussian".
-#' @param bwHV1 determines the bandwidth value for first hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}
-#'    Only used if \code{HVmethod} is "box" or "gaussian".
-#' @param bwHV2 determines the bandwidth value for second hypervolume. Only used if \code{freeBW} is FALSE. see \code{hypervolume::hypervolume}
-#'    Only used if \code{HVmethod} is "box" or "gaussian".
-#' @param HVmethod determines the method used to calculate hypervolumes - passed to \code{hypervolume::hypervolume} method argument
+#'    Only used if `HVmethod` is "box" or "gaussian".
+#' @param bwHV1 determines the bandwidth value for first hypervolume. Only used if `freeBW` is FALSE. see `hypervolume::hypervolume`
+#'    Only used if `HVmethod` is "box" or "gaussian".
+#' @param bwHV2 determines the bandwidth value for second hypervolume. Only used if `freeBW` is FALSE. see `hypervolume::hypervolume`
+#'    Only used if `HVmethod` is "box" or "gaussian".
+#' @param HVmethod determines the method used to calculate hypervolumes - passed to `hypervolume::hypervolume` method argument
 #' @param no.runs determines how many times the HV calculations and comparisons are repeated
 #' @param plotOrdi activates/desactivates plotting for ordinations - plots are saved to PDFs not plotted interactively
 #' @param plotHV activates/desactivates plotting for hypervolumes - plots are saved to PDFs not plotted interactively
@@ -30,11 +30,11 @@ globalVariables(c("HVidvar", "..init.vars", "..init.vars2"))
 #' @param saveOrdiSumm activates/deactivates saving ordination summary outputs
 #' @param outputs.dir is the directory to store results
 #' @param file.suffix is a character string used as a suffix in file names
-#' @param verbose is passed to \code{hypervolume::*} functions to control printing of diagnostic outputs
-#' @param plotHVDots a \code{list} of further arguments passed to \code{hypervolume:::plot.HypervolumeList}.
-#' @param ... further arguments passed to \code{hypervolume::hypervolume}.
+#' @param verbose is passed to `hypervolume::*` functions to control printing of diagnostic outputs
+#' @param plotHVDots a `list` of further arguments passed to `hypervolume:::plot.HypervolumeList`.
+#' @param ... further arguments passed to `hypervolume::hypervolume`.
 #'
-#' @return Nothing is returned. Hypervolumes and comparisons are saved \code{outputs.dir}
+#' @return Nothing is returned. Hypervolumes and comparisons are saved `outputs.dir`
 #'
 #' @export
 #'
@@ -216,11 +216,11 @@ hypervolumes <- function(HVdata1, HVdata2, HVidvar, ordination = "PCA", init.var
 #'
 #' Calculates an ordination across two datasets prior to calculating two hypervolumes (one from each dataset)
 #'
-#' @param datatable is a \code{data.table} contained the raw data for the two hypervolumes
+#' @param datatable is a `data.table` contained the raw data for the two hypervolumes
 #'
 #' @inheritParams hypervolumes
 #'
-#' @return a \code{list} of points used to build hypervolumes and final number of axes.
+#' @return a `list` of points used to build hypervolumes and final number of axes.
 #'
 #' @export
 #'
@@ -360,7 +360,7 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
 #'
 #' Calculates an ordination across two datasets prior to calculating two hypervolumes (one from each dataset)
 #'
-#' @param datatable is a \code{data.table} contained the raw data for the two hypervolumes
+#' @param datatable is a `data.table` contained the raw data for the two hypervolumes
 #' @param ordi the ordination object
 #' @param fscores factor scores
 #' @param PEV percent explained variance per PC
@@ -413,28 +413,28 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
 #' HYPERVOLUME COMPUTATION WRAPPER
 #'
 #' Calculates two hypervolumes and compares them in terms of
-#'   overlap and distance. When appropriate (i.e. \code{HVmethod == "box"}),
+#'   overlap and distance. When appropriate (i.e. `HVmethod == "box"`),
 #'   it also calculates the disjunct factor and repeats the calculations
-#'   with larger bandwidths (if \code{freeBW == TRUE})
+#'   with larger bandwidths (if `freeBW == TRUE`)
 #'
-#' @param big.table is a \code{data.table} contained the raw data for the two hypervolumes.
-#'   Used to subset \code{HVpoints} according to HVnames, so rows have to correspond
-#' @param HVpoints \code{data.table} of points used to build hypervolumes and final number of axes.
-#' @param HVnames \code{character} vector of length 2 of hypervolume names.
+#' @param big.table is a `data.table` contained the raw data for the two hypervolumes.
+#'   Used to subset `HVpoints` according to HVnames, so rows have to correspond
+#' @param HVpoints `data.table` of points used to build hypervolumes and final number of axes.
+#' @param HVnames `character` vector of length 2 of hypervolume names.
 #' @inheritParams hypervolumes
 #'
 #' @import data.table
 #' @importFrom hypervolume hypervolume hypervolume_distance get_volume estimate_bandwidth hypervolume_set
 #'
-#' @return a \code{list} with entries:
+#' @return a `list` with entries:
 #'  \itemize{
 #'    \item 'HV1'
 #'    \item 'HV2'
-#'    \item 'volume.set' - the result of \code{hypervolume::hypervolume_set}
-#'    \item 'hv.centroid.dist' and 'hv.min.dist' - the result of \code{hypervolume::hypervolume_distance(..., type = "centroid")} and \code{hypervolume::hypervolume_distance(..., type = "minimum")}
-#'    \item 'Bandwidth' - \code{NA} if \code{HVmethod} is not "box" or "gaussian")
-#'    \item 'HV1.disjfact' and 'HV2.disjfact' (\code{NA} if \code{HVmethod} is not "box")
-#'    \item 'SVM_nu' and 'SVM_gama' (\code{NA} if \code{HVmethod} is "box" or "gaussian")
+#'    \item 'volume.set' - the result of `hypervolume::hypervolume_set`
+#'    \item 'hv.centroid.dist' and 'hv.min.dist' - the result of `hypervolume::hypervolume_distance(..., type = "centroid")` and `hypervolume::hypervolume_distance(..., type = "minimum")`
+#'    \item 'Bandwidth' - `NA` if `HVmethod` is not "box" or "gaussian")
+#'    \item 'HV1.disjfact' and 'HV2.disjfact' (`NA` if `HVmethod` is not "box")
+#'    \item 'SVM_nu' and 'SVM_gama' (`NA` if `HVmethod` is "box" or "gaussian")
 #'  }
 
 .HVcalc <- function(big.table, HVpoints, noAxes, HVmethod, ordination,
@@ -510,10 +510,10 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
 
 #' SCALE VARIABLES
 #'
-#' Scales variables/columns in \code{init.vars} using \code{scale(..., center = FALSE, scale = TRUE)}
+#' Scales variables/columns in `init.vars` using `scale(..., center = FALSE, scale = TRUE)`
 #' Variables that only have 0s, will be assigned 1e-6
 #'
-#' @param datatable a table object coercible to \code{data.frame}
+#' @param datatable a table object coercible to `data.frame`
 #' @inheritParams HVordination
 #'
 #' @return scaled data.frame
@@ -536,20 +536,20 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
 #' Plots two 3D hypervolumes that are based on ordination scores, showing
 #' variable loadings and vectors fitted post-hoc to the ordination
 #'
-#' @param HVlist a \code{HypervolumeList}
+#' @param HVlist a `HypervolumeList`
 #' @param loadings_coords a data.table or data.frame of ordination factor
 #'   loadings for the 3 axes to be plotted
 #' @param PHvect_coords a data.table or data.frame of post-hoc fitted vectors
 #'   loadings for the 3 axes to be plotted
 #' @param loadings_labels character vector of labels for each ordination factor.
-#'   Defaults to \code{row.names(loadings_coords)}
+#'   Defaults to `row.names(loadings_coords)`
 #' @param PHvect_labels character vector of labels for each post-hoc fitted vector.
-#'   Defaults to \code{row.names(PHvect_coords)}
+#'   Defaults to `row.names(PHvect_coords)`
 #' @param loadings_col a colour for ordination factor arrows and labels.
 #' @param PHvect_col a colour for post-hoc fitted vector arrows and labels.
-#' @param cex.label passed to \code{basicPlotteR::addTextLabels}
-#' @param lwd passed to \code{scatterplot3d::scatterplot3d}
-#' @param ... arguments passed to \code{.plot.HypervolumeListEdited}
+#' @param cex.label passed to `basicPlotteR::addTextLabels`
+#' @param lwd passed to `scatterplot3d::scatterplot3d`
+#' @param ... arguments passed to `.plot.HypervolumeListEdited`
 #'
 #' @importFrom basicPlotteR addTextLabels
 #' @export
@@ -633,18 +633,18 @@ plotHypervolumes3D <- function(HVlist, loadings_coords = NULL, PHvect_coords = N
   }
 }
 
-#' Edited version of \code{hypervolume::plot.HypervolumeList}
+#' Edited version of `hypervolume::plot.HypervolumeList`
 #'
 #' Added centroid colours, corrected cex.data
-#' graphics changed to \code{scatterplot3d}, instead of \code{rgl}
+#' graphics changed to `scatterplot3d`, instead of `rgl`
 
 #' @inheritParams hypervolume::plot.HypervolumeList
-#' @param rglGraphics if TRUE will plot 3D hypervolumes using \code{rgl}.
-#'   Otherwise, \code{scatterplot3d} is used
+#' @param rglGraphics if TRUE will plot 3D hypervolumes using `rgl`.
+#'   Otherwise, `scatterplot3d` is used
 #' @param centroid.cols a vector of as many colours as hypervolumes used
 #'   to colour centroids
-#' @param ... passed to \code{points} if \code{show.3d == FALSE}, or
-#'   otherwise to \code{scatterplot3d}.
+#' @param ... passed to `points` if `show.3d == FALSE`, or
+#'   otherwise to `scatterplot3d`.
 #'
 #' @importFrom grDevices col2rgb rainbow rgb
 #' @importFrom graphics axis box contour legend mtext text

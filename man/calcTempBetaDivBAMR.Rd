@@ -2,10 +2,7 @@
 % Please edit documentation in R/networksBetadiversity.R
 \name{calcTempBetaDivBAMR}
 \alias{calcTempBetaDivBAMR}
-\title{----------------------------------------------
-NETWORKS BETADIVERSITY
-----------------------------------------------
-TEMPORAL BETA-DIVERSITY PER TETRAPOD FAMILY WRAPPER FUNCTION   ---------------------------}
+\title{TEMPORAL BETA-DIVERSITY PER TETRAPOD FAMILY WRAPPER FUNCTION}
 \usage{
 calcTempBetaDivBAMR(
   ff,

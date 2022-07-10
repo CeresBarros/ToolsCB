@@ -4,7 +4,7 @@
 \alias{makeAndSaveMasterScen}
 \title{MAKE AND SAVE SCENARIO MASTER MATRICES (SPP X PIXEL MATRICES) FUNCTION
 compiles all scenario networks into a sparse matrix and saves it to an
- .rds file}
+.rds file}
 \usage{
 makeAndSaveMasterScen(
   x,
@@ -31,5 +31,5 @@ in case their saved files already exist}
 \description{
 MAKE AND SAVE SCENARIO MASTER MATRICES (SPP X PIXEL MATRICES) FUNCTION
 compiles all scenario networks into a sparse matrix and saves it to an
- .rds file
+.rds file
 }

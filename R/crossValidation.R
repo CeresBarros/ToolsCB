@@ -1,26 +1,26 @@
-#' ----------------------------------------
-#' K-FOLD CROSS VALIDATION FUNCTIONS
-#' Ceres June 03 2020
-#' ----------------------------------------
+## ----------------------------------------
+## K\-FOLD CROSS VALIDATION FUNCTIONS
+## Ceres June 03 2020
+## ----------------------------------------
 
-#' CROSS-VALIDATION FUNCTION
+#' CROSS\-VALIDATION FUNCTION
 #'
-#' @param fullDT \code{data.table} with full dataset
+#' @param fullDT `data.table` with full dataset
 #' @param statsModel the statistical model to validate. Only works with gamlss models
 #' @param k integer with number of chunks that the data should be partitioned in
 #' @param idCol column with pixel/observation IDs (optional)
-#' @param origData the data used to fit the statsModule, needs to be passed to \code{gamlss::predictAll}
-#'   (it may not be able to access it) but also to make sure newdata in \code{gamlss::predictAll}
+#' @param origData the data used to fit the statsModule, needs to be passed to `gamlss::predictAll`
+#'   (it may not be able to access it) but also to make sure newdata in `gamlss::predictAll`
 #'  has the same variables (even if they're not used in the model)
-#' @param level passed to \code{gamlss:::predict}
-#' @param cacheObj1 object used by \code{reproducible::Cache} for digesting,
+#' @param level passed to `gamlss:::predict`
+#' @param cacheObj1 object used by `reproducible::Cache` for digesting,
 #'  to avoid digesting the (potentially) large data arguments
-#' @param cacheObj2  object used by \code{reproducible::Cache} for digesting,
+#' @param cacheObj2  object used by `reproducible::Cache` for digesting,
 #'  to avoid digesting the (potentially) large data arguments
-#' @param parallel logical. Uses \code{future.apply::future_lapply} to parallelise
-#'  model fitting across the k-folds, using \code{plan(multiprocess)}. Defaults to FALSE
-#' @param ... further arguments passed to \code{future::plan}
-#' @param cacheArgs a named \code{list} of arguments passed to inner \code{Cache} calls
+#' @param parallel logical. Uses `future.apply::future_lapply` to parallelise
+#'  model fitting across the k-folds, using `plan(multiprocess)`. Defaults to FALSE
+#' @param ... further arguments passed to `future::plan`
+#' @param cacheArgs a named `list` of arguments passed to inner `Cache` calls
 #'
 #' @importFrom future.apply future_lapply
 #' @importFrom future plan
@@ -70,12 +70,12 @@ crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol,
 #'
 #' @param samp the sample number to pick to use as the test data set
 #' @param fullDT the full dataset (not necessarily the one used to fit
-#'   \code{statsModel}, which could have been a subset (e.g. fewer columns))
-#' @param origData the data used to fit \code{statsModel}
+#'   `statsModel`, which could have been a subset (e.g. fewer columns))
+#' @param origData the data used to fit `statsModel`
 #' @param statsModel the fitted model
-#' @param level passed to \code{gamlss:::predict}
+#' @param level passed to `gamlss:::predict`
 #' @param origDataVars a character vector of the variables used in model fitting (including response variable and random effects.)
-#' @param cacheArgs a named \code{list} of arguments passed to \code{Cache}
+#' @param cacheArgs a named `list` of arguments passed to `Cache`
 #'
 #' @return a list with 2 entries
 #'
@@ -149,7 +149,7 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel, origDataVa
 #'
 #' to allow caching without digesting the large data table and model
 #'
-#' @param ... arguments passed to \code{update}
+#' @param ... arguments passed to `update`
 #' @param cacheObj1 an object used by Cache for digesting, to avoid digesting
 #'   the (potentially) large data arguments e.g.: model coefficients and a
 #'   sample of a column drawn with a set seed.

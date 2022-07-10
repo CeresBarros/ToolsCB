@@ -13,7 +13,7 @@ validateGeomsSf(sfObj, dim)
 }
 \value{
 an \code{sf} object with validated geometries. Or
-  or an error if geometries could not be validated.
+or an error if geometries could not be validated.
 }
 \description{
 Checks for corrupt geometries in an \code{sf} object

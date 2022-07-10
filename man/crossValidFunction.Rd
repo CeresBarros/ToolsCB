@@ -2,11 +2,7 @@
 % Please edit documentation in R/crossValidation.R
 \name{crossValidFunction}
 \alias{crossValidFunction}
-\title{----------------------------------------
-K-FOLD CROSS VALIDATION FUNCTIONS
-Ceres June 03 2020
-----------------------------------------
-CROSS-VALIDATION FUNCTION}
+\title{CROSS\-VALIDATION FUNCTION}
 \usage{
 crossValidFunction(
   fullDT,
@@ -28,7 +24,7 @@ crossValidFunction(
 \item{statsModel}{the statistical model to validate. Only works with gamlss models}
 
 \item{origData}{the data used to fit the statsModule, needs to be passed to \code{gamlss::predictAll}
- (it may not be able to access it) but also to make sure newdata in \code{gamlss::predictAll}
+(it may not be able to access it) but also to make sure newdata in \code{gamlss::predictAll}
 has the same variables (even if they're not used in the model)}
 
 \item{k}{integer with number of chunks that the data should be partitioned in}
@@ -51,9 +47,5 @@ to avoid digesting the (potentially) large data arguments}
 \item{...}{further arguments passed to \code{future::plan}}
 }
 \description{
-----------------------------------------
-K-FOLD CROSS VALIDATION FUNCTIONS
-Ceres June 03 2020
-----------------------------------------
-CROSS-VALIDATION FUNCTION
+CROSS\-VALIDATION FUNCTION
 }
