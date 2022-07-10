@@ -925,21 +925,14 @@ loadAndSummarizeResults <- function(...) {
 
 #' LOAD TEMPORAL BETA DIVERSITY RESULTS FUNCTION
 #'
-#' compiles calculations of temporal beta diversity results and saves the data.table
+#' compiles calculations of temporal beta diversity results and outputs the data.table
 #'
-#' @template res.dir
-#' @template out.dir
-#' @param quant is the quantile threshold of extinction chosen
+#' @param file.ls list of files to compile
 #'
 #' @importFrom data.table rbindlist
 #' @export
-loadResultsTempBetaDiv <- function(res.dir, out.dir, quant) {
+loadResultsTempBetaDiv <- function(file.ls) {
   message("Compiling temporal beta diversity")
-
-  file.ls <- grep(quant,
-                  list.files(res.dir, pattern = ("TaxonBetaDiv|TaxonTempBetaDiv"), ## for backwards compatibility
-                             recursive = TRUE, full.names = TRUE),
-                  value = TRUE)
   Tbeta_div <- rbindlist(use.names = TRUE,
                          l = lapply(file.ls, FUN = function(x) {
                            tempTaxonBetaDiv <- readRDS(x)
@@ -973,7 +966,6 @@ loadResultsTempBetaDiv <- function(res.dir, out.dir, quant) {
   Tbeta_div[, lapply(.SD, as.numeric), .SDcols = cols]
   return(Tbeta_div)
 }
-
 
 
 #' LOAD SPATIAL BETA DIVERSITY RESULTS FUNCTION
