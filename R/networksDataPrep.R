@@ -970,26 +970,16 @@ loadResultsTempBetaDiv <- function(file.ls) {
 
 #' LOAD SPATIAL BETA DIVERSITY RESULTS FUNCTION
 #'
-#' compiles calculations of spatial beta diversity results and saves the data.table
+#' compiles calculations of spatial beta diversity results and outputs the data.table
 #'
-#' @param bl.dir is the directory where baseline simulation results were saved
-#' @template res.dir
-#' @template out.dir
-#' @param quant is the quantile threshold of extinction chosen
+#' @inheritParams loadResultsTempBetaDiv
 #'
 #' @importFrom data.table rbindlist
 #' @export
-loadResultsSpaceBetaDiv <- function(bl.dir, res.dir, out.dir, quant) {
+loadResultsSpaceBetaDiv <- function(file.ls) {
   message("Compiling spatial beta diversity")
-
-  file.ls <- grep(quant,
-                  c(list.files(bl.dir, pattern = ("TaxonSpatialBetaDiv"),
-                               recursive = TRUE, full.names = TRUE),
-                    list.files(res.dir, pattern = ("TaxonSpatialBetaDiv"),
-                               recursive = TRUE, full.names = TRUE)),
-                  value = TRUE)
   Sbeta_div <- rbindlist(use.names = TRUE,
-                         l = lapply(file.ls, FUN = function(x, res.dir, bl.dir) {
+                         l = lapply(file.ls, FUN = function(x) {
                            spaceTaxonBetaDiv <- readRDS(x)
 
                            if (is(spaceTaxonBetaDiv, "list")) {
@@ -1020,8 +1010,7 @@ loadResultsSpaceBetaDiv <- function(bl.dir, res.dir, out.dir, quant) {
                            spaceTaxonBetaDivMean$resDir <- sub("/Taxon.*Beta.*", "", origFile)
 
                            return(spaceTaxonBetaDivMean)
-                         },
-                         res.dir = res.dir, bl.dir = bl.dir))
+                         }))
 
   return(Sbeta_div)
 }
