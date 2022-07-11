@@ -61,7 +61,7 @@ Suggests:
 Remotes:
   JosephCrispell/basicPlotteR,
   PredictiveEcology/Require@development,
-  gitlab::CeresBarros/econetwork@saveMemWIntegers
+  url::https://gitlab.com/CeresBarros/econetwork/-/blob/2e94dd21204d336b25f6772f4a0caea86ec2337a/econetwork_0.6.0.tar.gz
 BugReports: https://github.com/CeresBarros/ToolsCB/issues
 License: GPL-3
 Language: en-EN
