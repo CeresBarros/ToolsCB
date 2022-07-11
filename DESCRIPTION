@@ -6,8 +6,8 @@ Maintainer: The package maintainer <ceresvbarros@hotmail.com>
 Description: Package of useful R functions used for various ecological analyses, including hypervolumes for ecosystem stability assessments.
 Depends:
   R (>= 3.6)
-Date: 2021-06-28
-Version: 0.0.4
+Date: 2021-07-11
+Version: 0.0.4.9001
 Imports:
   ade4,
   basicPlotteR,
