@@ -983,13 +983,26 @@ loadResultsSpaceBetaDiv <- function(file.ls) {
                            spaceTaxonBetaDiv <- readRDS(x)
 
                            if (is(spaceTaxonBetaDiv, "list")) {
+                             if (all(sapply(spaceTaxonBetaDiv, function(x) is.list(x)))) {
+                               spaceTaxonBetaDivMean <- sapply(spaceTaxonBetaDiv, function(x) {
+                                 betaID <- grep("(B|b)eta", names(x))
+                                 data.table(meanBetadiversity = x[[betaID]])
+                               }, simplify = FALSE)
+
+                               spaceTaxonBetaDivMean <- rbindlist(spaceTaxonBetaDivMean, use.names = TRUE, idcol = "ID")
+
+                             } else if (all(sapply(spaceTaxonBetaDiv, function(x) is(x, "dist")))) {
                              spaceTaxonBetaDivMean <- rbindlist(lapply(spaceTaxonBetaDiv, FUN = calcNetMeanDistances),
-                                                                idcol = "rep")
+                                                                idcol = "ID")
                              spaceTaxonBetaDivMean[, rep := as.numeric(as.factor(rep))]  ## make sure its a number
+                               } else stop("Expecting a list of 'dist' objects or of lists of",
+                                           " alpha, beta and gamma diversity values")
                            } else if (is(spaceTaxonBetaDiv, "dist")) {
                              spaceTaxonBetaDivMean <- calcNetMeanDistances(spaceTaxonBetaDiv)
                              spaceTaxonBetaDivMean[, rep := 1]
-                           } else stop("Expecting a list of dist objects.")
+                           } else stop("Expecting a list (of 'dist' objects or of lists of",
+                                       " alpha, beta and gamma diversity values) or",
+                                       " a 'dist' object.")
 
                            ## remove general scenario simulation parent directory
                            basedir <- sub("Analyses/.*", "Analyses/", dirname(x))
