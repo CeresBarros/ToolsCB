@@ -369,7 +369,7 @@ vector2binmatrix <- function(x) {
 }
 
 
-#' FAST RASTERIZE ALL POLYGONS COVEVED BY POLYGON
+#' FAST RASTERIZE ALL POLYGONS COVERED BY POLYGON
 #'
 #' A faster version of `rasterize` with the argument `getCover` that
 #' for rasterizing polygon values that are touch a raster cell (rather than only it's center)
