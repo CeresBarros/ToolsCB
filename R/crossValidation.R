@@ -130,7 +130,7 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel, origDataVa
     if (trainModel$family[1] != "BEINF")
       stop("the object does not have a BEINF distribution")
 
-    predictionsDT[, predinvRobust := .calcMeanBEINF(mu, nu, tau),
+    predictionsDT[, predinvRobust := calcMeanBEINF(mu, nu, tau),
                   by = row.names(predictionsDT)]
 
     ## VALIDATION STATISTICS WITH CONTINUOUS VARIABLE -----------------------
@@ -161,18 +161,4 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel, origDataVa
 updateModelCached <- function(..., cacheObj1 = NULL, cacheObj2 = NULL) {
   updatedModel <- update(...)
   return(updatedModel)
-}
-
-
-#' CALCULATION OF THE MEAN FROM A BETA-INFLATED DISTRIBUTION
-#' adapted from `gamlss::meanBEINF`
-#' @param mu vector of values for the mu parameter of
-#'   the Beta-inflated distribution
-#' @param nu vector of values for the nu parameter of
-#'   the Beta-inflated distribution
-#' @param tau vector of values for the tau parameter of
-#'   the Beta-inflated distribution
-.calcMeanBEINF <- function(mu, nu, tau) {
-  meanofY <- (tau + mu)/(1 + nu + tau)
-  meanofY
 }
