@@ -1,9 +1,9 @@
 ## ----------------------------------------
-## K\-FOLD CROSS VALIDATION FUNCTIONS
+## K-FOLD CROSS VALIDATION FUNCTIONS
 ## Ceres June 03 2020
 ## ----------------------------------------
 
-#' CROSS\-VALIDATION FUNCTION
+#' CROSS-VALIDATION FUNCTION
 #'
 #' @param fullDT `data.table` with full dataset
 #' @param statsModel the statistical model to validate. Only works with gamlss models
