@@ -64,9 +64,8 @@ calcP1BEINF(nu, tau) {
 calcVarBEINF(mu, sigma, nu, tau) {
   gamma <- (tau*(1 + nu + tau))/((nu + tau)*(1 + nu + tau))
   alpha <- (nu + tau)/(1 + nu + tau)
-  Vmu <- mu*(1 - mu)
   V1 <- gamma*(1 - gamma)
-  V2 <- Vmu/(sigma + 1)
+  V2 <- (mu*(1 - mu))/(sigma + 1) ## note that this is Var(mu) the variance of the Beta process
 
   VarY <- alpha*V1 + (1 - alpha)*V2 + alpha*(1 - alpha)(gamma - mu)^2
   return(VarY)
