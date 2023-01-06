@@ -26,7 +26,8 @@ calcMeanBEINF <- function (mu, nu, tau) {
 #' @export
 #'
 #' @return expected probability of 0 [P(Y=0)]
-calcP0BEINF(nu, tau) {
+
+calcP0BEINF <- function (nu, tau) {
   p0 <- nu/(1 + nu + tau)
   return(p0)
 }
@@ -42,7 +43,7 @@ calcP0BEINF(nu, tau) {
 #' @export
 #'
 #' @return expected probability of 1 [P(Y=1)]
-calcP1BEINF(nu, tau) {
+calcP1BEINF <- function(nu, tau) {
   p1 <- tau/(1 + nu + tau)
   return(p1)
 }
@@ -61,7 +62,7 @@ calcP1BEINF(nu, tau) {
 #' @export
 #'
 #' @return expected variance of Y
-calcVarBEINF(mu, sigma, nu, tau) {
+calcVarBEINF <- function(mu, sigma, nu, tau) {
   gamma <- (tau*(1 + nu + tau))/((nu + tau)*(1 + nu + tau))
   alpha <- (nu + tau)/(1 + nu + tau)
   V1 <- gamma*(1 - gamma)
