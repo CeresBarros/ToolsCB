@@ -925,21 +925,14 @@ loadAndSummarizeResults <- function(...) {
 
 #' LOAD TEMPORAL BETA DIVERSITY RESULTS FUNCTION
 #'
-#' compiles calculations of temporal beta diversity results and saves the data.table
+#' compiles calculations of temporal beta diversity results and outputs the data.table
 #'
-#' @template res.dir
-#' @template out.dir
-#' @param quant is the quantile threshold of extinction chosen
+#' @param file.ls list of files to compile
 #'
 #' @importFrom data.table rbindlist
 #' @export
-loadResultsTempBetaDiv <- function(res.dir, out.dir, quant) {
+loadResultsTempBetaDiv <- function(file.ls) {
   message("Compiling temporal beta diversity")
-
-  file.ls <- grep(quant,
-                  list.files(res.dir, pattern = ("TaxonBetaDiv|TaxonTempBetaDiv"), ## for backwards compatibility
-                             recursive = TRUE, full.names = TRUE),
-                  value = TRUE)
   Tbeta_div <- rbindlist(use.names = TRUE,
                          l = lapply(file.ls, FUN = function(x) {
                            tempTaxonBetaDiv <- readRDS(x)
@@ -975,39 +968,41 @@ loadResultsTempBetaDiv <- function(res.dir, out.dir, quant) {
 }
 
 
-
 #' LOAD SPATIAL BETA DIVERSITY RESULTS FUNCTION
 #'
-#' compiles calculations of spatial beta diversity results and saves the data.table
+#' compiles calculations of spatial beta diversity results and outputs the data.table
 #'
-#' @param bl.dir is the directory where baseline simulation results were saved
-#' @template res.dir
-#' @template out.dir
-#' @param quant is the quantile threshold of extinction chosen
+#' @inheritParams loadResultsTempBetaDiv
 #'
 #' @importFrom data.table rbindlist
 #' @export
-loadResultsSpaceBetaDiv <- function(bl.dir, res.dir, out.dir, quant) {
+loadResultsSpaceBetaDiv <- function(file.ls) {
   message("Compiling spatial beta diversity")
-
-  file.ls <- grep(quant,
-                  c(list.files(bl.dir, pattern = ("TaxonSpatialBetaDiv"),
-                               recursive = TRUE, full.names = TRUE),
-                    list.files(res.dir, pattern = ("TaxonSpatialBetaDiv"),
-                               recursive = TRUE, full.names = TRUE)),
-                  value = TRUE)
   Sbeta_div <- rbindlist(use.names = TRUE,
-                         l = lapply(file.ls, FUN = function(x, res.dir, bl.dir) {
+                         l = lapply(file.ls, FUN = function(x) {
                            spaceTaxonBetaDiv <- readRDS(x)
 
                            if (is(spaceTaxonBetaDiv, "list")) {
+                             if (all(sapply(spaceTaxonBetaDiv, function(x) is.list(x)))) {
+                               spaceTaxonBetaDivMean <- sapply(spaceTaxonBetaDiv, function(x) {
+                                 betaID <- grep("(B|b)eta", names(x))
+                                 data.table(meanBetadiversity = x[[betaID]])
+                               }, simplify = FALSE)
+
+                               spaceTaxonBetaDivMean <- rbindlist(spaceTaxonBetaDivMean, use.names = TRUE, idcol = "ID")
+
+                             } else if (all(sapply(spaceTaxonBetaDiv, function(x) is(x, "dist")))) {
                              spaceTaxonBetaDivMean <- rbindlist(lapply(spaceTaxonBetaDiv, FUN = calcNetMeanDistances),
-                                                                idcol = "rep")
+                                                                idcol = "ID")
                              spaceTaxonBetaDivMean[, rep := as.numeric(as.factor(rep))]  ## make sure its a number
+                               } else stop("Expecting a list of 'dist' objects or of lists of",
+                                           " alpha, beta and gamma diversity values")
                            } else if (is(spaceTaxonBetaDiv, "dist")) {
                              spaceTaxonBetaDivMean <- calcNetMeanDistances(spaceTaxonBetaDiv)
                              spaceTaxonBetaDivMean[, rep := 1]
-                           } else stop("Expecting a list of dist objects.")
+                           } else stop("Expecting a list (of 'dist' objects or of lists of",
+                                       " alpha, beta and gamma diversity values) or",
+                                       " a 'dist' object.")
 
                            ## remove general scenario simulation parent directory
                            basedir <- sub("Analyses/.*", "Analyses/", dirname(x))
@@ -1028,8 +1023,7 @@ loadResultsSpaceBetaDiv <- function(bl.dir, res.dir, out.dir, quant) {
                            spaceTaxonBetaDivMean$resDir <- sub("/Taxon.*Beta.*", "", origFile)
 
                            return(spaceTaxonBetaDivMean)
-                         },
-                         res.dir = res.dir, bl.dir = bl.dir))
+                         }))
 
   return(Sbeta_div)
 }

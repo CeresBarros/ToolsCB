@@ -4,15 +4,11 @@
 \alias{loadResultsTempBetaDiv}
 \title{LOAD TEMPORAL BETA DIVERSITY RESULTS FUNCTION}
 \usage{
-loadResultsTempBetaDiv(res.dir, out.dir, quant)
+loadResultsTempBetaDiv(file.ls)
 }
 \arguments{
-\item{res.dir}{is the directory where scenario simulation results were saved}
-
-\item{out.dir}{is the directory where outputs will be saved}
-
-\item{quant}{is the quantile threshold of extinction chosen}
+\item{file.ls}{list of files to compile}
 }
 \description{
-compiles calculations of temporal beta diversity results and saves the data.table
+compiles calculations of temporal beta diversity results and outputs the data.table
 }
