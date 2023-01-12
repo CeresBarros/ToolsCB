@@ -13,8 +13,7 @@ calc.extThresh(x, quants, out.dir, dietcat)
 
 \item{out.dir}{is the destination directory for outputs}
 
-\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
-across all networks)}
+\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)}
 }
 \description{
 CALCULATE MIN PREY EXTINCTION THRESHOLDS

@@ -4,17 +4,11 @@
 \alias{loadResultsSpaceBetaDiv}
 \title{LOAD SPATIAL BETA DIVERSITY RESULTS FUNCTION}
 \usage{
-loadResultsSpaceBetaDiv(bl.dir, res.dir, out.dir, quant)
+loadResultsSpaceBetaDiv(file.ls)
 }
 \arguments{
-\item{bl.dir}{is the directory where baseline simulation results were saved}
-
-\item{res.dir}{is the directory where scenario simulation results were saved}
-
-\item{out.dir}{is the directory where outputs will be saved}
-
-\item{quant}{is the quantile threshold of extinction chosen}
+\item{file.ls}{list of files to compile}
 }
 \description{
-compiles calculations of spatial beta diversity results and saves the data.table
+compiles calculations of spatial beta diversity results and outputs the data.table
 }

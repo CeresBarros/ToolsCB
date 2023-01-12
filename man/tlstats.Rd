@@ -10,8 +10,7 @@ tlstats(web = NULL, dietcat = dietcat)
 \arguments{
 \item{web}{a square \code{matrix} representing an adjacency matrix.}
 
-\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
-across all networks)}
+\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)}
 }
 \description{
 CALCULATE TROPHIC LEVEL STATISTICS

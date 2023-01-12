@@ -17,7 +17,7 @@ calcMeanBEINF <- function (mu, nu, tau) {
 
 #' CALCULATION OF THE PROBABILITY OF ZERO FROM A ZERO- AND ONE-INFLATED BETA-INFLATED DISTRIBUTION
 #'
-#' Follows the parameterisation used in `gamlss` package. 
+#' Follows the parameterisation used in `gamlss` package.
 #' See Rigby et al. 2020 (Distributions for Modeling Location, Scale, and Shape: using GAMLSS in R)
 #'
 #' @param nu vector of values for the nu parameter of the zero- and one-inflated Beta distribution (BEINF)
@@ -25,7 +25,7 @@ calcMeanBEINF <- function (mu, nu, tau) {
 #'
 #' @export
 #'
-#' @return expected probability of 0 [P(Y=0)]
+#' @return expected probability of 0 (P(Y=0))
 
 calcP0BEINF <- function (nu, tau) {
   p0 <- nu/(1 + nu + tau)
@@ -34,7 +34,7 @@ calcP0BEINF <- function (nu, tau) {
 
 #' CALCULATION OF THE PROBABILITY OF ONE FROM A ZERO- AND ONE-INFLATED BETA-INFLATED DISTRIBUTION
 #'
-#' Follows the parameterisation used in `gamlss` package. 
+#' Follows the parameterisation used in `gamlss` package.
 #' See Rigby et al. 2020 (Distributions for Modeling Location, Scale, and Shape: using GAMLSS in R)
 #'
 #' @param nu vector of values for the nu parameter of the zero- and one-inflated Beta distribution (BEINF)
@@ -42,7 +42,7 @@ calcP0BEINF <- function (nu, tau) {
 #'
 #' @export
 #'
-#' @return expected probability of 1 [P(Y=1)]
+#' @return expected probability of 1 (P(Y=1))
 calcP1BEINF <- function(nu, tau) {
   p1 <- tau/(1 + nu + tau)
   return(p1)
@@ -50,10 +50,10 @@ calcP1BEINF <- function(nu, tau) {
 
 #' CALCULATION OF THE VARIANCE OF A ZERO- AND ONE-INFLATED BETA-INFLATED DISTRIBUTION
 #'
-#' Follows the parameterisation used in `gamlss` package, using variance estimation described in 
+#' Follows the parameterisation used in `gamlss` package, using variance estimation described in
 #'  and Ferrari (2010). See also Rigby et al. 2020 (Distributions for Modeling Location,
 #'  Scale, and Shape: using GAMLSS in R)
-#' 
+#'
 #' @param mu vector of values for the mu parameter of the zero- and one-inflated Beta distribution (BEINF)
 #' @param sigma vector of values for the sigma parameter of the BEINF
 #' @param nu vector of values for the nu parameter of the BEINF

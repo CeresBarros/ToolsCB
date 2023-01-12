@@ -133,7 +133,7 @@ validateGeomsSf <- function(sfObj, dim) {
 
 prepKMZ2shapefile <- function(url, archive, destinationPath, overwrite = TRUE) {
   ## check
-  if (class(url) != "character" | is.null(url))
+  if (!is(url, "character") | is.null(url))
     stop("Provide url as a character string")
   if (!grepl("\\.zip$", archive))
     stop("archive should be the name of the .zip file in url")
@@ -185,7 +185,7 @@ prepKMZ2shapefile <- function(url, archive, destinationPath, overwrite = TRUE) {
 #' @importFrom dismo convHull
 
 outerBuffer <- function(x) {
-  if (class(x) == "SpatialPolygons" | class(x) == "SpatialPolygonsDataFrame") {
+  if (is(x, "SpatialPolygons") | is(x, "SpatialPolygonsDataFrame")) {
     ## Get polygon vertices
     pts <- SpatialPoints(do.call(rbind, lapply(x@polygons, FUN = function(x) {
       return(x@Polygons[[1]]@coords)
@@ -339,7 +339,7 @@ checkProjections <- function(sfObj.list){
 cropToStudyArea <- function(study.area, tocrop, method = "bilinear") {
   temp <- tocrop
 
-  if (class(study.area) == class(temp) & class(study.area) == "RasterLayer") {
+  if (class(study.area) == class(temp) & is(study.area, "RasterLayer")) {
     temp <- projectRaster(from = temp, to = study.area, crs = crs(study.area), method = method)
   } else {
     if (crs(study.area)@projargs != crs(tocrop)@projargs){
@@ -383,17 +383,24 @@ vector2binmatrix <- function(x) {
 #'
 #' @importFrom raster raster mask
 #' @importFrom sf as_Spatial
-#' @importFrom gdalUtils gdal_rasterize
 #' @importFrom rgdal writeOGR
 #' @importFrom sp bbox
+#' @importFrom utils installed.packages
 #'
 rasterizeCover <- function(rasterToMatch, shp, field, noDataVal = 0) {
+  if (!"gdalUtils" %in% rownames(installed.packages())) {
+    stop("'gdalUtils' is not installed. Please install using:",
+         "\ninstall.packages('https://cran.r-project.org/src/contrib/Archive/gdalUtils/gdalUtils_2.0.3.2.tar.gz',
+         type = 'source', repos = NULL)")
+  } else {
+    loadNamespace("gdalUtils")
+  }
   ## checks
-  if (class(rasterToMatch) != "RasterLayer")
+  if (!is(rasterToMatch, "RasterLayer"))
     stop("rasterToMatch must be RasterLayer")
-  if (!any(class(shp) %in% c("sf", "SpatialPolygonsDataFrame")))
+  if (!is(shp, "sf") & !is(shp, "SpatialPolygonsDataFrame"))
     stop("shp must be sf or SpatialPolygonsDataFrame")
-  if (any(class(shp) %in% c("sf")))
+  if (is(shp, "sf"))
     shp <- as_Spatial(shp)
   if (!is.numeric(noDataVal) & !is.integer(noDataVal))
     stop("noDataVal must be numeric/integer")

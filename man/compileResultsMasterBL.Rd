@@ -23,8 +23,7 @@ compileResultsMasterBL(
 
 \item{quant}{is the quantile threshold of extinction chosen}
 
-\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
-across all networks)}
+\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)}
 
 \item{useCache}{is NULL, but will default to TRUE if the argument is not defined in the parent.frame()}
 

@@ -26,8 +26,7 @@ calcTempBetaDivBAMR(
 
 \item{out.dir}{is the directory where outputs will be saved}
 
-\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
-across all networks)}
+\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)}
 
 \item{families}{determines for which families beta div will be calculated (this subsets the species)}
 

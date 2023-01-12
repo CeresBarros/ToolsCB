@@ -21,8 +21,7 @@
 
 \item{web2.ls}{is a list of networks to be indexed by i}
 
-\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
-across all networks)}
+\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)}
 
 \item{charMatch}{is used to subset species in the networks beloging to a specific family.}
 

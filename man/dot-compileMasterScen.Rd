@@ -9,8 +9,7 @@
 \arguments{
 \item{file.ls}{file list}
 
-\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
-across all networks)}
+\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)}
 }
 \description{
 internal function

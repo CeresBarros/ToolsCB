@@ -2,7 +2,7 @@
 % Please edit documentation in R/crossValidation.R
 \name{crossValidFunction}
 \alias{crossValidFunction}
-\title{CROSS\-VALIDATION FUNCTION}
+\title{CROSS-VALIDATION FUNCTION}
 \usage{
 crossValidFunction(
   fullDT,
@@ -47,5 +47,5 @@ to avoid digesting the (potentially) large data arguments}
 \item{...}{further arguments passed to \code{future::plan}}
 }
 \description{
-CROSS\-VALIDATION FUNCTION
+CROSS-VALIDATION FUNCTION
 }
