@@ -68,6 +68,6 @@ calcVarBEINF <- function(mu, sigma, nu, tau) {
   V1 <- gamma*(1 - gamma)
   V2 <- (mu*(1 - mu))/(sigma + 1) ## note that this is Var(mu) the variance of the Beta process
 
-  VarY <- alpha*V1 + (1 - alpha)*V2 + alpha*(1 - alpha)(gamma - mu)^2
+  VarY <- alpha*V1 + (1 - alpha)*V2 + alpha*(1 - alpha)*(gamma - mu)^2
   return(VarY)
 }
