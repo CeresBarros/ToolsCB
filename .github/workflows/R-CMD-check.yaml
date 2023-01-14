@@ -29,16 +29,13 @@ jobs:
           - {os: windows-latest, r: '4.0'}
           - {os: ubuntu-20.04,   r: 'devel'}
           - {os: ubuntu-20.04,   r: 'release'}
-          - {os: ubuntu-20.04,   r: 'release', spevol: 2}
           - {os: ubuntu-20.04,   r: 'oldrel'}
           - {os: ubuntu-20.04,   r: '4.0'}
 
     env:
-      _SP_EVOLUTION_STATUS_: ${{ matrix.config.spevol }}
+      _R_CHECK_DEPENDS_ONLY_: ${{ matrix.config.nosuggests }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-      R_REPRODUCIBLE_RUN_ALL_EXAMPLES: true
-      R_REPRODUCIBLE_RUN_ALL_TESTS: true
 
     steps:
       - uses: actions/checkout@v3
@@ -47,7 +44,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          extra-repositories: https://rcppcore.github.io/drat
+          Ncpus: 2
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
@@ -56,10 +53,9 @@ jobs:
           extra-packages: |
             any::rcmdcheck
             any::Rcpp
+            any::digest
 
       - uses: r-lib/actions/check-r-package@v2
-        with:
-          args: 'c("--no-manual", "--as-cran", "--run-dontrun", "--run-donttest")'
 
       - name: Show testthat output
         if: always()
