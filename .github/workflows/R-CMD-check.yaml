@@ -50,10 +50,10 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: |
+          packages: |
+            url::https://cran.r-project.org/src/contrib/Archive/digest/digest_0.6.30.tar.gz
             any::rcmdcheck
             any::Rcpp
-            any::digest
 
       - uses: r-lib/actions/check-r-package@v2
 
