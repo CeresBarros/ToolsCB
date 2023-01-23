@@ -7,7 +7,8 @@
 #' @param term see `gamlss::getPEF`
 #' @param data see `gamlss::getPEF`
 #' @param n.points see `gamlss::getPEF`
-#' @param parameter see `gamlss::getPEF`
+#' @param parameter see `gamlss::getPEF`. Also allows "all" to
+#'   generate functions for all parameters at once
 #' @param level see `gamlss::getPEF`
 #' @param type see `gamlss::getPEF`
 #' @param how see `gamlss::getPEF`
@@ -19,8 +20,10 @@
 #' @importFrom graphics abline
 #' @importFrom stats splinefun median
 #' @importFrom utils tail
+## added "mean" and level to gamlss:getPEF
+## added output to chose between function of predicted values
 getPEF.own <- function(obj = NULL, term = NULL, data = NULL, n.points = 100,
-                       parameter = c("mu", "sigma", "nu", "tau"), level = NULL,
+                       parameter = c("mu", "sigma", "nu", "tau", "all"), level = NULL,
                        type = c("response", "link"), how = c("mean", "median", "last"), fixed.at = list(),
                        plot = FALSE, output = c("function", "vals")) {
   if (is.null(obj) || !class(obj)[1] == "gamlss")
@@ -31,10 +34,9 @@ getPEF.own <- function(obj = NULL, term = NULL, data = NULL, n.points = 100,
   type <- match.arg(type)
   parameter <- match.arg(parameter)
   if (any(grepl("data", names(obj$call)))) {
-    # DaTa <- if (startsWith(as.character(obj$call["data"]), "na.omit"))
-    #   eval(parse(text = as.character(obj$call["data"])))
-    # else get(as.character(obj$call["data"]))
-    DaTa <- eval(parse(text = as.character(obj$call["data"])))
+    DaTa <- if (startsWith(as.character(obj$call["data"]), "na.omit"))
+      eval(parse(text = as.character(obj$call["data"])))
+    else get(as.character(obj$call["data"]))
   } else if (is.null(data))
     stop("The data argument is needed in obj")
 
@@ -75,16 +77,38 @@ getPEF.own <- function(obj = NULL, term = NULL, data = NULL, n.points = 100,
       dat.temp[, i] <- c(DaTa[, i], rep(ma, n.points))
     }
   }
-  fittted.orig <- predict(obj, newdata = tail(dat.temp, n.points),
-                          type = type, parameter = parameter, level = level)
-  theFun <- splinefun(xvar, fittted.orig)
+  if (parameter != "all") {
+    fittted.orig <- predict(obj, newdata = tail(dat.temp, n.points),
+                            type = type, parameter = parameter, level = level)
+    fittted.orig <- list(fittted.orig)
+    names(fittted.orig) <- parameter
+  } else {
+    fittted.orig <- predictAll(obj, newdata = tail(dat.temp, n.points),
+                               type = type, level = level)
+  }
+  ## Adapt code for multiple params:
+  # theFun <- splinefun(xvar, fittted.orig)
+  theFun <- Map(splinefun,
+                y = fittted.orig,
+                MoreArgs = list(x = xvar))
   if (plot) {
-    layout(matrix(c(1, 1, 2, 2), 2, 2, byrow = TRUE))
-    plot(theFun(xvar) ~ xvar, ylab = "s()", xlab = term,
-         type = "l")
-    plot(theFun(xvar, deriv = 1) ~ xvar, xlab = term, ylab = "ds/dx",
-         type = "l")
-    abline(h = 0)
+    matPlot <- if (parameter != "all") {
+      matrix(c(1, 2), 2, 1, byrow = TRUE)
+    } else {
+      matrix(c(1:10,11,11), 3, 4, byrow = TRUE)
+    }
+    layout(matPlot)
+    Map(function(xvar, theFun, term, parameter){
+      plot(theFun(xvar) ~ xvar, ylab = "s()", xlab = term,
+           type = "l", main = parameter)
+      plot(theFun(xvar, deriv = 1) ~ xvar, xlab = term, ylab = "ds/dx",
+           type = "l", main = parameter)
+      abline(h = 0)
+    },
+    theFun = theFun,
+    parameter = names(theFun),
+    MoreArgs = list(xvar = xvar, term = term)
+    )
     layout(1)
   }
   invisible(theFun)
