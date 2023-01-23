@@ -20,8 +20,7 @@ makeAndSaveMasterScen(
 \item{returnMaster}{controls whether the function returns the master matrix or not. Defaults
 to FALSE and returns the saved file path}
 
-\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
-across all networks)}
+\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)}
 
 \item{redo}{controls whether masters will be recalculated and re-saved
 in case their saved files already exist}

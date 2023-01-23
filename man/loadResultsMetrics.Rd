@@ -9,8 +9,8 @@ loadResultsMetrics(
   bl.dir = NULL,
   res.dir = NULL,
   out.dir = NULL,
-  quant = c("No_ext_thresh", "min", "quant10", "quant25", "median", "quant50",
-    "quant75", "quant90"),
+  quant = c("No_ext_thresh", "min", "quant10", "quant25", "median", "quant50", "quant75",
+    "quant90"),
   onlyBL = FALSE,
   onlyScen = FALSE
 )

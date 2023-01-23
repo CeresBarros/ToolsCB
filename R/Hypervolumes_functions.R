@@ -258,7 +258,8 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
     init.vars = c(1:ncol(datatable))
     message("Using all variables in data")
   } else{
-    if (class(init.vars) != "numeric" & class(init.vars) != "integer") stop("init.vars must be a numeric/integer vector of columns indices")
+    if (!is(init.vars, "numeric") & !is(init.vars, "integer"))
+      stop("init.vars must be a numeric/integer vector of columns indices")
   }
 
   ## check if variables contain the ID variable; if so remove it

@@ -245,7 +245,7 @@ col_convert <- function(M, corresp, merge.fun = "max", na.rm = TRUE) {
 #'
 #' @param files is a list of file paths to the distributions to be used
 #' @param opt is either TRUE of FALSE (default) and determines if only optimal habitats are used as presences
-#' @param k presence threshold [0,1], used if `opt = FALSE`. `opt` and
+#' @param k presence threshold \\[0,1\\], used if `opt = FALSE`. `opt` and
 #'   `k` are only used for Luigi Maiorano's spp distributions
 #' @export
 do.PAmaster <- function(files, opt = FALSE, k = 0) {

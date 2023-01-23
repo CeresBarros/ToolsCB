@@ -2,7 +2,7 @@
 % Please edit documentation in R/spatialTools.R
 \name{rasterizeCover}
 \alias{rasterizeCover}
-\title{FAST RASTERIZE ALL POLYGONS COVEVED BY POLYGON}
+\title{FAST RASTERIZE ALL POLYGONS COVERED BY POLYGON}
 \usage{
 rasterizeCover(rasterToMatch, shp, field, noDataVal = 0)
 }

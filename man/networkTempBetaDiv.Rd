@@ -12,8 +12,7 @@ networkTempBetaDiv(web1, web2, dietcat, method = "all", mode = "composition")
 
 \item{web2}{second adjency matrix (species network)}
 
-\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
-across all networks)}
+\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)}
 
 \item{method}{is the method used to calculate beta diversity in 'composition' \code{mode}.
 Options are Sorensen's ("sorensen") and Simpson's ("simpson") beta-diversity

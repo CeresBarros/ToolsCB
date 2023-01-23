@@ -27,10 +27,9 @@ SppRm_localweb(
 \item{SPP.EXT}{vector of spp to be primarily extinct}
 
 \item{EXT.TRSH}{threshold of lost prey that determines spp extinction. Varies from 0 to 1,
-increasing with predator sensitivity (e.g. 0.9 = spp dies if it is left with 90\\% of orignal prey)}
+increasing with predator sensitivity (e.g. 0.9 = spp dies if it is left with 90 \\\% of original prey)}
 
-\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
-across all networks)}
+\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)}
 
 \item{HELP}{print help}
 }

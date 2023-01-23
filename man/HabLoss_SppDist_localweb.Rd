@@ -2,7 +2,7 @@
 % Please edit documentation in R/networksBuildLocalWebs.R
 \name{HabLoss_SppDist_localweb}
 \alias{HabLoss_SppDist_localweb}
-\title{Function to build local networks according to LC changes and changes in spp dists}
+\title{Local networks after land-cover and species distribution changes}
 \usage{
 HabLoss_SppDist_localweb(
   metaweb = NULL,
@@ -30,15 +30,15 @@ HabLoss_SppDist_localweb(
 \item{FUTSPP}{species IDs of future species presences}
 
 \item{EXT.TRSH}{threshold of lost prey that determines spp extinction. Varies from 0 to 1,
-increasing with predator sensitivity (e.g. 0.9 = spp dies if it is left with 90\\% of orignal prey)}
+increasing with predator sensitivity (e.g. 0.9 = spp dies if it is left with 90 \\\% of original prey)}
 
-\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
-across all networks)}
+\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)}
 
 \item{HELP}{print help}
 
 \item{PIX.HAB}{a pix x habitat \code{matrix}}
 }
 \description{
-Function to build local networks according to LC changes and changes in spp dists
+Function to build local networks according to LC changes and changes
+in spp dists
 }

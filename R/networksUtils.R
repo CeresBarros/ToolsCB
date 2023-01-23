@@ -211,7 +211,7 @@ replaceNAs.data.table <- function(DT, value = 0L) {
 robustnessMaps <- function(ras, mask = NULL, maskCol = NULL,
                            factorLayer = FALSE) {
   ## checks
-  if (class(ras) != "RasterLayer")
+  if (!is(ras, "RasterLayer"))
     stop("ras needs to be of class RasterLayer")
   if (!is.null(mask) & class(mask) != "RasterLayer")
     stop("mask needs to be of class RasterLayer")

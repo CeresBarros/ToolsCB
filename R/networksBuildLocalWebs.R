@@ -276,7 +276,10 @@ SppRm_localweb <- function(metaweb = NULL, SPPCODE = NULL,
 }
 
 
-#' Function to build local networks according to LC changes and changes in spp dists
+#' Local networks after land-cover and species distribution changes
+#'
+#' Function to build local networks according to LC changes and changes
+#'   in spp dists
 #'
 #' @template metaweb
 #' @template SPP.HAB
@@ -295,7 +298,7 @@ HabLoss_SppDist_localweb <- function(metaweb = NULL, ORIGSPP = NULL,
                                      PIX.HAB.ORIG = NULL, PIX.HAB.FUT = NULL,
                                      FUTSPP = NULL, EXT.TRSH = NULL,
                                      dietcat = NULL,
-                                     HELP=TRUE) {
+                                     HELP = TRUE) {
   ## Function to subset the meta-web square matrix according
   ## a subgroup of species into a sub web square matrix
   if (HELP) warning("Description of HAB arguments: if spp x hab and pixel x hab matrices are provided habitat overlap will be used to filter spp links.

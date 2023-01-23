@@ -2,16 +2,16 @@
 % Please edit documentation in R/statsTools.R
 \name{calcMeanBEINF}
 \alias{calcMeanBEINF}
-\title{CALCULATION OF THE MEAN FROM A BETA-INFLATED DISTRIBUTION}
+\title{CALCULATION OF THE MEAN FROM A ZERO- AND ONE-INFLATED BETA-INFLATED DISTRIBUTION}
 \usage{
 calcMeanBEINF(mu, nu, tau)
 }
 \arguments{
-\item{mu}{vector of values for the mu parameter Beta-inflated distribution}
+\item{mu}{vector of values for the mu parameter of the zero- and one-inflated Beta distribution (BEINF)}
 
-\item{nu}{vector of values for the nu parameter Beta-inflated distribution}
+\item{nu}{vector of values for the nu parameter of the BEINF}
 
-\item{tau}{vector of values for the tau parameter Beta-inflated distribution}
+\item{tau}{vector of values for the tau parameter of the BEINF}
 }
 \value{
 expected mean Y

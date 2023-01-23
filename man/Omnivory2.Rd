@@ -9,8 +9,7 @@ Omnivory2(M, dietcat = NULL, level = PreyAveragedTrophicLevel)
 \arguments{
 \item{M}{a square \code{matrix} representing an adjacency newtork}
 
-\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
-across all networks)}
+\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)}
 
 \item{level}{a function to calculate the trophic level. See \code{cheddar}
 for options}

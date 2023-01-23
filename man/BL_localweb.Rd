@@ -22,8 +22,7 @@ BL_localweb(
 
 \item{PIX.HAB}{a pix x habitat \code{matrix}}
 
-\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous
-across all networks)}
+\item{dietcat}{diet categories (i.e., lowest trophic level nodes that are ubiquitous across all networks)}
 
 \item{HELP}{print help}
 }
