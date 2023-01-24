@@ -61,7 +61,7 @@ Remotes:
   JosephCrispell/basicPlotteR,
   PredictiveEcology/Require@development,
   PredictiveEcology/reproducible@master,
-  url::https://gitlab.com/CeresBarros/econetwork/-/archive/saveMemWIntegers/econetwork-saveMemWIntegers.zip  
+  git::git@gitlab.com:CeresBarros/econetwork@saveMemWIntegers
 BugReports: https://github.com/CeresBarros/ToolsCB/issues
 License: GPL-3
 Language: en-EN
