@@ -49,6 +49,7 @@ Imports:
 Suggests:
   alphahull,
   ape,
+  econetwork,
   hash,
   phangorn,
   knitr,
