@@ -17,7 +17,6 @@ Imports:
   data.table,
   dismo,
   dplyr,
-  econetwork,
   foreign,
   future,
   future.apply,
@@ -61,7 +60,6 @@ Remotes:
   JosephCrispell/basicPlotteR,
   PredictiveEcology/Require@development,
   PredictiveEcology/reproducible@master,
-  git::git@gitlab.com:CeresBarros/econetwork@saveMemWIntegers
 BugReports: https://github.com/CeresBarros/ToolsCB/issues
 License: GPL-3
 Language: en-EN
