@@ -392,10 +392,9 @@ vector2binmatrix <- function(x) {
 #' @importFrom utils installed.packages
 #'
 rasterizeCover <- function(rasterToMatch, shp, field, noDataVal = 0) {
-  if (!"gdalUtils" %in% rownames(installed.packages())) {
-    stop("'gdalUtils' is not installed. Please install using:",
-         "\ninstall.packages('https://cran.r-project.org/src/contrib/Archive/gdalUtils/gdalUtils_2.0.3.2.tar.gz',
-         type = 'source', repos = NULL)")
+  if (!"gdalUtilities" %in% rownames(installed.packages())) {
+    stop("'gdalUtilities' is not installed. Please install using:",
+         "\ninstall.packages('gdalUtilities')")
   } else {
     loadNamespace("gdalUtils")
   }

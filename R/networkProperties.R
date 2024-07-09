@@ -226,7 +226,7 @@ tlstats <- function(web = NULL, dietcat = NULL) {
 #'
 #' @importFrom cheddar PreyAveragedTrophicLevel RemoveCannibalisticLinks Community
 #' @export
-calcSppTL <- function (web = NULL, community = NULL, out.type = c("vector", "data.table")) {
+calcSppTL <- function(web = NULL, community = NULL, out.type = c("vector", "data.table")) {
   out.type <- match.arg(out.type)
 
   if (is.null(web) & is.null(community)) {
