@@ -164,10 +164,21 @@ netw.metrics <- function(web = NULL, normalise = FALSE, verbose = TRUE) {
 #' @param web a square `matrix` representing an adjacency matrix.
 #' @template dietcat
 #'
-#' @importFrom cheddar PreyAveragedTrophicLevel PredationMatrixToLinks RemoveCannibalisticLinks Community ResourcesByNode
+#' @importFrom cheddar PredationMatrixToLinks RemoveCannibalisticLinks Community ResourcesByNode
 #'
 #' @export
-tlstats <- function(web = NULL, dietcat = dietcat) {
+tlstats <- function(web = NULL, dietcat = NULL) {
+  if (!is(web, "matrix")) {
+    web <- as.matrix(web)
+  }
+
+  if (is.null(dietcat)) {
+    dietcat <- c("Algae", "Coprofagous", "Detritus", "DomesticAnimals", "Fish", "Fruits", "Invertebrates",
+                 "MossesLichens", "Mushrooms", "OtherPlantParts", "SeedsNutsGrains")
+    message("'dietcat' not provided. Assuming the following default 'other' diet items:")
+    message(paste(dietcat, collapse = ", "))
+  }
+
   ## Use PredationMatrixToLinks() to create a Cheddar community from a predation
   community <- Community(data.frame(node = colnames(web)), trophic.links = PredationMatrixToLinks(web),
                          properties = list(title = "BL"))
