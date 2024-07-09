@@ -48,6 +48,7 @@ Suggests:
   alphahull,
   ape,
   econetwork,
+  gdalUtils,
   hash,
   phangorn,
   knitr,
