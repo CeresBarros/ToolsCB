@@ -374,7 +374,7 @@ vector2binmatrix <- function(x) {
 #' A faster version of `rasterize` with the argument `getCover` that
 #' for rasterizing polygon values that are touch a raster cell (rather than only it's center)
 #' @param rasterToMatch is the raster to use to burn polygon values to
-#' @param shp is sf of `SpatialPolygonsDataFrame` object
+#' @param shp is `sf` or `SpatVector` object
 #' @param field character. The field of shp to extract values from.
 #'   If NULL, 1s will be assigned to all cells that touch polygons
 #' @param noDataVal Numeric, compatible with "Float64". value assigned to no data. Defaults to 0.
@@ -382,8 +382,8 @@ vector2binmatrix <- function(x) {
 #' @export
 #'
 #' @importFrom raster raster mask
-#' @importFrom sf as_Spatial
-#' @importFrom rgdal writeOGR
+#' @importFrom terra vect
+#' @importFrom gdalUtils gdal_rasterize
 #' @importFrom sp bbox
 #' @importFrom utils installed.packages
 #'
@@ -398,17 +398,17 @@ rasterizeCover <- function(rasterToMatch, shp, field, noDataVal = 0) {
   ## checks
   if (!is(rasterToMatch, "RasterLayer"))
     stop("rasterToMatch must be RasterLayer")
-  if (!is(shp, "sf") & !is(shp, "SpatialPolygonsDataFrame"))
-    stop("shp must be sf or SpatialPolygonsDataFrame")
-  if (is(shp, "sf"))
-    shp <- as_Spatial(shp)
+  if (!is(shp, "sf") & !is(shp, "SpatVector"))
+    stop("shp must be sf or SpatVector")
+  if (!is(shp, "SpatVector"))
+    shp <- vect(shp)
   if (!is.numeric(noDataVal) & !is.integer(noDataVal))
     stop("noDataVal must be numeric/integer")
 
 
   ## create temporary files/directories
   tempShp <- basename(tempfile())
-  writeOGR(shp, tempdir(), tempShp, 'ESRI Shapefile')
+  writeVector(shp, file.path(tempdir(), tempShp), "ESRI Shapefile")
   tempRas <- tempfile(fileext = '.tif')
 
   ## rasterize
