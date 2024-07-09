@@ -40,7 +40,6 @@ Imports:
   rredlist,
   scatterplot3d,
   sf,
-  sp,
   stats,
   tools,
   utils,
@@ -55,7 +54,8 @@ Suggests:
   Matrix,
   NetIndices,
   rmarkdown,
-  rstudioapi
+  rstudioapi,
+  sp
 Remotes:
   JosephCrispell/basicPlotteR,
   PredictiveEcology/Require@development,

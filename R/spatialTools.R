@@ -181,10 +181,16 @@ prepKMZ2shapefile <- function(url, archive, destinationPath, overwrite = TRUE) {
 #'
 #' @return a convex hull polygon
 #'
-#' @importFrom sp SpatialPoints polygons
 #' @importFrom dismo convHull
 
 outerBuffer <- function(x) {
+  if (!"sp" %in% rownames(installed.packages())) {
+    stop("'sp' is not installed. Please install using:",
+         "\ninstall.packages('sp')")
+  } else {
+    loadNamespace("sp")
+  }
+
   if (is(x, "SpatialPolygons") | is(x, "SpatialPolygonsDataFrame")) {
     ## Get polygon vertices
     pts <- SpatialPoints(do.call(rbind, lapply(x@polygons, FUN = function(x) {
