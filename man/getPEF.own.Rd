@@ -9,7 +9,7 @@ getPEF.own(
   term = NULL,
   data = NULL,
   n.points = 100,
-  parameter = c("mu", "sigma", "nu", "tau"),
+  parameter = c("mu", "sigma", "nu", "tau", "all"),
   level = NULL,
   type = c("response", "link"),
   how = c("mean", "median", "last"),
@@ -27,7 +27,8 @@ getPEF.own(
 
 \item{n.points}{see \code{gamlss::getPEF}}
 
-\item{parameter}{see \code{gamlss::getPEF}}
+\item{parameter}{see \code{gamlss::getPEF}. Also allows "all" to
+generate functions for all parameters at once}
 
 \item{level}{see \code{gamlss::getPEF}}
 

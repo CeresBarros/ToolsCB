@@ -164,10 +164,21 @@ netw.metrics <- function(web = NULL, normalise = FALSE, verbose = TRUE) {
 #' @param web a square `matrix` representing an adjacency matrix.
 #' @template dietcat
 #'
-#' @importFrom cheddar PreyAveragedTrophicLevel PredationMatrixToLinks RemoveCannibalisticLinks Community ResourcesByNode
+#' @importFrom cheddar PredationMatrixToLinks RemoveCannibalisticLinks Community ResourcesByNode
 #'
 #' @export
-tlstats <- function(web = NULL, dietcat = dietcat) {
+tlstats <- function(web = NULL, dietcat = NULL) {
+  if (!is(web, "matrix")) {
+    web <- as.matrix(web)
+  }
+
+  if (is.null(dietcat)) {
+    dietcat <- c("Algae", "Coprofagous", "Detritus", "DomesticAnimals", "Fish", "Fruits", "Invertebrates",
+                 "MossesLichens", "Mushrooms", "OtherPlantParts", "SeedsNutsGrains")
+    message("'dietcat' not provided. Assuming the following default 'other' diet items:")
+    message(paste(dietcat, collapse = ", "))
+  }
+
   ## Use PredationMatrixToLinks() to create a Cheddar community from a predation
   community <- Community(data.frame(node = colnames(web)), trophic.links = PredationMatrixToLinks(web),
                          properties = list(title = "BL"))
@@ -175,7 +186,7 @@ tlstats <- function(web = NULL, dietcat = dietcat) {
   community <- RemoveCannibalisticLinks(community, title='community');
 
   ## get all spp trophic levels
-  tl <- PreyAveragedTrophicLevel(community)
+  tl <- calcSppTL(community = community)
 
   ## Omnivory
   resource.spp <- ResourcesByNode(community) ## get resource spp for each predator
@@ -198,6 +209,58 @@ tlstats <- function(web = NULL, dietcat = dietcat) {
   return(tab)
 }
 
+
+#' Calculate species trophic levels
+#'
+#' @inheritParams tlstats
+#' @param community object of class "Community", output by `cheddar::Community`
+#' @param out.type character. should trophic levels be output as a named vector (as the output of
+#'   `cheddar::PreyAveragedTrophicLevel`) or a data.table with species as columns
+#'   and a single row of trophic level values?
+#'
+#' @details Cannibalistic links are removed with `[cheddar::RemoveCannibalisticLinks()]`
+#'   before calculating species trophic levels with `[cheddar::PreyAveragedTrophicLevel()]`
+#'
+#' @return a vector or `data.table` (see `out.type`) of trophic level values for each species in
+#'   the community`.`
+#'
+#' @importFrom cheddar PreyAveragedTrophicLevel RemoveCannibalisticLinks Community
+#' @export
+calcSppTL <- function(web = NULL, community = NULL, out.type = c("vector", "data.table")) {
+  out.type <- match.arg(out.type)
+
+  if (is.null(web) & is.null(community)) {
+    stop("Please provide web or community")
+  }
+
+  if (!is.null(web) & !is.null(community)) {
+    message("Both web and community were provided; community will be used.")
+  }
+
+  if (is.null(community)) {
+    if (!is(web, "matrix")) {
+      web <- as.matrix(web)
+    }
+    ## Use PredationMatrixToLinks() to create a Cheddar community from a predation
+    community <- Community(data.frame(node = colnames(web)), trophic.links = PredationMatrixToLinks(web),
+                           properties = list(title = "BL"))
+
+    community <- RemoveCannibalisticLinks(community, title='community')
+  } else {
+    stopifnot(is(community, "Community"))
+  }
+
+
+  ## get all spp trophic levels
+  tl <- PreyAveragedTrophicLevel(community)
+
+  if (out.type == "data.table") {
+    tl <- as.matrix(tl) |>
+      t() |>
+      as.data.table()
+  }
+  return(tl)
+}
 
 #' DETECT INTERACTIONS FUNCTION
 #'

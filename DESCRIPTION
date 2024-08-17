@@ -2,12 +2,12 @@ Package: ToolsCB
 Type: Package
 Title: Ceres's Useful R Functions
 Author: Ceres Barros
-Maintainer: The package maintainer <ceresvbarros@hotmail.com>
+Maintainer: The package maintainer <ceres.barros@nrcan-rncan.gc.ca>
 Description: Package of useful R functions used for various ecological analyses, including hypervolumes for ecosystem stability assessments.
 Depends:
   R (>= 3.6)
-Date: 2023-01-23
-Version: 0.0.7
+Date: 2024-07-09
+Version: 0.0.9
 Imports:
   ade4,
   basicPlotteR,
@@ -17,7 +17,6 @@ Imports:
   data.table,
   dismo,
   dplyr,
-  econetwork,
   foreign,
   future,
   future.apply,
@@ -37,12 +36,10 @@ Imports:
   raster,
   reproducible,
   reshape2,
-  rgdal,
   rgl,
   rredlist,
   scatterplot3d,
   sf,
-  sp,
   stats,
   tools,
   utils,
@@ -50,23 +47,25 @@ Imports:
 Suggests:
   alphahull,
   ape,
+  econetwork,
+  gdalUtilities,
   hash,
   phangorn,
   knitr,
   Matrix,
   NetIndices,
   rmarkdown,
-  rstudioapi
+  rstudioapi,
+  sp
 Remotes:
   JosephCrispell/basicPlotteR,
   PredictiveEcology/Require@development,
   PredictiveEcology/reproducible@master,
-  url::https://gitlab.com/CeresBarros/econetwork/-/archive/saveMemWIntegers/econetwork-saveMemWIntegers.zip  
 BugReports: https://github.com/CeresBarros/ToolsCB/issues
 License: GPL-3
 Language: en-EN
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 VignetteBuilder: knitr, rmarkdown
 Roxygen: list(markdown = TRUE)

@@ -222,12 +222,19 @@ calcTempBetaDivBAMR <- function(ff, BLweb, res.dir, out.dir, dietcat = dietcat,
 #'
 #' @importFrom crayon blue
 #' @importFrom data.table data.table
-#' @importFrom econetwork divPartition disPairwise
 #' @importFrom vegan vegdist
 #' @importFrom utils capture.output
 #'
 #' @export
 networkTempBetaDiv <- function(web1, web2, dietcat, method = "all", mode = "composition") {
+  if (!"econetwork" %in% installed.packages() |
+      packageVersion("econetwork") != "0.7.0.9000") {
+    stop("Please install econetwork package using:\n",
+         "remotes::install_gitlab('CeresBarros/econetwork@saveMemWIntegers', auth_token = 'glpat-Xa1mqzHW-ZMT75Q7P16c')")
+  } else {
+    requireNamespace("econetwork")
+  }
+
   if (!mode %in% c("decompHills", "pairwiseHills", "composition")) {
     stop("mode must be one of 'decompHills', 'pairwiseHills' or 'composition'")
   }
@@ -595,7 +602,6 @@ networkTempBetaDiv.master <- function(pixXsppMat1, pixXsppMat2,
 #'
 #' @importFrom tools file_path_sans_ext
 #' @importFrom reproducible Cache
-#' @importFrom econetwork disPairwise divPartition
 #' @importFrom future plan
 #' @importFrom future.apply future_lapply
 #' @importFrom utils object.size
@@ -605,6 +611,14 @@ calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetwor
                              noReps = NULL, networkGroups = NULL, parallel = FALSE,
                              noCores = 2, toDo = "missing", cacheRepo = options("reproducible.cachePath")) {
   cat(paste0("Start\n", date(), ": ", ff, "\n"), append = TRUE)
+  if (!"econetwork" %in% installed.packages() |
+      packageVersion("econetwork") != "0.7.0.9000") {
+    stop("Please install econetwork package using:\n",
+         "remotes::install_gitlab('CeresBarros/econetwork@saveMemWIntegers', auth_token = 'glpat-Xa1mqzHW-ZMT75Q7P16c')")
+  } else {
+    requireNamespace("econetwork")
+  }
+
   ## checks:
   if (!isFALSE(sampleNetworks) & is.null(noReps)) {
     warning("You chose to sample networks without repetition. We advise providing a 'noReps'")

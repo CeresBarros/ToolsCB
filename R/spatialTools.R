@@ -181,10 +181,16 @@ prepKMZ2shapefile <- function(url, archive, destinationPath, overwrite = TRUE) {
 #'
 #' @return a convex hull polygon
 #'
-#' @importFrom sp SpatialPoints polygons
 #' @importFrom dismo convHull
 
 outerBuffer <- function(x) {
+  if (!"sp" %in% rownames(installed.packages())) {
+    stop("'sp' is not installed. Please install using:",
+         "\ninstall.packages('sp')")
+  } else {
+    loadNamespace("sp")
+  }
+
   if (is(x, "SpatialPolygons") | is(x, "SpatialPolygonsDataFrame")) {
     ## Get polygon vertices
     pts <- SpatialPoints(do.call(rbind, lapply(x@polygons, FUN = function(x) {
@@ -382,16 +388,13 @@ vector2binmatrix <- function(x) {
 #' @export
 #'
 #' @importFrom raster raster mask
-#' @importFrom sf as_Spatial
-#' @importFrom rgdal writeOGR
-#' @importFrom sp bbox
+#' @importFrom sf st_bbox st_as_sf st_write
 #' @importFrom utils installed.packages
 #'
 rasterizeCover <- function(rasterToMatch, shp, field, noDataVal = 0) {
-  if (!"gdalUtils" %in% rownames(installed.packages())) {
-    stop("'gdalUtils' is not installed. Please install using:",
-         "\ninstall.packages('https://cran.r-project.org/src/contrib/Archive/gdalUtils/gdalUtils_2.0.3.2.tar.gz',
-         type = 'source', repos = NULL)")
+  if (!"gdalUtilities" %in% rownames(installed.packages())) {
+    stop("'gdalUtilities' is not installed. Please install using:",
+         "\ninstall.packages('gdalUtilities')")
   } else {
     loadNamespace("gdalUtils")
   }
@@ -400,15 +403,15 @@ rasterizeCover <- function(rasterToMatch, shp, field, noDataVal = 0) {
     stop("rasterToMatch must be RasterLayer")
   if (!is(shp, "sf") & !is(shp, "SpatialPolygonsDataFrame"))
     stop("shp must be sf or SpatialPolygonsDataFrame")
-  if (is(shp, "sf"))
-    shp <- as_Spatial(shp)
+  if (!is(shp, "sf"))
+    shp <- st_as_sf(shp)
   if (!is.numeric(noDataVal) & !is.integer(noDataVal))
     stop("noDataVal must be numeric/integer")
 
 
   ## create temporary files/directories
   tempShp <- basename(tempfile())
-  writeOGR(shp, tempdir(), tempShp, 'ESRI Shapefile')
+  st_write(shp, dsn = file.path(tempdir(), tempShp), driver = 'ESRI Shapefile')
   tempRas <- tempfile(fileext = '.tif')
 
   ## rasterize
@@ -416,14 +419,14 @@ rasterizeCover <- function(rasterToMatch, shp, field, noDataVal = 0) {
     gdal_rasterize(sprintf('%s/%s.shp', tempdir(), tempShp),
                    tempRas, at = T, a = field,
                    init = noDataVal,
-                   te = c(bbox(rasterToMatch)),
+                   te = c(st_bbox(rasterToMatch)),
                    tr = res(rasterToMatch))
   } else {
     gdal_rasterize(sprintf('%s/%s.shp', tempdir(), tempShp),
                    tempRas, at = T,
                    burn = 1,
                    init = noDataVal,
-                   te = c(bbox(rasterToMatch)),
+                   te = c(st_bbox(rasterToMatch)),
                    tr = res(rasterToMatch))
   }
 
