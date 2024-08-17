@@ -246,6 +246,8 @@ calcSppTL <- function(web = NULL, community = NULL, out.type = c("vector", "data
                            properties = list(title = "BL"))
 
     community <- RemoveCannibalisticLinks(community, title='community')
+  } else {
+    stopifnot(is(community, "Community"))
   }
 
 
