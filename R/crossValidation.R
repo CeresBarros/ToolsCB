@@ -9,17 +9,17 @@
 #' @param statsModel the statistical model to validate. Only works with gamlss models
 #' @param k integer with number of chunks that the data should be partitioned in
 #' @param idCol column with pixel/observation IDs (optional)
-#' @param origData the data used to fit the statsModule, needs to be passed to `gamlss::predictAll`
-#'   (it may not be able to access it) but also to make sure newdata in `gamlss::predictAll`
+#' @param origData the data used to fit the statsModule, needs to be passed to [`gamlss::predictAll()`]
+#'   (it may not be able to access it) but also to make sure newdata in [`gamlss::predictAll()`]
 #'  has the same variables (even if they're not used in the model)
 #' @param level passed to `gamlss:::predict`
-#' @param cacheObj1 object used by `reproducible::Cache` for digesting,
+#' @param cacheObj1 object used by [`reproducible::Cache()`] for digesting,
 #'  to avoid digesting the (potentially) large data arguments
-#' @param cacheObj2  object used by `reproducible::Cache` for digesting,
+#' @param cacheObj2  object used by [`reproducible::Cache()`] for digesting,
 #'  to avoid digesting the (potentially) large data arguments
-#' @param parallel logical. Uses `future.apply::future_lapply` to parallelise
+#' @param parallel logical. Uses [`future.apply::future_lapply()`] to parallelise
 #'  model fitting across the k-folds, using `plan(multiprocess)`. Defaults to FALSE
-#' @param ... further arguments passed to `future::plan`
+#' @param ... further arguments passed to [`future::plan()`]
 #' @param cacheArgs a named `list` of arguments passed to inner `Cache` calls
 #'
 #' @importFrom future.apply future_lapply

@@ -6,7 +6,7 @@
 #' Summarizes network pairwise distances into mean distance from a
 #'   focal network to others
 #'
-#' @param distObj a `dist` object calculated using `econetwork::disPairwise`
+#' @param distObj a `dist` object calculated using [`econetwork::disPairwise()`]
 #'
 #' @importFrom data.table data.table
 #' @importFrom stats sd
