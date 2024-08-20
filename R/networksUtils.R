@@ -218,7 +218,7 @@ robustnessMaps <- function(ras, mask = NULL, maskCol = NULL,
   ## checks
   if (!is(ras, "RasterLayer"))
     stop("ras needs to be of class RasterLayer")
-  if (!is.null(mask) & class(mask) != "RasterLayer")
+  if (!is.null(mask) & !is(mask, "RasterLayer"))
     stop("mask needs to be of class RasterLayer")
 
   if (is.null(maskCol))
