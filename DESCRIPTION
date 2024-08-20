@@ -65,5 +65,4 @@ Language: en-EN
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.1
-VignetteBuilder: knitr, rmarkdown
 Roxygen: list(markdown = TRUE)
