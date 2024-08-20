@@ -9,7 +9,7 @@ focal network to others}
 calcNetMeanDistances(distObj)
 }
 \arguments{
-\item{distObj}{a \code{dist} object calculated using \code{econetwork::disPairwise}}
+\item{distObj}{a \code{dist} object calculated using \code{\link[econetwork:disPairwise]{econetwork::disPairwise()}}}
 }
 \description{
 CALCULATE MEAN BETA DIVERSITY (PAIRWISE DISTANCE)

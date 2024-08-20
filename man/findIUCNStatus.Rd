@@ -4,12 +4,20 @@
 \alias{findIUCNStatus}
 \title{FIND SPECIES IUCN STATUS}
 \usage{
-findIUCNStatus(species, region = NULL)
+findIUCNStatus(
+  species,
+  region = NULL,
+  token = "9bb4facb6d23f48efbf424bb05c0c1ef1cf6f468393bc745d42179ac4aca5fee"
+)
 }
 \arguments{
 \item{species}{character vector of species scientific names. see \code{rredlist::rl_search}}
 
 \item{region}{region to search in. see \code{rredlist::rl_regions}}
+
+\item{token}{IUCN API token. See https://apiv3.iucnredlist.org/api/v3/docs
+and \code{rredlist} documentation. Defaults to the token in this URL:
+https://apiv3.iucnredlist.org/api/v3/species/region/europe/page/0?token=9bb4facb6d23f48efbf424bb05c0c1ef1cf6f468393bc745d42179ac4aca5fee}
 }
 \description{
 FIND SPECIES IUCN STATUS

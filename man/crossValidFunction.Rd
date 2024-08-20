@@ -23,28 +23,28 @@ crossValidFunction(
 
 \item{statsModel}{the statistical model to validate. Only works with gamlss models}
 
-\item{origData}{the data used to fit the statsModule, needs to be passed to \code{gamlss::predictAll}
-(it may not be able to access it) but also to make sure newdata in \code{gamlss::predictAll}
+\item{origData}{the data used to fit the statsModule, needs to be passed to \code{\link[gamlss:predict.gamlss]{gamlss::predictAll()}}
+(it may not be able to access it) but also to make sure newdata in \code{\link[gamlss:predict.gamlss]{gamlss::predictAll()}}
 has the same variables (even if they're not used in the model)}
 
 \item{k}{integer with number of chunks that the data should be partitioned in}
 
 \item{idCol}{column with pixel/observation IDs (optional)}
 
-\item{parallel}{logical. Uses \code{future.apply::future_lapply} to parallelise
+\item{parallel}{logical. Uses \code{\link[future.apply:future_lapply]{future.apply::future_lapply()}} to parallelise
 model fitting across the k-folds, using \code{plan(multiprocess)}. Defaults to FALSE}
 
-\item{cacheObj1}{object used by \code{reproducible::Cache} for digesting,
+\item{cacheObj1}{object used by \code{\link[reproducible:Cache]{reproducible::Cache()}} for digesting,
 to avoid digesting the (potentially) large data arguments}
 
-\item{cacheObj2}{object used by \code{reproducible::Cache} for digesting,
+\item{cacheObj2}{object used by \code{\link[reproducible:Cache]{reproducible::Cache()}} for digesting,
 to avoid digesting the (potentially) large data arguments}
 
 \item{cacheArgs}{a named \code{list} of arguments passed to inner \code{Cache} calls}
 
 \item{level}{passed to \code{gamlss:::predict}}
 
-\item{...}{further arguments passed to \code{future::plan}}
+\item{...}{further arguments passed to \code{\link[future:plan]{future::plan()}}}
 }
 \description{
 CROSS-VALIDATION FUNCTION

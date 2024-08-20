@@ -5,7 +5,7 @@
 \title{CALCULATE TROPHIC LEVEL STATISTICS
 Function to calculate trophic level stats}
 \usage{
-tlstats(web = NULL, dietcat = dietcat)
+tlstats(web = NULL, dietcat = NULL)
 }
 \arguments{
 \item{web}{a square \code{matrix} representing an adjacency matrix.}
