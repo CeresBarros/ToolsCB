@@ -230,7 +230,7 @@ networkTempBetaDiv <- function(web1, web2, dietcat, method = "all", mode = "comp
   if (!"econetwork" %in% installed.packages() |
       packageVersion("econetwork") != "0.7.0.9000") {
     stop("Please install econetwork package using:\n",
-         "remotes::install_gitlab('CeresBarros/econetwork@saveMemWIntegers', auth_token = 'glpat-Xa1mqzHW-ZMT75Q7P16c')")
+         "remotes::install_gitlab('CeresBarros/econetwork@saveMemWIntegers')")
   } else {
     requireNamespace("econetwork")
   }
@@ -335,7 +335,7 @@ networkTempBetaDiv <- function(web1, web2, dietcat, method = "all", mode = "comp
 
         if (mode == "pairwiseHills") {
           ## suppress progress bar
-          invisible(capture.output(temp <- disPairwise(gList = pixelXspp.ls, type = "L")))
+          invisible(capture.output(temp <- econetwork::disPairwise(gList = pixelXspp.ls, type = "L")))
           temp <- unique(temp)
           temp <- data.table(beta_sore = NA,
                              beta_simp = NA,
@@ -347,7 +347,7 @@ networkTempBetaDiv <- function(web1, web2, dietcat, method = "all", mode = "comp
         }
 
         if (mode == "decompHills") {
-          temp <- divPartition(gList = pixelXspp.ls, type = "L", framework = "Chao")
+          temp <- econetwork::divPartition(gList = pixelXspp.ls, type = "L", framework = "Chao")
           temp <- data.table(beta_sore = NA,
                              beta_simp = NA,
                              beta_nest = NA,
