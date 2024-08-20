@@ -1,2 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+
+^.git$
+^\.github$
+
+^man-roxygen$
+
+^docUtils\.R$
