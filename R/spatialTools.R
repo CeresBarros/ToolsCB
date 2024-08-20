@@ -188,17 +188,17 @@ outerBuffer <- function(x) {
     stop("'sp' is not installed. Please install using:",
          "\ninstall.packages('sp')")
   } else {
-    loadNamespace("sp")
+    requireNamespace("sp")
   }
 
   if (is(x, "SpatialPolygons") | is(x, "SpatialPolygonsDataFrame")) {
     ## Get polygon vertices
-    pts <- SpatialPoints(do.call(rbind, lapply(x@polygons, FUN = function(x) {
+    pts <- sp::SpatialPoints(do.call(rbind, lapply(x@polygons, FUN = function(x) {
       return(x@Polygons[[1]]@coords)
     })))
 
     ## Draw convex hull around points and extract polygons slot
-    hull <- polygons(convHull(pts))
+    hull <- sp::polygons(convHull(pts))
 
     return(hull)
   } else(stop("x must be a SpatialPolygons, or SpatialPolygonsDF"))
@@ -237,9 +237,9 @@ loadBindSpatialObjs <- function(files, destinationPath, urls = NULL) {
     }  else {
       ## check if all are raster files
       if (all(grepl(".grd", files)) |
-         all(grepl(".asc", files)) |
-         all(grepl(".tif", files)) |
-         all(grepl(".img", files))) {
+          all(grepl(".asc", files)) |
+          all(grepl(".tif", files)) |
+          all(grepl(".img", files))) {
 
         spObj.ls <- lapply(files, FUN = function(targetFile) {
           prepInputs(targetFile = file.path(destinationPath, targetFile),
@@ -269,9 +269,9 @@ loadBindSpatialObjs <- function(files, destinationPath, urls = NULL) {
     }  else {
       ## check if all are raster files
       if (all(grepl(".grd", files)) |
-         all(grepl(".asc", files)) |
-         all(grepl(".tif", files)) |
-         all(grepl(".img", files))) {
+          all(grepl(".asc", files)) |
+          all(grepl(".tif", files)) |
+          all(grepl(".img", files))) {
 
         spObj.ls <- lapply(files, FUN = function(targetFile) {
           prepInputs(targetFile = targetFile,
@@ -396,7 +396,7 @@ rasterizeCover <- function(rasterToMatch, shp, field, noDataVal = 0) {
     stop("'gdalUtilities' is not installed. Please install using:",
          "\ninstall.packages('gdalUtilities')")
   } else {
-    loadNamespace("gdalUtils")
+    requireNamespace("gdalUtilities")
   }
   ## checks
   if (!is(rasterToMatch, "RasterLayer"))
@@ -416,18 +416,18 @@ rasterizeCover <- function(rasterToMatch, shp, field, noDataVal = 0) {
 
   ## rasterize
   if (!is.null(field)) {
-    gdal_rasterize(sprintf('%s/%s.shp', tempdir(), tempShp),
-                   tempRas, at = T, a = field,
-                   init = noDataVal,
-                   te = c(st_bbox(rasterToMatch)),
-                   tr = res(rasterToMatch))
+    gdalUtilities::gdal_rasterize(sprintf('%s/%s.shp', tempdir(), tempShp),
+                              tempRas, at = T, a = field,
+                              init = noDataVal,
+                              te = c(st_bbox(rasterToMatch)),
+                              tr = res(rasterToMatch))
   } else {
-    gdal_rasterize(sprintf('%s/%s.shp', tempdir(), tempShp),
-                   tempRas, at = T,
-                   burn = 1,
-                   init = noDataVal,
-                   te = c(st_bbox(rasterToMatch)),
-                   tr = res(rasterToMatch))
+    gdalUtilities::gdal_rasterize(sprintf('%s/%s.shp', tempdir(), tempShp),
+                              tempRas, at = T,
+                              burn = 1,
+                              init = noDataVal,
+                              te = c(st_bbox(rasterToMatch)),
+                              tr = res(rasterToMatch))
   }
 
   tempRas <- raster(tempRas)

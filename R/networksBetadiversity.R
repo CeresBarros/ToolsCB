@@ -223,7 +223,7 @@ calcTempBetaDivBAMR <- function(ff, BLweb, res.dir, out.dir, dietcat = dietcat,
 #' @importFrom crayon blue
 #' @importFrom data.table data.table
 #' @importFrom vegan vegdist
-#' @importFrom utils capture.output
+#' @importFrom utils capture.output packageVersion
 #'
 #' @export
 networkTempBetaDiv <- function(web1, web2, dietcat, method = "all", mode = "composition") {
@@ -604,7 +604,7 @@ networkTempBetaDiv.master <- function(pixXsppMat1, pixXsppMat2,
 #' @importFrom reproducible Cache
 #' @importFrom future plan
 #' @importFrom future.apply future_lapply
-#' @importFrom utils object.size
+#' @importFrom utils object.size packageVersion
 #'
 #' @export
 calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetworks = FALSE,
@@ -726,7 +726,7 @@ calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetwor
         if (parallel) {
           plan(multisession, gc = TRUE, workers = 4)
           pairwiseBetaDivList <- future_lapply(sampList, FUN = function(samp, pixelXspp.ls, cacheRepo, outFile) {
-            Cache(disPairwise,
+            Cache(econetwork::disPairwise,
                   gList = pixelXspp.ls[samp],
                   type = "L",
                   .cacheExtra = list(samp, object.size(pixelXspp.ls[samp]), outFile),
@@ -739,7 +739,7 @@ calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetwor
           future:::ClusterRegistry("stop")
         } else {
           pairwiseBetaDivList <- lapply(sampList, FUN = function(samp, pixelXspp.ls, cacheRepo, outFile) {
-            Cache(disPairwise,
+            Cache(econetwork::disPairwise,
                   gList = pixelXspp.ls[samp],
                   type = "L",
                   cacheRepo = cacheRepo,
@@ -754,7 +754,7 @@ calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetwor
         if (parallel) {
           plan(multisession, gc = TRUE, workers = 4)
           pairwiseBetaDivList <- future_lapply(sampList, FUN = function(samp, pixelXspp.ls, cacheRepo, outFile) {
-            Cache(divPartition,
+            Cache(econetwork::divPartition,
                   gList = pixelXspp.ls[samp],
                   type = "L",
                   framework = "Chao",
@@ -768,7 +768,7 @@ calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetwor
           future:::ClusterRegistry("stop")
         } else {
           pairwiseBetaDivList <- lapply(sampList, FUN = function(samp, pixelXspp.ls, cacheRepo, outFile) {
-            Cache(divPartition,
+            Cache(econetwork::divPartition,
                   gList = pixelXspp.ls[samp],
                   type = "L",
                   framework = "Chao",
