@@ -148,9 +148,19 @@ BetaDisQ <- function(spxp, Z = NULL, q = 2, check = TRUE, mult = TRUE){
 #' @param spxp sites (row) by species (cols) `matrix` with or without `rownames` and `colnames`
 #' @param phy ultrametric phylogenetic tree.
 
-chaoObjects <- function(spxp, phy){
-  requireNamespace(ape)
-  requireNamespace(phangorn)
+chaoObjects <- function(spxp, phy) {
+
+  if (!"ape" %in% installed.packages()) {
+    stop("Please install ape package")
+  } else {
+    requireNamespace("ape")
+  }
+
+  if (!"phangorn" %in% installed.packages()) {
+    stop("Please install phangorn package")
+  } else {
+    requireNamespace("phangorn")
+  }
 
   if (!inherits(phy, "phylo")){
     stop("object \"phy\" is not of class \"phylo\"")}

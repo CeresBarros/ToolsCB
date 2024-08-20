@@ -20,6 +20,8 @@
 #' @importFrom graphics abline
 #' @importFrom stats splinefun median
 #' @importFrom utils tail
+#' @importFrom gamlss predictAll
+#'
 ## added "mean" and level to gamlss:getPEF
 ## added output to chose between function of predicted values
 getPEF.own <- function(obj = NULL, term = NULL, data = NULL, n.points = 100,
