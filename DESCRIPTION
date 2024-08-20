@@ -35,7 +35,6 @@ Imports:
   plyr,
   raster,
   reproducible,
-  reshape2,
   rgl,
   rredlist,
   scatterplot3d,

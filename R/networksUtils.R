@@ -6,8 +6,7 @@
 #'
 #' @param ras a `raster` with species presence data.
 #'
-#' @importFrom data.table data.table
-#' @importFrom reshape2 dcast
+#' @importFrom data.table data.table dcast
 #' @export
 ras2matrix <- function(ras) {
   ## ras is a raster file

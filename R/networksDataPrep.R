@@ -129,8 +129,7 @@ fun.dbf2raster <- function(SPPPA, mask.dir = NULL) {
 #'   per pixel that is to be converted into a matrix of pix X spp
 #' @param is.web is `list.obj` a list of webs?
 #'
-#' @importFrom data.table rbindlist set
-#' @importFrom reshape2 dcast
+#' @importFrom data.table rbindlist set dcast
 #' @export
 pixXspp_function <- function(list.obj = NULL, is.web = TRUE) {
   ## checks
