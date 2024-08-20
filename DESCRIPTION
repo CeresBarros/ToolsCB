@@ -59,8 +59,7 @@ Suggests:
   sp
 Remotes:
   JosephCrispell/basicPlotteR,
-  PredictiveEcology/Require@development,
-  CeresBarros/econetwork@saveMemWIntegers
+  PredictiveEcology/Require@development
 BugReports: https://github.com/CeresBarros/ToolsCB/issues
 License: GPL-3
 Language: en-EN
