@@ -133,14 +133,17 @@ makeBioregDT <- function(rasterToMatch = NULL, maskID = NULL, args = NULL) {
 #' FIND SPECIES IUCN STATUS
 #' @param species character vector of species scientific names. see `rredlist::rl_search`
 #' @param region region to search in. see `rredlist::rl_regions`
+#' @param token IUCN API token. See https://apiv3.iucnredlist.org/api/v3/docs
+#'   and `rredlist` documentation. Defaults to the token in this URL:
+#'   https://apiv3.iucnredlist.org/api/v3/species/region/europe/page/0?token=9bb4facb6d23f48efbf424bb05c0c1ef1cf6f468393bc745d42179ac4aca5fee
 #'
 #' @importFrom rredlist rl_search
 #' @export
-findIUCNStatus <- function(species, region = NULL) {
+findIUCNStatus <- function(species, region = NULL, token = "9bb4facb6d23f48efbf424bb05c0c1ef1cf6f468393bc745d42179ac4aca5fee") {
   status <- sapply(species, FUN = function(x, region) {
     ## try checking if spp exists by searching in whole database
-    if (length(rl_search(x)$result)) {
-      status <- rl_search(x, region = region)$result[["category"]]
+    if (length(rl_search(x, key = token)$result)) {
+      status <- rl_search(x, region = region, key = token)$result[["category"]]
 
       if (length(status)) {
         status
@@ -155,12 +158,14 @@ findIUCNStatus <- function(species, region = NULL) {
 }
 
 #' FIND SPECIES ACCEPTED NAMES (IUCN)
-#' @param species character vector of species scientific names. see `rredlist::rl_search`
+#' @inheritParams findIUCNStatus
 #'
 #' @importFrom rredlist rl_synonyms
 #' @export
-findIUCNAcceptedName <- function(species) {
-  accptdName <- sapply(species, FUN = function(x) unique(rl_synonyms(x)$result[["accepted_name"]]))
+findIUCNAcceptedName <- function(species, token = "9bb4facb6d23f48efbf424bb05c0c1ef1cf6f468393bc745d42179ac4aca5fee") {
+  accptdName <- sapply(species, FUN = function(x){
+    unique(rl_synonyms(x, key = token)$result[["accepted_name"]])
+  })
   accptdName
 }
 
