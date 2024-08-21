@@ -57,7 +57,6 @@ Suggests:
 Remotes:
   JosephCrispell/basicPlotteR,
   PredictiveEcology/Require@development,
-  gitlab::CeresBarros/econetwork@saveMemWIntegers
 BugReports: https://github.com/CeresBarros/ToolsCB/issues
 License: GPL-3
 Language: en-EN
