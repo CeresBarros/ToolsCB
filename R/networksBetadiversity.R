@@ -508,7 +508,6 @@ calcTempBetaDiv.master <- function(masterScen.file, masterBL.files,
 #'
 #' @return a data.table of beta-diversity indices per pixel ID (column "PAGENAME")
 #' @importFrom data.table rbindlist data.table melt
-#' @importFrom vegan vegdist
 #'
 #' @export
 networkTempBetaDiv.master <- function(pixXsppMat1, pixXsppMat2,
