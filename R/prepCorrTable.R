@@ -7,14 +7,18 @@
 #'               Adapted from http://myowelt.blogspot.com/2008/04/beautiful-correlation-tables-in-r.html
 #' @param x a matrix or any object compatible with as.matrix, from where the covariance matrix will be calculated.
 #'          alternatively, corTable and pTable matrices can be supplied.
-#' @param method see `Hmisc::rcorr` `type` argument.
+#' @param method see [`Hmisc::rcorr()`] `type` argument.
 #' @param corTable matrix of correlation values obtained from e.g. `Hmisc::rcorr(...)$r`.
 #'                 If supplied, x will be ignored
 #' @param pTable matrix of pTable-values values obtained from e.g. `Hmisc::rcorr(...)$pTable`
 #'
 #' @export
-#' @importFrom Hmisc rcorr
 prepCorrTable <- function(x = NULL, corTable = NULL, pTable = NULL, method = "pearson") {
+  if (!requireNamespace("Hmisc", quietly = TRUE)) {
+    stop("'Hmisc' is not installed. Please install using:",
+         "\ninstall.packages('Hmisc')")
+  }
+
   ## checks
   if (!is.null(x)) {
     if (!all(class(x) == "matrix"))
@@ -31,8 +35,8 @@ prepCorrTable <- function(x = NULL, corTable = NULL, pTable = NULL, method = "pe
     stop("method must be 'pearson' or 'spearman'")
 
   if (is.null(corTable) & is.null(pTable)) {
-    corTable <- rcorr(x, type = method)$r
-    pTable <- rcorr(x, type = method)$P
+    corTable <- Hmisc::rcorr(x, type = method)$r
+    pTable <- Hmisc::rcorr(x, type = method)$P
   }
 
   ## define notions for significance levels; spacing is important.

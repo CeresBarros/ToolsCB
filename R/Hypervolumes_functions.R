@@ -552,13 +552,16 @@ HVordination <- function(datatable, HVidvar, init.vars = NULL, ordination = "PCA
 #' @param lwd passed to `scatterplot3d::scatterplot3d`
 #' @param ... arguments passed to `.plot.HypervolumeListEdited`
 #'
-#' @importFrom basicPlotteR addTextLabels
 #' @export
 
 plotHypervolumes3D <- function(HVlist, loadings_coords = NULL, PHvect_coords = NULL,
                                loadings_labels = NULL, PHvect_labels = NULL,
                                loadings_col = "grey20", cex.label = 1, lwd = 1,
                                PHvect_col = "darkgreen", ...) {
+  if (!requireNamespace("basicPlotteR", quietly = TRUE)) {
+    stop("'basicPlotteR' is not installed. Please install using:",
+         "\ninstall.packages('basicPlotteR')")
+  }
 
   if (!is.null(loadings_coords)) {
     if (ncol(loadings_coords) != 3) {
@@ -620,25 +623,25 @@ plotHypervolumes3D <- function(HVlist, loadings_coords = NULL, PHvect_coords = N
     ## factor loading labels
     plotlabels <- allVectors$label[rowSums(allVectors[,1:3]) != 0]
     plotlabels[allVectors$type[rowSums(allVectors[,1:3]) != 0] == "PHvect"] <- ""
-    addTextLabels(xCoords = textCoords$x, yCoords = textCoords$y,
-                  labels = plotlabels, cex.label = cex.label, col.label = loadings_col, col.line = loadings_col, lwd = 0.15, lty = 2,
-                  avoidPoints = TRUE)
+    basicPlotteR::addTextLabels(xCoords = textCoords$x, yCoords = textCoords$y,
+                                labels = plotlabels, cex.label = cex.label, col.label = loadings_col, col.line = loadings_col, lwd = 0.15, lty = 2,
+                                avoidPoints = TRUE)
 
     ## trait labels
     plotlabels <- allVectors$label[rowSums(allVectors[,1:3]) != 0]
     plotlabels[allVectors$type[rowSums(allVectors[,1:3]) != 0] == "loadings"] <- ""
-    addTextLabels(xCoords = textCoords$x, yCoords = textCoords$y,
-                  labels = plotlabels, cex.label = cex.label,
-                  col.label = PHvect_col, col.line = PHvect_col, lwd = 0.15, lty = 2,
-                  avoidPoints = TRUE)
+    basicPlotteR::addTextLabels(xCoords = textCoords$x, yCoords = textCoords$y,
+                                labels = plotlabels, cex.label = cex.label,
+                                col.label = PHvect_col, col.line = PHvect_col, lwd = 0.15, lty = 2,
+                                avoidPoints = TRUE)
   }
 }
 
 #' Edited version of `hypervolume::plot.HypervolumeList`
 #'
-#' Added centroid colours, corrected cex.data
-#' graphics changed to `scatterplot3d`, instead of `rgl`
-
+#' With added centroid colours, corrected cex.data, and the option to
+#' use `scatterplot3d`, instead of `rgl`
+#'
 #' @inheritParams hypervolume::plot.HypervolumeList
 #' @param rglGraphics if TRUE will plot 3D hypervolumes using `rgl`.
 #'   Otherwise, `scatterplot3d` is used
@@ -650,7 +653,6 @@ plotHypervolumes3D <- function(HVlist, loadings_coords = NULL, PHvect_coords = N
 #' @importFrom grDevices col2rgb rainbow rgb
 #' @importFrom graphics axis box contour legend mtext text
 #' @importFrom stats quantile
-#' @importFrom scatterplot3d scatterplot3d
 #' @importFrom rgl plot3d points3d mtext3d
 #' @importFrom MASS kde2d
 #' @export
@@ -904,7 +906,12 @@ plotHypervolumes3D <- function(HVlist, loadings_coords = NULL, PHvect_coords = N
              zlim = limits[[3]], size = cex.random, type = "p",
              box = show.frame, axes = show.axes)
     } else {
-      s3d <- scatterplot3d(x = all[, plot.3d.axes.id][, 1], y = all[, plot.3d.axes.id][, 2], z = all[, plot.3d.axes.id][, 3],
+      if (!requireNamespace("scatterplot3d", quietly = TRUE)) {
+        stop("'scatterplot3d' is not installed. Please install using:",
+             "\ninstall.packages('scatterplot3d')\n
+             or pass 'rglGraphics = TRUE'")
+      }
+      s3d <- scatterplot3d::scatterplot3d(x = all[, plot.3d.axes.id][, 1], y = all[, plot.3d.axes.id][, 2], z = all[, plot.3d.axes.id][, 3],
                            color = colorlist, xlab=axesnames[1], ylab=axesnames[2], zlab=axesnames[3],
                            xlim=limits[[1]], ylim=limits[[2]], zlim=limits[[3]],
                            cex.symbols = cex.random, cex.axis = cex.axis, type = "p", ...)

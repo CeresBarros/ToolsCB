@@ -23,7 +23,6 @@
 #' @param cacheRepo passed to `reproducible::Cache`
 #'
 #' @importFrom crayon red
-#' @importFrom tools file_path_sans_ext
 #' @importFrom reproducible Cache
 #' @importFrom data.table rbindlist
 #' @importFrom utils object.size
@@ -55,7 +54,7 @@ calcTempBetaDivBAMR <- function(ff, BLweb, res.dir, out.dir, dietcat = dietcat,
 
   ## make output file suffix and directory
   scen <- sub(res.dir, "", dirname(ff))
-  fileSuf <- file_path_sans_ext(basename(ff))
+  fileSuf <- .file_path_sans_ext(basename(ff))
   fileSuf <- sub("spp10kWdietFUND_", "", fileSuf)
 
   out.folder <- file.path(out.dir, scen)
@@ -222,17 +221,24 @@ calcTempBetaDivBAMR <- function(ff, BLweb, res.dir, out.dir, dietcat = dietcat,
 #'
 #' @importFrom crayon blue
 #' @importFrom data.table data.table
-#' @importFrom vegan vegdist
 #' @importFrom utils capture.output packageVersion
 #'
 #' @export
 networkTempBetaDiv <- function(web1, web2, dietcat, method = "all", mode = "composition") {
-  if (!"econetwork" %in% installed.packages() |
-      packageVersion("econetwork") != "0.7.0.9000") {
-    stop("Please install econetwork package using:\n",
-         "remotes::install_gitlab('CeresBarros/econetwork@saveMemWIntegers')")
+
+  if (!requireNamespace("econetwork", quietly = TRUE)) {
+    stop("'econetwork' is not installed. Please install using:",
+         "\nremotes::install_gitlab('CeresBarros/econetwork@saveMemWIntegers')")
   } else {
-    requireNamespace("econetwork")
+    if (packageVersion("econetwork") < "0.7.0.9000") {
+      stop("Please install econetwork package using:\n",
+           "remotes::install_gitlab('CeresBarros/econetwork@saveMemWIntegers')")
+    }
+  }
+
+  if (!requireNamespace("vegan", quietly = TRUE)) {
+    stop("'vegan' is not installed. Please install using:",
+         "\ninstall.packages('vegan')")
   }
 
   if (!mode %in% c("decompHills", "pairwiseHills", "composition")) {
@@ -313,7 +319,7 @@ networkTempBetaDiv <- function(web1, web2, dietcat, method = "all", mode = "comp
       temp <- data.table(beta_sore = beta.sor(siteXspp)[1],
                          beta_simp = beta.sim(siteXspp)[1],
                          beta_nest = beta.nes(siteXspp)[1],
-                         diss_jacc = vegdist(as.matrix(siteXspp), method = "jaccard", binary = TRUE)[1],
+                         diss_jacc = vegan::vegdist(as.matrix(siteXspp), method = "jaccard", binary = TRUE)[1],
                          beta_decompSimpson = BetaDisQ(as.matrix(siteXspp), q = 0)["Pres.fut", "Pres.bl"],
                          beta_decompHills = NA,
                          beta_pairwiseHills = NA)
@@ -416,7 +422,7 @@ calcTempBetaDiv.master <- function(masterScen.file, masterBL.files,
 
   ## make output file suffix and directory
   scen <- sub(scen.dir, "", dirname(masterScen.file))
-  fileSuf <- file_path_sans_ext(basename(masterScen.file))
+  fileSuf <- .file_path_sans_ext(basename(masterScen.file))
   fileSuf <- sub("masterdietFUND_", "", fileSuf)
 
   out.folder <- file.path(out.dir, scen)
@@ -560,7 +566,7 @@ networkTempBetaDiv.master <- function(pixXsppMat1, pixXsppMat2,
   tempTaxonBetaDiv <- pixXsppMat12[, .(beta_sore = beta.sor(.SD)[1],
                                        beta_simp = beta.sim(.SD)[1],
                                        beta_nest = beta.nes(.SD)[1],
-                                       diss_jacc = vegdist(as.matrix(.SD), method = "jaccard", binary = TRUE)[1],
+                                       diss_jacc = vegan::vegdist(as.matrix(.SD), method = "jaccard", binary = TRUE)[1],
                                        beta_decompSimpson = BetaDisQ(as.matrix(.SD), q = 0)[2, 1]),
                                    .SDcols = cols, by = PAGENAME]
   cols <- c("PAGENAME", betaMetrics)
@@ -599,26 +605,28 @@ networkTempBetaDiv.master <- function(pixXsppMat1, pixXsppMat2,
 #' @param toDo controls if beta-diversity has to be recalculated for 'all'
 #'     scenarios or just 'missing' ones
 #' @param cacheRepo passed to `reproducible::Cache`.
+#' @param ... further arguments passed to [`future::plan()`]
 #'
 #' @importFrom tools file_path_sans_ext
 #' @importFrom reproducible Cache
-#' @importFrom future plan
-#' @importFrom future.apply future_lapply
 #' @importFrom utils object.size packageVersion
 #'
 #' @export
 calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetworks = FALSE,
                              noReps = NULL, networkGroups = NULL, parallel = FALSE,
-                             noCores = 2, toDo = "missing", cacheRepo = options("reproducible.cachePath")) {
+                             noCores = 2, toDo = "missing", cacheRepo = options("reproducible.cachePath"),
+                             ...) {
   cat(paste0("Start\n", date(), ": ", ff, "\n"), append = TRUE)
-  if (!"econetwork" %in% installed.packages() |
-      packageVersion("econetwork") != "0.7.0.9000") {
-    stop("Please install econetwork package using:\n",
-         "remotes::install_gitlab('CeresBarros/econetwork@saveMemWIntegers', auth_token = 'glpat-Xa1mqzHW-ZMT75Q7P16c')")
-  } else {
-    requireNamespace("econetwork")
-  }
 
+  if (!requireNamespace("econetwork", quietly = TRUE)) {
+    stop("'econetwork' is not installed. Please install using:",
+         "\nremotes::install_gitlab('CeresBarros/econetwork@saveMemWIntegers')")
+  } else {
+    if (packageVersion("econetwork") < "0.7.0.9000") {
+      stop("Please install econetwork package using:\n",
+           "remotes::install_gitlab('CeresBarros/econetwork@saveMemWIntegers')")
+    }
+  }
   ## checks:
   if (!isFALSE(sampleNetworks) & is.null(noReps)) {
     warning("You chose to sample networks without repetition. We advise providing a 'noReps'")
@@ -651,7 +659,7 @@ calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetwor
 
   ## make output file name and directory
   scen <- sub(res.dir, "", dirname(ff))
-  fileSuf <- file_path_sans_ext(basename(ff))
+  fileSuf <- .file_path_sans_ext(basename(ff))
   fileSuf <- sub("spp10kWdietFUND_", "", fileSuf)
 
   out.folder <- file.path(out.dir, scen)
@@ -724,18 +732,33 @@ calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetwor
       if (mode == "pairwise") {
         ## SPATIAL TAXONOMIC BETA_DIVERSITY CALCULATION ---------------------------
         if (parallel) {
-          plan(multisession, gc = TRUE, workers = 4)
-          pairwiseBetaDivList <- future_lapply(sampList, FUN = function(samp, pixelXspp.ls, cacheRepo, outFile) {
-            Cache(econetwork::disPairwise,
-                  gList = pixelXspp.ls[samp],
-                  type = "L",
-                  .cacheExtra = list(samp, object.size(pixelXspp.ls[samp]), outFile),
-                  cacheRepo = cacheRepo,
-                  omitArgs = c("gList"))
-          },
-          pixelXspp.ls = pixelXspp.ls,
-          cacheRepo = cacheRepo,
-          outFile = outFile)
+
+          if (!requireNamespace("future", quietly = TRUE)) {
+            stop("'future' is not installed. Please install using:",
+                 "\ninstall.packages('future')")
+          }
+
+          if (!requireNamespace("future.apply", quietly = TRUE)) {
+            stop("'future.apply' is not installed. Please install using:",
+                 "\ninstall.packages('future.apply')")
+          }
+
+          if (Sys.info()[["sysname"]] == "Windows") {
+            future::plan(future::multisession, gc = TRUE, ...)
+          } else future::plan(future::multicore, ...)
+
+          pairwiseBetaDivList <- future.apply::future_lapply(
+            sampList, FUN = function(samp, pixelXspp.ls, cacheRepo, outFile) {
+              Cache(econetwork::disPairwise,
+                    gList = pixelXspp.ls[samp],
+                    type = "L",
+                    .cacheExtra = list(samp, object.size(pixelXspp.ls[samp]), outFile),
+                    cacheRepo = cacheRepo,
+                    omitArgs = c("gList"))
+            },
+            pixelXspp.ls = pixelXspp.ls,
+            cacheRepo = cacheRepo,
+            outFile = outFile)
           future:::ClusterRegistry("stop")
         } else {
           pairwiseBetaDivList <- lapply(sampList, FUN = function(samp, pixelXspp.ls, cacheRepo, outFile) {
@@ -752,8 +775,22 @@ calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetwor
         }
       } else {
         if (parallel) {
-          plan(multisession, gc = TRUE, workers = 4)
-          pairwiseBetaDivList <- future_lapply(sampList, FUN = function(samp, pixelXspp.ls, cacheRepo, outFile) {
+
+          if (!requireNamespace("future", quietly = TRUE)) {
+            stop("'future' is not installed. Please install using:",
+                 "\ninstall.packages('future')")
+          }
+
+          if (!requireNamespace("future.apply", quietly = TRUE)) {
+            stop("'future.apply' is not installed. Please install using:",
+                 "\ninstall.packages('future.apply')")
+          }
+
+          if (Sys.info()[["sysname"]] == "Windows") {
+            future::plan(future::multisession, gc = TRUE, ...)
+          } else future::plan(future::multicore, ...)
+
+          pairwiseBetaDivList <- future.apply::future_lapply(sampList, FUN = function(samp, pixelXspp.ls, cacheRepo, outFile) {
             Cache(econetwork::divPartition,
                   gList = pixelXspp.ls[samp],
                   type = "L",
@@ -765,6 +802,7 @@ calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetwor
           pixelXspp.ls = pixelXspp.ls,
           cacheRepo = cacheRepo,
           outFile = outFile)
+
           future:::ClusterRegistry("stop")
         } else {
           pairwiseBetaDivList <- lapply(sampList, FUN = function(samp, pixelXspp.ls, cacheRepo, outFile) {
@@ -788,4 +826,14 @@ calcSpaceBetaDiv <- function(ff, mode = "decomp", res.dir, out.dir, sampleNetwor
       cat(paste0("End\n", date(), "\n"), append = TRUE)
     }
   }
+}
+
+
+
+.file_path_sans_ext <- function(...) {
+  if (!requireNamespace("tools", quietly = TRUE)) {
+    stop("'tools' is not installed. Please install using:",
+         "\ninstall.packages('tools')")
+  }
+  tools::file_path_sans_ext(...)
 }

@@ -22,12 +22,16 @@
 #' @param ... further arguments passed to [`future::plan()`]
 #' @param cacheArgs a named `list` of arguments passed to inner `Cache` calls
 #'
-#' @importFrom future.apply future_lapply
-#' @importFrom future plan
 #' @export
 crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol,
-                                parallel = FALSE, cacheObj1 = NULL, cacheObj2 = NULL,
-                                cacheArgs = NULL, level = NULL, ...) {
+                               parallel = FALSE, cacheObj1 = NULL, cacheObj2 = NULL,
+                               cacheArgs = NULL, level = NULL, ...) {
+
+  if (!requireNamespace("gamlss", quietly = TRUE)) {
+    stop("'gamlss' is not installed. Please install using:",
+         "\ninstall.packages('gamlss')")
+  }
+
   if (!is.null(idCol))
     origDataVars <- c(names(origData), idCol)
 
@@ -45,13 +49,24 @@ crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol,
 
   message(paste("Starting cross-validation using", k, "folds"))
   if (parallel) {
+    if (!requireNamespace("future", quietly = TRUE)) {
+      stop("'future' is not installed. Please install using:",
+           "\ninstall.packages('future')")
+    }
+
+    if (!requireNamespace("future.apply", quietly = TRUE)) {
+      stop("'future.apply' is not installed. Please install using:",
+           "\ninstall.packages('future.apply')")
+    }
+
     if (Sys.info()[["sysname"]] == "Windows") {
-      plan(multisession, gc = TRUE, ...)
-    } else plan(multicore, ...)
-    crossValidResults <- future_lapply(unique(fullDT$sampID), FUN = calcCrossValidMetrics,
-                                       fullDT = fullDT, origData = origData,
-                                       statsModel = statsModel, origDataVars = origDataVars,
-                                       level = level, cacheArgs = cacheArgs)
+      future::plan(future::multisession, gc = TRUE, ...)
+    } else future::plan(future::multicore, ...)
+
+    crossValidResults <- future.apply::future_lapply(unique(fullDT$sampID), FUN = calcCrossValidMetrics,
+                                                     fullDT = fullDT, origData = origData,
+                                                     statsModel = statsModel, origDataVars = origDataVars,
+                                                     level = level, cacheArgs = cacheArgs)
     ## Explicitly close workers
     future:::ClusterRegistry("stop")
   } else {
@@ -79,14 +94,22 @@ crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol,
 #'
 #' @return a list with 2 entries
 #'
-#' @importFrom gamlss Rsq getTGD
 #' @importFrom reproducible Cache
 #' @importFrom data.table as.data.table set
-#' @importFrom caret defaultSummary
 #' @importFrom stats update
 #'
 #' @export
 calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel, origDataVars, level = NULL, cacheArgs = NULL) {
+  if (!requireNamespace("gamlss", quietly = TRUE)) {
+    stop("'gamlss' is not installed. Please install using:",
+         "\ninstall.packages('gamlss')")
+  }
+
+  if (!requireNamespace("caret", quietly = TRUE)) {
+    stop("'caret' is not installed. Please install using:",
+         "\ninstall.packages('caret')")
+  }
+
   message(paste("Fold", samp))
   ## predict requires the original and new data to have the same columns
   if (!all(names(origData) %in% names(fullDT)))
@@ -134,10 +157,10 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel, origDataVa
                   by = row.names(predictionsDT)]
 
     ## VALIDATION STATISTICS WITH CONTINUOUS VARIABLE -----------------------
-    RsqGAMLSS <- Rsq(trainModel)
-    TGDstats <- getTGD(trainModel, newdata = testData, data = trainData)
+    RsqGAMLSS <- gamlss::Rsq(trainModel)
+    TGDstats <- gamlss::getTGD(trainModel, newdata = testData, data = trainData)
 
-    validMetrics <- c(defaultSummary(data.frame(obs = predictionsDT$invRobust, pred = predictionsDT$predinvRobust)),
+    validMetrics <- c(caret::defaultSummary(data.frame(obs = predictionsDT$invRobust, pred = predictionsDT$predinvRobust)),
                       "Rsq" = RsqGAMLSS,
                       TGD = TGDstats$TGD,
                       predictError = TGDstats$predictError)

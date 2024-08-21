@@ -150,16 +150,14 @@ BetaDisQ <- function(spxp, Z = NULL, q = 2, check = TRUE, mult = TRUE){
 
 chaoObjects <- function(spxp, phy) {
 
-  if (!"ape" %in% installed.packages()) {
-    stop("Please install ape package")
-  } else {
-    requireNamespace("ape")
+  if (!requireNamespace("ape", quietly = TRUE)) {
+    stop("'ape' is not installed. Please install using:",
+         "\ninstall.packages('ape')")
   }
 
-  if (!"phangorn" %in% installed.packages()) {
-    stop("Please install phangorn package")
-  } else {
-    requireNamespace("phangorn")
+  if (!requireNamespace("phangorn", quietly = TRUE)) {
+    stop("'phangorn' is not installed. Please install using:",
+         "\ninstall.packages('phangorn')")
   }
 
   if (!inherits(phy, "phylo")){

@@ -92,15 +92,20 @@ fun.PRESENCE.ABSENCE <- function(species.dist = NULL, threshold = NULL, opt.only
 #' @param mask.dir folder where study area mask rasters and dbf file with pixel IDs can be found
 #'
 #' @importFrom raster raster
-#' @importFrom foreign read.dbf
 #' @export
 fun.dbf2raster <- function(SPPPA, mask.dir = NULL) {
+
+  if (!requireNamespace("foreign", quietly = TRUE)) {
+    stop("'foreign' is not installed. Please install using:",
+         "\ninstall.packages('foreign')")
+  }
+
   if (is.null(mask.dir)) stop("Must specify folder directory for mask files")
 
   if (any(!class(SPPPA) %in% "data.frame"))
     stop("Please make sure SPPPA is a data.frame")
 
-  maskID <- read.dbf(list.files(path = mask.dir, full.names = TRUE, pattern = ".img.vat.dbf$"))
+  maskID <- foreign::read.dbf(list.files(path = mask.dir, full.names = TRUE, pattern = ".img.vat.dbf$"))
   maskk <- raster(x = list.files(path = mask.dir, full.names = TRUE, pattern = ".img$"))
 
   spp <- data.frame(PAGENAME = as.character(maskID$PageName), stringsAsFactors = FALSE)

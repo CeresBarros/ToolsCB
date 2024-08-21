@@ -126,12 +126,16 @@ validateGeomsSf <- function(sfObj, dim) {
 #'
 #' @return a `shapefile`
 #'
-#' @importFrom googledrive drive_download as_id
 #' @importFrom sf st_read st_zm as_Spatial
 #' @importFrom raster shapefile
 #' @importFrom utils unzip
 
 prepKMZ2shapefile <- function(url, archive, destinationPath, overwrite = TRUE) {
+  if (!requireNamespace("googledrive", quietly = TRUE)) {
+    stop("'googledrive' is not installed. Please install using:",
+         "\ninstall.packages('googledrive')")
+  }
+
   ## check
   if (!is(url, "character") | is.null(url))
     stop("Provide url as a character string")
@@ -143,9 +147,9 @@ prepKMZ2shapefile <- function(url, archive, destinationPath, overwrite = TRUE) {
   }
 
   archivePath <- file.path(destinationPath, archive)
-  downloaded_file <- drive_download(file = as_id(url),
-                                    path = archivePath,
-                                    overwrite = overwrite)
+  downloaded_file <- googledrive::drive_download(file = googledrive::as_id(url),
+                                                 path = archivePath,
+                                                 overwrite = overwrite)
   if (downloaded_file$local_path != archivePath |
       downloaded_file$name != archive)
     stop(paste0("Downloaded file name (", downloaded_file$name, ") and archive (",
@@ -181,14 +185,15 @@ prepKMZ2shapefile <- function(url, archive, destinationPath, overwrite = TRUE) {
 #'
 #' @return a convex hull polygon
 #'
-#' @importFrom dismo convHull
-
 outerBuffer <- function(x) {
-  if (!"sp" %in% rownames(installed.packages())) {
+  if (!requireNamespace("sp", quietly = TRUE)) {
     stop("'sp' is not installed. Please install using:",
          "\ninstall.packages('sp')")
-  } else {
-    requireNamespace("sp")
+  }
+
+  if (!requireNamespace("dismo", quietly = TRUE)) {
+    stop("'dismo' is not installed. Please install using:",
+         "\ninstall.packages('dismo')")
   }
 
   if (is(x, "SpatialPolygons") | is(x, "SpatialPolygonsDataFrame")) {
@@ -198,7 +203,7 @@ outerBuffer <- function(x) {
     })))
 
     ## Draw convex hull around points and extract polygons slot
-    hull <- sp::polygons(convHull(pts))
+    hull <- sp::polygons(dismo::convHull(pts))
 
     return(hull)
   } else(stop("x must be a SpatialPolygons, or SpatialPolygonsDF"))
@@ -392,12 +397,11 @@ vector2binmatrix <- function(x) {
 #' @importFrom utils installed.packages
 #'
 rasterizeCover <- function(rasterToMatch, shp, field, noDataVal = 0) {
-  if (!"gdalUtilities" %in% rownames(installed.packages())) {
+  if (!requireNamespace("gdalUtilities", quietly = TRUE)) {
     stop("'gdalUtilities' is not installed. Please install using:",
          "\ninstall.packages('gdalUtilities')")
-  } else {
-    requireNamespace("gdalUtilities")
   }
+
   ## checks
   if (!is(rasterToMatch, "RasterLayer"))
     stop("rasterToMatch must be RasterLayer")
@@ -417,17 +421,17 @@ rasterizeCover <- function(rasterToMatch, shp, field, noDataVal = 0) {
   ## rasterize
   if (!is.null(field)) {
     gdalUtilities::gdal_rasterize(sprintf('%s/%s.shp', tempdir(), tempShp),
-                              tempRas, at = T, a = field,
-                              init = noDataVal,
-                              te = c(st_bbox(rasterToMatch)),
-                              tr = res(rasterToMatch))
+                                  tempRas, at = T, a = field,
+                                  init = noDataVal,
+                                  te = c(st_bbox(rasterToMatch)),
+                                  tr = res(rasterToMatch))
   } else {
     gdalUtilities::gdal_rasterize(sprintf('%s/%s.shp', tempdir(), tempShp),
-                              tempRas, at = T,
-                              burn = 1,
-                              init = noDataVal,
-                              te = c(st_bbox(rasterToMatch)),
-                              tr = res(rasterToMatch))
+                                  tempRas, at = T,
+                                  burn = 1,
+                                  init = noDataVal,
+                                  te = c(st_bbox(rasterToMatch)),
+                                  tr = res(rasterToMatch))
   }
 
   tempRas <- raster(tempRas)

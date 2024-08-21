@@ -20,7 +20,6 @@
 #' @importFrom graphics abline
 #' @importFrom stats splinefun median
 #' @importFrom utils tail
-#' @importFrom gamlss predictAll
 #'
 ## added "mean" and level to gamlss:getPEF
 ## added output to chose between function of predicted values
@@ -28,6 +27,11 @@ getPEF.own <- function(obj = NULL, term = NULL, data = NULL, n.points = 100,
                        parameter = c("mu", "sigma", "nu", "tau", "all"), level = NULL,
                        type = c("response", "link"), how = c("mean", "median", "last"), fixed.at = list(),
                        plot = FALSE, output = c("function", "vals")) {
+  if (!requireNamespace("gamlss", quietly = TRUE)) {
+    stop("'gamlss' is not installed. Please install using:",
+         "\ninstall.packages('gamlss')")
+  }
+
   if (is.null(obj) || !class(obj)[1] == "gamlss")
     stop("Supply a standard GAMLSS model in obj")
   if (is.null(term))
@@ -85,8 +89,8 @@ getPEF.own <- function(obj = NULL, term = NULL, data = NULL, n.points = 100,
     fittted.orig <- list(fittted.orig)
     names(fittted.orig) <- parameter
   } else {
-    fittted.orig <- predictAll(obj, newdata = tail(dat.temp, n.points),
-                               type = type, level = level)
+    fittted.orig <- gamlss::predictAll(obj, newdata = tail(dat.temp, n.points),
+                                       type = type, level = level)
   }
   ## Adapt code for multiple params:
   # theFun <- splinefun(xvar, fittted.orig)
