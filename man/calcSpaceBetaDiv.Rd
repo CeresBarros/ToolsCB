@@ -15,7 +15,8 @@ calcSpaceBetaDiv(
   parallel = FALSE,
   noCores = 2,
   toDo = "missing",
-  cacheRepo = options("reproducible.cachePath")
+  cacheRepo = options("reproducible.cachePath"),
+  ...
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ of sample size.}
 scenarios or just 'missing' ones}
 
 \item{cacheRepo}{passed to \code{reproducible::Cache}.}
+
+\item{...}{further arguments passed to \code{\link[future:plan]{future::plan()}}}
 }
 \description{
 This function loads and prepares networks to calculate temporal

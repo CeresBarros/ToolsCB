@@ -15,7 +15,7 @@ If supplied, x will be ignored}
 
 \item{pTable}{matrix of pTable-values values obtained from e.g. \code{Hmisc::rcorr(...)$pTable}}
 
-\item{method}{see \code{Hmisc::rcorr} \code{type} argument.}
+\item{method}{see \code{\link[Hmisc:rcorr]{Hmisc::rcorr()}} \code{type} argument.}
 }
 \description{
 function to make a nice correlation table for latex/Rmd

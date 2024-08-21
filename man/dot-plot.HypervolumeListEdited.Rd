@@ -186,6 +186,6 @@ If \code{TRUE}, prints diagnostic information about the number of points being p
 otherwise to \code{scatterplot3d}.}
 }
 \description{
-Added centroid colours, corrected cex.data
-graphics changed to \code{scatterplot3d}, instead of \code{rgl}
+With added centroid colours, corrected cex.data, and the option to
+use \code{scatterplot3d}, instead of \code{rgl}
 }
