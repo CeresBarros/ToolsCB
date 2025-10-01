@@ -264,10 +264,14 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
 
   Rsquared <- caret::postResample(pred = predictionsDT$pred, obs = predictionsDT$obs)
   Rsquared <- Rsquared["Rsquared"]
+
+  RMSE <- rmse(predictionsDT$obs, predictionsDT$pred)
+
   validMetrics <- c(caret::defaultSummary(data.frame(obs = predictionsDT$obs, pred = predictionsDT$pred)),
-                      "Rsq" = RsqGAMLSS,
+                    RMSE = RMSE,
+                    "Rsq" = RsqGAMLSS,
                     Rsquared = Rsquared,
-                      TGD = TGDstats$TGD,
+                    TGD = TGDstats$TGD,
                       predictError = TGDstats$predictError)
 
   out <- list(validMetrics = validMetrics, confMatrix = confMatrix,
@@ -292,4 +296,22 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
 updateModelCached <- function(..., cacheObj1 = NULL, cacheObj2 = NULL) {
   updatedModel <- update(...)
   return(updatedModel)
+}
+
+#' Root Mean Squared Error
+#'
+#' (Modified from `Metrics::rmse`)
+#'
+#' \code{rmse} computes the root mean squared error between two numeric vectors
+#'
+#' @param actual The ground truth numeric vector.
+#' @param predicted The predicted numeric vector, where each element in the vector
+#'                  is a prediction for the corresponding element in \code{actual}.
+#' @author Michael Frasco
+#' @examples
+#' actual <- c(1.1, 1.9, 3.0, 4.4, 5.0, 5.6)
+#' predicted <- c(0.9, 1.8, 2.5, 4.5, 5.0, 6.2)
+#' rmse(actual, predicted)
+rmse <- function(actual, predicted) {
+  return(sqrt(mean((actual - predicted) ^ 2)))
 }
