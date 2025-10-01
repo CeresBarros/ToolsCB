@@ -269,10 +269,10 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
 
   validMetrics <- c(caret::defaultSummary(data.frame(obs = predictionsDT$obs, pred = predictionsDT$pred)),
                     RMSE = RMSE,
-                    "Rsq" = RsqGAMLSS,
+                    Rsq = RsqGAMLSS,
                     Rsquared = Rsquared,
                     TGD = TGDstats$TGD,
-                      predictError = TGDstats$predictError)
+                    predictError = TGDstats$predictError)
 
   out <- list(validMetrics = validMetrics, confMatrix = confMatrix,
               coefs = coefAll(trainModel))
