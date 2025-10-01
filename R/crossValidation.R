@@ -9,6 +9,8 @@
 #' @param statsModel the statistical model to validate. Only works with gamlss models
 #' @param k integer with number of chunks that the data should be partitioned in
 #' @param idCol column with pixel/observation IDs (optional)
+#' @param sampleGroup column used as a grouping variable (i.e. random effect) in the  `statsModel`.
+#'    Used to ensure that all folds contain all levels of this grouping variable.
 #' @param origData the data used to fit the statsModule, needs to be passed to [`gamlss::predictAll()`]
 #'   (it may not be able to access it) but also to make sure newdata in [`gamlss::predictAll()`]
 #'  has the same variables (even if they're not used in the model)
@@ -19,13 +21,15 @@
 #'  to avoid digesting the (potentially) large data arguments
 #' @param parallel logical. Uses [`future.apply::future_lapply()`] to parallelise
 #'  model fitting across the k-folds, using `plan(multiprocess)`. Defaults to FALSE
-#' @param ... further arguments passed to [`future::plan()`]
 #' @param cacheArgs a named `list` of arguments passed to inner `Cache` calls
+#' @param ... further arguments passed to [`future::plan()`] and `calcCrossValidMetrics`.
 #'
 #' @export
-crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol,
+crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol, sampleGroup = NULL,
                                parallel = FALSE, cacheObj1 = NULL, cacheObj2 = NULL,
                                cacheArgs = NULL, level = NULL, ...) {
+
+  dots <- list(...)
 
   if (!requireNamespace("gamlss", quietly = TRUE)) {
     stop("'gamlss' is not installed. Please install using:",
@@ -37,17 +41,44 @@ crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol,
 
   ## remove NAs from the data without subsetting columns
   if (any(is.na(fullDT[, ..origDataVars])))
-    stop("Please remove NAs from the variables going in the model")
+    stop("Please remove NAs from 'fullDT'")
 
   ## partition data into roughly equal chunks
-  sampDT <- unique(fullDT[, ..idCol])
-  sampDT[, sampID := sample(1:k, size = length(get(idCol)), replace = TRUE)]
+  savedSeed <- .Random.seed
+  on.exit(assign(".Random.seed", savedSeed, envir = .GlobalEnv), add = TRUE)
+  set.seed(123)
+  if (!is.null(sampleGroup)) {
+    cols2 <- c(sampleGroup, idCol)
+    sampDT <- fullDT[, ..cols2]
+    sampDT[, sampID := sample(1:k, size = length(get(idCol)), replace = TRUE),
+           by = get(sampleGroup)]
+    rm(cols2)
+  } else {
+    sampDT <- unique(fullDT[, ..idCol])
+    sampDT[, sampID := sample(1:k, size = length(get(idCol)), replace = TRUE)]
+  }
+
   ## join samp IDs with data
   fullDT <- sampDT[fullDT, on = idCol]
 
   origDataVars <- c(origDataVars, "sampID")
 
   message(paste("Starting cross-validation using", k, "folds"))
+
+  ##  get the arguments for the lapply call
+  args <- c(formalArgs(calcCrossValidMetrics))
+  args <- dots[intersect(names(dots), args)]
+  args <- append(args,
+                 list(X = unique(fullDT$sampID),
+                      FUN = calcCrossValidMetrics,
+                      idCol = idCol,
+                      fullDT = fullDT,
+                      origData = origData,
+                      statsModel = statsModel,
+                      origDataVars = origDataVars,
+                      level = level,
+                      cacheArgs = cacheArgs))
+
   if (parallel) {
     if (!requireNamespace("future", quietly = TRUE)) {
       stop("'future' is not installed. Please install using:",
@@ -59,21 +90,26 @@ crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol,
            "\ninstall.packages('future.apply')")
     }
 
+    planArgs <- formalArgs(future::plan)
     if (Sys.info()[["sysname"]] == "Windows") {
-      future::plan(future::multisession, gc = TRUE, ...)
-    } else future::plan(future::multicore, ...)
+      futArgs <- c(formalArgs(future::multisession), planArgs)
+      futArgs <- dots[intersect(names(dots), futArgs)]
+      futArgs <- append(list(gc = TRUE,
+                             strategy = future::multisession),
+                        futArgs)
+    } else {
+      futArgs <- c(formalArgs(future::multicore), planArgs)
+      futArgs <- dots[intersect(names(dots), futArgs)]
+      futArgs <- append(list(strategy = future::multicore),
+                        futArgs)
+    }
 
-    crossValidResults <- future.apply::future_lapply(unique(fullDT$sampID), FUN = calcCrossValidMetrics,
-                                                     fullDT = fullDT, origData = origData,
-                                                     statsModel = statsModel, origDataVars = origDataVars,
-                                                     level = level, cacheArgs = cacheArgs)
+    do.call(future::plan, futArgs)
+    crossValidResults <- do.call(future.apply::future_lapply, args)
     ## Explicitly close workers
     future:::ClusterRegistry("stop")
   } else {
-    crossValidResults <- lapply(unique(fullDT$sampID), FUN = calcCrossValidMetrics,
-                                fullDT = fullDT, origData = origData,
-                                statsModel = statsModel, origDataVars = origDataVars,
-                                level = level, cacheArgs = cacheArgs)
+    crossValidResults <- do.call(lapply, args)
   }
   return(crossValidResults)
 }
@@ -89,6 +125,9 @@ crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol,
 #' @param origData the data used to fit `statsModel`
 #' @param statsModel the fitted model
 #' @param level passed to `gamlss:::predict`
+#' @param classVar if a categorical (i.e. class) version of the response is available,
+#'   it can be passed here to run validation metrics on class probabilities and accuracies.
+#' @param idCol row IDs. Needed when `!is.null(classVar)`
 #' @param origDataVars a character vector of the variables used in model fitting (including response variable and random effects.)
 #' @param cacheArgs a named `list` of arguments passed to `Cache`
 #'
@@ -99,7 +138,9 @@ crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol,
 #' @importFrom stats update
 #'
 #' @export
-calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel, origDataVars, level = NULL, cacheArgs = NULL) {
+calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
+                                  origDataVars, level = NULL, cacheArgs = NULL,
+                                  classVar = NULL, idCol = NULL) {
   if (!requireNamespace("gamlss", quietly = TRUE)) {
     stop("'gamlss' is not installed. Please install using:",
          "\ninstall.packages('gamlss')")
@@ -119,53 +160,120 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel, origDataVa
   trainData <<- fullDT[sampID != samp, ..origDataVars]
   testData <- fullDT[sampID == samp, ..origDataVars]
 
+  ## checks, if there's a RE variable, all it's levels need to exist in the sample
+  REvar <- names(statsModel$mu.coefSmo[[1]]$coefficients$random)
+  if (!is.null(REvar)) {
+    if (!REvar %in% colnames(fullDT)) {
+      stop("Grouping variable not found in 'fullDT'")
+    }
+
+    if (length(setdiff(unique(fullDT[[REvar]]),
+                       unique(testData[[REvar]]))) |
+        length(setdiff(unique(fullDT[[REvar]]),
+                       unique(trainData[[REvar]]))))
+      stop("Fires lost in sampling!")
+  }
+
+
   if (any(is.na(trainData)) | any(is.na(testData)))
     stop("Please remove NAs from the variables going in the model")
 
   ## trainData an testData cannot have extra cols with respect to those in the original
   ## data used to fit the model
   cols <- names(origData)
-  trainData <<- trainData[, .SD, .SDcols = cols]   ## need to export to .Global for gamlss...
-  testData <- testData[, .SD, .SDcols = cols]
+  trainData <<- trainData[, ..cols]
+  testData <- testData[, ..cols]
+
+  cacheObj <- list(resid(statsModel), samp)
 
   ## refit model on training sample then predict
-  trainModel <- tryCatch(update(object = statsModel, data = trainData), error = function(e) e)
+  trainModel <- tryCatch(
+    Cache(update,
+          object = statsModel,
+          data = trainData,
+          omitArgs = c("data", "object"),
+          cacheExtra = cacheObj)
+    , error = function(e) e)
 
   if (is(trainModel, "error")) {
     message("Model could not be re-fit. Error:")
     message(trainModel)
     validMetrics <- c("RMSE" = NA, "Rsquared" = NA, "MAE" = NA,
                       "Rsq" = NA, "TGD" = NA, "predictError" = NA)
-  } else {
-    params <- c("mu", "nu", "tau")
-    names(params) <- params
-    predictionsDT <- lapply(params, FUN = function(param) {
-      predict(trainModel, what = param,
-              newdata = testData, data = trainData,
-              type = "response", level = level)
-    })
+    return(validMetrics)
+  }
+
+  params <- c("mu", "nu", "tau")
+  names(params) <- params
+  predictionsDT <- lapply(params, FUN = function(param) {
+    predict(trainModel, what = param,
+            newdata = testData[1:10], data = trainData,
+            type = "response", level = level)
+  })
     predictionsDT <- as.data.table(do.call(cbind, predictionsDT))
 
     ## add response variable
-    set(predictionsDT, NULL, "invRobust", testData$invRobust)
+  modform <- formula(statsModel)
+  modterms <- terms(modform)
+  respVar <- as.character(attr(modterms, "variables")[attr(modterms, "response") + 1])
 
-    ## predict using meanBEINF approach
-    if (trainModel$family[1] != "BEINF")
+  set(predictionsDT, NULL, obs, testData[, get(respVar)])
+
+  ## predict using meanBEINF approach
+  if (trainModel$family[1] != "BEINF")
       stop("the object does not have a BEINF distribution")
 
-    predictionsDT[, predinvRobust := calcMeanBEINF(mu, nu, tau),
-                  by = row.names(predictionsDT)]
+  predictionsDT[, pred := calcMeanBEINF(mu, nu, tau)]
 
-    ## VALIDATION STATISTICS WITH CONTINUOUS VARIABLE -----------------------
+  ## VALIDATION STATISTICS WITH CLASSES -----------------------
+  if (!is.null(classVar)) {
+    ## add severity classes
+    testData <- na.omit(fullDT[sampID == samp, ..origDataVars]) ## redo testData in case idCol was dropped when subsetting to model data
+    predictionsDT[, c(idCol) := testData[[grep(idCol, names(testData))]]]
+    cols <- c(idCol, classVar)
+    predictionsDT <- fullDT[, ..cols][predictionsDT, on = idCol]
+
+    ## convert to classes, using the quantiles corresponding to the observed class proportions
+    ## accumulate proportions to get probabilities
+    quantProbs <- cumsum(table(predictionsDT[[get(classVar)]])/nrow(predictionsDT))
+    classRanges <- c(0, quantile(predictionsDT$pred, probs = quantProbs))
+
+    predictionsDT[, predCLASS := cut(pred, breaks = classRanges,
+                                     include.lowest = TRUE, right = FALSE)]  ## classify as with intervals as ],]
+
+    ## convert to numbered factor (subtracting one, because classes are 0-5)
+    predictionsDT[, predCLASS := as.numeric(predCLASS)-1]
+    classes <- as.character(sort(unique(fullDT[[get(classVar)]])))
+    predictionsDT[, `:=`(obsCLASS = factor(get(classVar), levels = classes),
+                         predCLASS = factor(predCLASS, levels = classes))]
+
+    ## VALIDATION STATISTICS WITH CLASSES ----------------------------------
+    ## calculate overall statistics
+    validMetrics <- caret::multiClassSummary(predictionsDT[, list(obs = obsCLASS,
+                                                                  pred = predCLASS)],
+                                             lev = classes)
+    ## calculate confusion matrix
+    confMatrix <- caret::confusionMatrix(data = predictionsDT$predCLASS,
+                                         reference = predictionsDT$obsCLASS)
+
+  }
+
+  ## VALIDATION STATISTICS WITH CONTINUOUS VARIABLE -----------------------
     RsqGAMLSS <- gamlss::Rsq(trainModel)
     TGDstats <- gamlss::getTGD(trainModel, newdata = testData, data = trainData)
 
-    validMetrics <- c(caret::defaultSummary(data.frame(obs = predictionsDT$invRobust, pred = predictionsDT$predinvRobust)),
+  Rsquared <- caret::postResample(pred = predictionsDT$pred, obs = predictionsDT$obs)
+  Rsquared <- Rsquared["Rsquared"]
+  validMetrics <- c(caret::defaultSummary(data.frame(obs = predictionsDT$obs, pred = predictionsDT$pred)),
                       "Rsq" = RsqGAMLSS,
+                    Rsquared = Rsquared,
                       TGD = TGDstats$TGD,
                       predictError = TGDstats$predictError)
-  }
-  list(validMetrics = validMetrics)
+
+  out <- list(validMetrics = validMetrics, confMatrix = confMatrix,
+              coefs = coefAll(trainModel))
+
+  return(out)
 }
 
 #' CACHE-COMPATIBLE MODEL UPDATE
