@@ -250,33 +250,46 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
 
     ## VALIDATION STATISTICS WITH CLASSES ----------------------------------
     ## calculate overall statistics
-    validMetrics <- caret::multiClassSummary(predictionsDT[, list(obs = obsCLASS,
+    validMetricsClass <- caret::multiClassSummary(predictionsDT[, list(obs = obsCLASS,
                                                                   pred = predCLASS)],
                                              lev = classes)
     ## calculate confusion matrix
     confMatrix <- caret::confusionMatrix(data = predictionsDT$predCLASS,
                                          reference = predictionsDT$obsCLASS)
 
+    out <- list(validMetricsClass = validMetricsClass,
+                confMatrix = confMatrix)
   }
 
   ## VALIDATION STATISTICS WITH CONTINUOUS VARIABLE -----------------------
-    RsqGAMLSS <- gamlss::Rsq(trainModel)
-    TGDstats <- gamlss::getTGD(trainModel, newdata = testData, data = trainData)
+  RsqGAMLSS <- Cache(gamlss::Rsq,
+                     object = trainModel,
+                     omitArgs = c("object"),
+                     .cacheExtra = cacheObj)
+  TGDstats <- Cache(gamlss::getTGD,
+                    object = trainModel,
+                    newdata = testData,
+                    data = trainData,
+                    omitArgs = c("object", "newdata", "data"),
+                    .cacheExtra = cacheObj)
 
-  Rsquared <- caret::postResample(pred = predictionsDT$pred, obs = predictionsDT$obs)
-  Rsquared <- Rsquared["Rsquared"]
+  caretSumm <- caret::defaultSummary(data.frame(obs = predictionsDT$obs, pred = predictionsDT$pred))
+  validMetricsCont <- c(caretSumm,
+                        RsqGAMLSS = RsqGAMLSS,
+                        TGD = TGDstats$TGD,
+                        predictError = TGDstats$predictError)
 
-  RMSE <- rmse(predictionsDT$obs, predictionsDT$pred)
+  if (!exists("out"))
+    out <- list()
 
-  validMetrics <- c(caret::defaultSummary(data.frame(obs = predictionsDT$obs, pred = predictionsDT$pred)),
-                    RMSE = RMSE,
-                    Rsq = RsqGAMLSS,
-                    Rsquared = Rsquared,
-                    TGD = TGDstats$TGD,
-                    predictError = TGDstats$predictError)
-
-  out <- list(validMetrics = validMetrics, confMatrix = confMatrix,
-              coefs = coefAll(trainModel))
+  out <- append(out,
+                list(
+                  validMetrics = validMetricsCont,
+                  validMetricsClass = validMetricsClass,
+                  confMatrix = confMatrix,
+                  coefs = coefAll(trainModel)
+                )
+  )
 
   return(out)
 }
