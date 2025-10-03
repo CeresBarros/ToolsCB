@@ -217,7 +217,7 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
   modterms <- terms(modform)
   respVar <- as.character(attr(modterms, "variables")[attr(modterms, "response") + 1])
 
-  set(predictionsDT, NULL, obs, testData[, get(respVar)])
+  set(predictionsDT, NULL, "obs", testData[, get(respVar)])
 
   ## predict using meanBEINF approach
   if (trainModel$family[1] != "BEINF")
@@ -235,7 +235,7 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
 
     ## convert to classes, using the quantiles corresponding to the observed class proportions
     ## accumulate proportions to get probabilities
-    quantProbs <- cumsum(table(predictionsDT[[get(classVar)]])/nrow(predictionsDT))
+    quantProbs <- cumsum(table(predictionsDT[[classVar]])/nrow(predictionsDT))
     classRanges <- c(0, quantile(predictionsDT$pred, probs = quantProbs))
 
     predictionsDT[, predCLASS := cut(pred, breaks = classRanges,
@@ -243,7 +243,7 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
 
     ## convert to numbered factor (subtracting one, because classes are 0-5)
     predictionsDT[, predCLASS := as.numeric(predCLASS)-1]
-    classes <- as.character(sort(unique(fullDT[[get(classVar)]])))
+    classes <- as.character(sort(unique(fullDT[[classVar]])))
     predictionsDT[, `:=`(obsCLASS = factor(get(classVar), levels = classes),
                          predCLASS = factor(predCLASS, levels = classes))]
 
