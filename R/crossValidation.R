@@ -205,14 +205,20 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
 
   params <- c("mu", "nu", "tau")
   names(params) <- params
-  predictionsDT <- lapply(params, FUN = function(param) {
-    predict(trainModel, what = param,
-            newdata = testData[1:10], data = trainData,
-            type = "response", level = level)
-  })
-    predictionsDT <- as.data.table(do.call(cbind, predictionsDT))
+  predictionsDT <- lapply(params, FUN = function(param, cacheObj) {
+    Cache(predict,
+          object = trainModel,
+          what = param,
+          newdata = testData,
+          data = trainData,
+          type = "response",
+          level = level,
+          omitArgs = c("object", "newdata", "data"),
+          .cacheExtra = cacheObj)
+  }, cacheObj = cacheObj)
+  predictionsDT <- as.data.table(do.call(cbind, predictionsDT))
 
-    ## add response variable
+  ## add response variable
   modform <- formula(statsModel)
   modterms <- terms(modform)
   respVar <- as.character(attr(modterms, "variables")[attr(modterms, "response") + 1])
@@ -221,7 +227,7 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
 
   ## predict using meanBEINF approach
   if (trainModel$family[1] != "BEINF")
-      stop("the object does not have a BEINF distribution")
+    stop("the object does not have a BEINF distribution")
 
   predictionsDT[, pred := calcMeanBEINF(mu, nu, tau)]
 
@@ -251,8 +257,8 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
     ## VALIDATION STATISTICS WITH CLASSES ----------------------------------
     ## calculate overall statistics
     validMetricsClass <- caret::multiClassSummary(predictionsDT[, list(obs = obsCLASS,
-                                                                  pred = predCLASS)],
-                                             lev = classes)
+                                                                       pred = predCLASS)],
+                                                  lev = classes)
     ## calculate confusion matrix
     confMatrix <- caret::confusionMatrix(data = predictionsDT$predCLASS,
                                          reference = predictionsDT$obsCLASS)
