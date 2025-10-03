@@ -226,10 +226,11 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
   predictionsDT[, pred := calcMeanBEINF(mu, nu, tau)]
 
   ## VALIDATION STATISTICS WITH CLASSES -----------------------
+  testData <- na.omit(fullDT[sampID == samp, ..origDataVars]) ## redo testData in case idCol was dropped when subsetting to model data
+
   if (!is.null(classVar)) {
     ## add severity classes
-    testData <- na.omit(fullDT[sampID == samp, ..origDataVars]) ## redo testData in case idCol was dropped when subsetting to model data
-    predictionsDT[, c(idCol) := testData[[grep(idCol, names(testData))]]]
+    predictionsDT[, c(idCol) := testData[[idCol]]]
     cols <- c(idCol, classVar)
     predictionsDT <- fullDT[, ..cols][predictionsDT, on = idCol]
 
