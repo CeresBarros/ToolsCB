@@ -7,7 +7,7 @@ Description: Package of useful R functions used for various ecological analyses,
 Depends:
   R (>= 3.6)
 Date: 2024-07-09
-Version: 0.0.9
+Version: 0.0.9001
 Imports:
   ade4,
   cheddar,
