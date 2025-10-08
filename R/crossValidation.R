@@ -22,12 +22,13 @@
 #' @param parallel logical. Uses [`future.apply::future_lapply()`] to parallelise
 #'  model fitting across the k-folds, using `plan(multiprocess)`. Defaults to FALSE
 #' @param cacheArgs a named `list` of arguments passed to inner `Cache` calls
-#' @param ... further arguments passed to [`future::plan()`] and `calcCrossValidMetrics`.
+#' @param classVar if a categorical (i.e. class) version of the response is available,
+#'   it can be passed here to run validation metrics on class probabilities and accuracies.
+#' @param ... further arguments passed to [`future::plan()`].
 #'
 #' @export
 crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol, sampleGroup = NULL,
-                               parallel = FALSE, cacheObj1 = NULL, cacheObj2 = NULL,
-                               cacheArgs = NULL, level = NULL, ...) {
+                               parallel = FALSE, cacheArgs = NULL, level = NULL, classVar = NULL, ...) {
 
   dots <- list(...)
 
@@ -65,51 +66,75 @@ crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol, sampl
 
   message(paste("Starting cross-validation using", k, "folds"))
 
-  ##  get the arguments for the lapply call
-  args <- c(formalArgs(calcCrossValidMetrics))
-  args <- dots[intersect(names(dots), args)]
-  args <- append(args,
-                 list(X = unique(fullDT$sampID),
-                      FUN = calcCrossValidMetrics,
-                      idCol = idCol,
-                      fullDT = fullDT,
-                      origData = origData,
-                      statsModel = statsModel,
-                      origDataVars = origDataVars,
-                      level = level,
-                      cacheArgs = cacheArgs))
-
   if (parallel) {
-    if (!requireNamespace("future", quietly = TRUE)) {
-      stop("'future' is not installed. Please install using:",
-           "\ninstall.packages('future')")
+    if (!requireNamespace("doSNOW", quietly = TRUE)) {
+      stop("'doSNOW' is not installed. Please install using:",
+           "\ninstall.packages('doSNOW')")
     }
 
-    if (!requireNamespace("future.apply", quietly = TRUE)) {
-      stop("'future.apply' is not installed. Please install using:",
-           "\ninstall.packages('future.apply')")
+    if (!requireNamespace("foreach", quietly = TRUE)) {
+      stop("'foreach' is not installed. Please install using:",
+           "\ninstall.packages('foreach')")
+    } else require(foreach)
+
+    if (!requireNamespace("parallel", quietly = TRUE)) {
+      stop("'parallel' is not installed. Please install using:",
+           "\ninstall.packages('parallel')")
     }
 
-    planArgs <- formalArgs(future::plan)
+    # Extract relevant arguments
+    clusterArgs <- formalArgs(makeCluster)
+    clusterArgs <- dots[intersect(names(dots), clusterArgs)]
+
+    # Set up cluster based on OS
     if (Sys.info()[["sysname"]] == "Windows") {
-      futArgs <- c(formalArgs(future::multisession), planArgs)
-      futArgs <- dots[intersect(names(dots), futArgs)]
-      futArgs <- append(list(gc = TRUE,
-                             strategy = future::multisession),
-                        futArgs)
+      cl <- do.call(makeCluster, clusterArgs)
+      doSNOW::registerDoSNOW(cl)
     } else {
-      futArgs <- c(formalArgs(future::multicore), planArgs)
-      futArgs <- dots[intersect(names(dots), futArgs)]
-      futArgs <- append(list(strategy = future::multicore),
-                        futArgs)
+      clusterArgs$type <- "FORK"
+      cl <- do.call(makeCluster, clusterArgs)
+      doSNOW::registerDoSNOW(cl)
     }
+    on.exit(stopCluster(cl), add = TRUE)
 
-    do.call(future::plan, futArgs)
-    crossValidResults <- do.call(future.apply::future_lapply, args)
-    ## Explicitly close workers
-    future:::ClusterRegistry("stop")
+    # Set up progress bar
+    pb <- txtProgressBar(min = 0, max = length(unique(fullDT$sampID)[1:2]), style = 3)
+    progress <- function(n) setTxtProgressBar(pb, n)
+    opts <- list(progress = progress)
+
+    pkgs <- c("caret",
+              "data.table",
+              "gamlss",
+              "gamlss.inf",
+              "reproducible",
+              "stats")
+
+    # Apply function in parallel using foreach, move some arguments to a separate lise
+    crossValidResults <- foreach(sampID = unique(fullDT$sampID)[1],
+                                 .packages = pkgs,
+                                 .options.snow = opts) %dopar% {
+                                   calcCrossValidMetrics(samp = sampID,
+                                                         classVar = classVar,
+                                                         idCol = idCol,
+                                                         fullDT = fullDT,
+                                                         origData = origData,
+                                                         statsModel = statsModel,
+                                                         origDataVars = origDataVars,
+                                                         level = level,
+                                                         cacheArgs = cacheArgs)
+                                 }
+
   } else {
-    crossValidResults <- do.call(lapply, args)
+    crossValidResults <- unique(fullDT$sampID) |>
+      purrr::map(\(x) calcCrossValidMetrics(x,
+                                            classVar = classVar,
+                                            idCol = idCol,
+                                            fullDT = fullDT,
+                                            origData = origData,
+                                            statsModel = statsModel,
+                                            origDataVars = origDataVars,
+                                            level = level,
+                                            cacheArgs = cacheArgs))
   }
   return(crossValidResults)
 }
@@ -136,6 +161,7 @@ crossValidFunction <- function(fullDT, statsModel, origData, k = 4, idCol, sampl
 #' @importFrom reproducible Cache
 #' @importFrom data.table as.data.table set
 #' @importFrom stats update
+#' @importFrom gamlss predict Rsq
 #'
 #' @export
 calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
@@ -184,16 +210,19 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
   trainData <<- trainData[, ..cols]
   testData <- testData[, ..cols]
 
+  ## test
+  # trainData <<- trainData[1:200, ..cols]
+  # testData <- testData[201:301, ..cols]
+
   cacheObj <- list(resid(statsModel), samp)
 
   ## refit model on training sample then predict
-  trainModel <- tryCatch(
-    Cache(update,
-          object = statsModel,
-          data = trainData,
-          omitArgs = c("data", "object"),
-          cacheExtra = cacheObj)
-    , error = function(e) e)
+  trainModel <- tryCatch({
+    update(object = statsModel,
+            data = trainData) #|>
+  # Cache(omitArgs = c("data", "object"),   ## 1) need to pipe this cache call, gamlss won't work, 2) omitArgs is not working properly here, but all seems good in global env.
+        # .cacheExtra = cacheObj)
+  }, error = function(e) e)
 
   if (is(trainModel, "error")) {
     message("Model could not be re-fit. Error:")
@@ -204,19 +233,17 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
   }
 
   params <- c("mu", "nu", "tau")
-  names(params) <- params
-  predictionsDT <- lapply(params, FUN = function(param, cacheObj) {
-    Cache(predict,
-          object = trainModel,
-          what = param,
-          newdata = testData,
-          data = trainData,
-          type = "response",
-          level = level,
-          omitArgs = c("object", "newdata", "data"),
-          .cacheExtra = cacheObj)
-  }, cacheObj = cacheObj)
-  predictionsDT <- as.data.table(do.call(cbind, predictionsDT))
+  predictionsDT <- sapply(params, FUN = function(param) {
+    predict(object = trainModel,
+            what = param,
+            newdata = testData,
+            data = trainData,
+            type = "response",
+            level = level) |>
+      Cache(omitArgs = c("object", "newdata", "data"),
+            .cacheExtra = c(cacheObj, param))
+  }) |>
+    as.data.table()
 
   ## add response variable
   modform <- formula(statsModel)
@@ -232,9 +259,11 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
   predictionsDT[, pred := calcMeanBEINF(mu, nu, tau)]
 
   ## VALIDATION STATISTICS WITH CLASSES -----------------------
-  testData <- na.omit(fullDT[sampID == samp, ..origDataVars]) ## redo testData in case idCol was dropped when subsetting to model data
+  if (!idCol %in% colnames(testData)) {
+    testData <- na.omit(fullDT[sampID == samp, ..origDataVars]) ## redo testData in case idCol was dropped when subsetting to model data
+  }
 
-  if (!is.null(classVar)) {
+  if (exists("classVar")) {
     ## add severity classes
     predictionsDT[, c(idCol) := testData[[idCol]]]
     cols <- c(idCol, classVar)
@@ -268,20 +297,20 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
   }
 
   ## VALIDATION STATISTICS WITH CONTINUOUS VARIABLE -----------------------
-  RsqGAMLSS <- Cache(gamlss::Rsq,
-                     object = trainModel,
-                     omitArgs = c("object"),
-                     .cacheExtra = cacheObj)
-  TGDstats <- Cache(gamlss::getTGD,
-                    object = trainModel,
-                    newdata = testData,
-                    data = trainData,
-                    omitArgs = c("object", "newdata", "data"),
-                    .cacheExtra = cacheObj)
+  RsqGAMLSS <- Rsq(object = trainModel) |>
+    Cache(omitArgs = c("object"),
+          .cacheExtra = cacheObj)
+  TGDstats <- getTGD(object = trainModel,
+                     newdata = testData,
+                     data = trainData) |>
+    Cache(omitArgs = c("object", "newdata", "data"),
+          .cacheExtra = cacheObj)
 
   caretSumm <- caret::defaultSummary(data.frame(obs = predictionsDT$obs, pred = predictionsDT$pred))
+  RMSE <- caret::RMSE(pred = predictionsDT$pred, obs = predictionsDT$obs)
   validMetricsCont <- c(caretSumm,
                         RsqGAMLSS = RsqGAMLSS,
+                        RMSE = RMSE,
                         TGD = TGDstats$TGD,
                         predictError = TGDstats$predictError)
 
@@ -293,7 +322,7 @@ calcCrossValidMetrics <- function(samp, fullDT, origData, statsModel,
                   validMetrics = validMetricsCont,
                   validMetricsClass = validMetricsClass,
                   confMatrix = confMatrix,
-                  coefs = coefAll(trainModel)
+                  coefs = gamlss::coefAll(trainModel)
                 )
   )
 
